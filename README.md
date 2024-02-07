@@ -6,3 +6,9 @@
 ## TA: <Insert Here>
 
 ## Instructions/Link to access: <insert here>
+
+
+## How to Run:
+
+cd SpotifyGames
+npx expo start
