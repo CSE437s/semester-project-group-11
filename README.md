@@ -10,5 +10,8 @@
 
 ## How to Run:
 
+```
 cd SpotifyGames
 npx expo start
+```
+
