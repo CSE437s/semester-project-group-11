@@ -28,6 +28,9 @@ const firebaseConfig = {
   measurementId: 'G-V06PHVMN3L',
 };
 
+const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
+const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
+
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 // For more information on how to access Firebase in your project,
