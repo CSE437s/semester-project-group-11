@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
 
 
 // .env file configuration
@@ -33,6 +34,10 @@ const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+
+// Initialize Firebase Authentication and get a reference to the service
+const auth = getAuth(app)
+
 // For more information on how to access Firebase in your project,
 // see the Firebase documentation: https://firebase.google.com/docs/web/setup#access-firebase
 // expo+firebase docs: https://rnfirebase.io/#expo
