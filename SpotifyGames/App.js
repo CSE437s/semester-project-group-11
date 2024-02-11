@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, View, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 
 // Expo has their own version of environment variables
 // https://docs.expo.dev/guides/environment-variables/
@@ -49,6 +50,10 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+    <Image
+      contentFit="cover"
+      source="'./assets/spotify-logo.svg'"
+    />
     <Button
       disabled={!request}
       title="Login"
