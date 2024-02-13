@@ -5,22 +5,22 @@ import { getAnalytics } from "firebase/analytics";
 // .env file configuration
 // TODO add react-native-dotenv to plugins
 // https://www.npmjs.com/package/react-native-dotenv
-import {FIREBASE_API_KEY} from "@env";
+
 
 
 
 // Optionally import the services that you want to use
 // import {...} from "firebase/auth";
-// import {...} from "firebase/database";
+import {getDatabase, ref, set} from "firebase/database";
 // import {...} from "firebase/firestore";
 // import {...} from "firebase/functions";
 // import {...} from "firebase/storage";
 
 // Initialize Firebase
 const firebaseConfig = {
-  apiKey: FIREBASE_API_KEY,
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
   authDomain: 'spotify-games.firebaseapp.com',
-  databaseURL: 'https://project-id.firebaseio.com',
+  databaseURL: 'https://group11-8368c-default-rtdb.firebaseio.com',
   projectId: 'spotify-games',
   storageBucket: 'spotify-games.appspot.com',
   messagingSenderId: '16243974718',
@@ -30,6 +30,30 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+
+
 // For more information on how to access Firebase in your project,
 // see the Firebase documentation: https://firebase.google.com/docs/web/setup#access-firebase
 // expo+firebase docs: https://rnfirebase.io/#expo
+
+export const storeUserDataInFirebase = (userId, email, authCode, authToken, refreshToken, authTokenExpirationDate, authTokenScope) => {
+
+  const database = getDatabase();
+  
+  
+  // Push the user data to the database
+  set(ref(database, 'users/'+userId), {
+    email: email,
+    authCode: authCode,
+    authToken: authToken,
+    refreshToken: refreshToken,
+    authTokenExpirationDate: authTokenExpirationDate,
+    authTokenScope:authTokenScope
+  })
+  .then(() => {
+    console.log('User data stored successfully in Firebase');
+  })
+  .catch((error) => {
+    console.error('Error storing user data in Firebase:', error);
+  });
+};
