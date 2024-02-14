@@ -7,21 +7,25 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 export function signUp (email, password){
 
+  let response;
+
   const auth = getAuth();
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed up 
       const user = userCredential.user;
       // ...
-      return {user:user, errorcode: null, errorMessage:null}
+      response = {user:user, errorcode: null, errorMessage:null}
 
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       // ..
-      return {user:null, errorcode: errorCode, errorMessage:errorMessage}
+      response = {user:null, errorcode: errorCode, errorMessage:errorMessage}
 
     });
+
+    return response;
 
 }
