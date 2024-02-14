@@ -83,7 +83,6 @@ export default function SpotifyLogin() {
                                     console.error("error getting access token", tokenres)
                                 }
                             }
-
                         ).catch(
                             (err) => console.log("token err", err)
                         )
