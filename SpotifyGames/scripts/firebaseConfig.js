@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 
-import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, onAuthStateChanged} from "firebase/auth";
 
 import { save, getValueFor } from './SecureStore.js'
 
@@ -96,7 +96,7 @@ export const getAuthStateChangeFirebase = (setIsLoggedIn) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsLoggedIn(!!user);
     });
-    return () => unsubscribe;
+    return unsubscribe;
   }
   catch (error) {
     console.log("unable to create isLoggedIn event listener")
