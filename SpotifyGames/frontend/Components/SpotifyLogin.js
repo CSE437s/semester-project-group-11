@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, AccessTokenRequest } from 'expo-auth-session';
 import { Button, View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
 import {save, getValueFor} from '../../scripts/SecureStore.js'
 import { storeUserDataInFirebase } from '../../scripts/firebaseConfig';
 
@@ -58,10 +57,14 @@ export default function SpotifyLogin() {
 
     return (
         <View style={styles.container}>
-            <Image
+
+
+            {/* <Image
                 contentFit="cover"
                 source="'./assets/spotify-logo.svg'"
-            />
+            /> */}
+
+
             <Button
                 disabled={!request}
                 title="Connect your Spotify"
@@ -74,10 +77,11 @@ export default function SpotifyLogin() {
                         token = getFirstTokenData(res.params.code, expoRedirectUri).then(
                             (tokenres) => {
                                 if (tokenres.access_token){
-                                    //MOVE THIS? //////////////
-                                    storeUserDataInFirebase(1, "fake23@email.com", res.params.code, tokenres.access_token, tokenres.refresh_token, new Date(calculateExpirationTime(tokenres.expires_in)).toISOString(), tokenres.scope)
-                                    //////////////////////////
+                                    // TODO
+                                    // Store in Firebase somehow, or ok to keep in local storage?
+                                    // Secure store seems to persist for app installs for iOS, but unsure for Android
                                     save("authToken", tokenres.access_token)
+                                    console.log("access token in local storage")
                                 }
                                 else{
                                     console.error("error getting access token", tokenres)
