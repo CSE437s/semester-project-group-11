@@ -1,4 +1,4 @@
-import { signUp } from "../../scripts/firebaseConfig.js"
+import { signUpFirebase } from "../../scripts/firebaseConfig.js"
 
 import { useState } from 'react'
 import { StyleSheet, Text, View, TextInput, Button} from 'react-native';
@@ -19,7 +19,7 @@ export default Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    signUp(email, password).then((response) => {
+    signUpFirebase(email, password).then((response) => {
         if (response && response.user) {
           console.log("logged in")
         }

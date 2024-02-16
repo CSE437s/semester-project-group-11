@@ -1,7 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getAnalytics } from "firebase/analytics";
 
-import Authentication, { onAuthStateChanged } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword} from "firebase/auth";
 
 import { save, getValueFor } from './SecureStore.js'
 
@@ -19,27 +18,26 @@ export const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
+// const analytics = getAnalytics(app);
 
 // Returns user credential if successful login, otherwise returns respective error code from Firebase
 // output formatted as {user:user,  errorcode: errorCode, errorMessage:errorMessage}
-export async function signIn(email, password) {
+export async function signInFirebase(email, password) {
   let response;
   try {
-    const auth = Authentication.getAuth(app);
-    const userCredential = await Authentication.signInWithEmailAndPassword(auth, email, password)
+    const auth = getAuth(app);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password)
 
     const user = userCredential.user;
-    response = {user:user, errorcode: undefined, errorMessage:undefined}
+    response = { user: user, errorcode: undefined, errorMessage: undefined }
     console.log(user)
-    await save("user", JSON.stringify(user))
+    // await save("user", JSON.stringify(user))
     alert("logged in!")
   }
   catch (error) {
     const errorCode = error.code;
     const errorMessage = error.message;
-    response = {user:undefined, errorcode: errorCode, errorMessage:errorMessage}
+    response = { user: undefined, errorcode: errorCode, errorMessage: errorMessage }
     console.log(errorCode, errorMessage)
     alert("error logging in")
 
@@ -48,60 +46,60 @@ export async function signIn(email, password) {
 }
 
 
-export async function signUp(email, password) {
+export async function signUpFirebase(email, password) {
   let response
   try {
-    const auth = Authentication.getAuth(app);
-    const userCredential = Authentication.createUserWithEmailAndPassword(auth, email, password)
+    const auth = getAuth(app);
+    const userCredential = createUserWithEmailAndPassword(auth, email, password)
     const user = userCredential.user;
-    response = {user:user, errorcode: undefined, errorMessage:undefined}
+    response = { user: user, errorcode: undefined, errorMessage: undefined }
     console.log(user)
     alert("registered successfully!")
 
   }
-  
-    catch (error) {
-  const errorCode = error.code;
-  const errorMessage = error.message;
-  response = {user:undefined, errorcode: errorCode, errorMessage:errorMessage}
-  console.log(errorCode, errorMessage)
-  alert("error registering")
-};
 
-return response
+  catch (error) {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    response = { user: undefined, errorcode: errorCode, errorMessage: errorMessage }
+    console.log(errorCode, errorMessage)
+    alert("error registering")
+  };
 
+  return response
 }
 
-export async function signOut () {
-  try{  
-  const auth = Authentication.getAuth(app);
-  const res = await Authentication.signOut(auth);
+export async function signOutFirebase() {
+  try {
+    const auth = getAuth(app);
+    const res = await signOut(auth);
     alert("signout successful!");
   }
   catch (error) {
-    alert ("signout unsuccessful");
+    alert("signout unsuccessful");
   }
 }
 
-export async function getAuthStatus(){
-  try{
-    const auth = Authentication.getAuth(app);
-    return auth;
-  }
-  catch (error){
-    console.log("unable to get auth")
-  }
-}
+// export async function getAuthStatusFirebase(){
+//   try{
+//     const auth = getAuth(app);
+//     return auth;
+//   }
+//   catch (error){
+//     console.log("unable to get auth")
+//   }
+// }
 
-export const getAuthStateChange = (setIsLoggedIn) => {
-  try{
-    const auth = Authentication.getAuth(app);
+export const getAuthStateChangeFirebase = (setIsLoggedIn) => {
+  try {
+    const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsLoggedIn(!!user);
     });
     return () => unsubscribe;
   }
-  catch (error){
+  catch (error) {
     console.log("unable to create isLoggedIn event listener")
+    return () => false;
   }
 }
