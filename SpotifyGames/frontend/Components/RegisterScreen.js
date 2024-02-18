@@ -3,7 +3,7 @@ import { signUpFirebase } from "../../scripts/firebaseConfig.js"
 import { useState } from 'react'
 import { StyleSheet, Text, View, TextInput, Button} from 'react-native';
 
-export default Register = () => {
+export default RegisterScreen = ({navigation}) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -49,6 +49,8 @@ export default Register = () => {
           onChangeText={handlePasswordChange}
         />
        <Button title="Register" onPress={handleSubmit} />
+
+       <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
       
     </View>
   );

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import SpotifyLogin from './SpotifyLogin';
+import SpotifyLogin from './SpotifyLoginScreen';
 import TestProfile from './TestProfile';
 
 export default function UserLogin(){

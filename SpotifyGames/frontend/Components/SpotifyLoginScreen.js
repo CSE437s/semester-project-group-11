@@ -3,9 +3,9 @@ import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, AccessTokenRequest } from 'expo-auth-session';
 import { Button, View, StyleSheet } from 'react-native';
 import {save, getValueFor} from '../../scripts/SecureStore.js'
-import { storeUserDataInFirebase } from '../../scripts/firebaseConfig';
+import { storeUserDataInFirebase } from '../../scripts/firebaseConfig.js';
 
-import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../scripts/SpotifyApiRequests';
+import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../scripts/SpotifyApiRequests.js';
 
 // Expo has their own version of environment variables
 // https://docs.expo.dev/guides/environment-variables/
@@ -32,7 +32,7 @@ function calculateExpirationTime(expiresIn){
     return expirationTime
 }
 
-export default function SpotifyLogin() {
+export default function SpotifyLoginScreen() {
     const [request, response, promptAsync] = useAuthRequest(
         {
             clientId: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID,

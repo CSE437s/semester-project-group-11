@@ -3,7 +3,7 @@ import { signInFirebase } from "../../scripts/firebaseConfig.js"
 import { useState } from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native';
 
-export default Login = () => {
+export default LoginScreen = ({ navigation }) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -50,6 +50,8 @@ export default Login = () => {
           onChangeText={handlePasswordChange}
         />
         <Button title="Login" onPress={handleSubmit} />
+
+        <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
       
     </View>
   );
