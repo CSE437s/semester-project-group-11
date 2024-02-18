@@ -1,4 +1,4 @@
-import { signUp } from "./backend/firebaseConfig"
+import { signUpFirebase } from "../../scripts/firebaseConfig.js"
 
 import { useState } from 'react'
 import { StyleSheet, Text, View, TextInput, Button} from 'react-native';
@@ -19,7 +19,7 @@ export default Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    signUp(email, password).then((response) => {
+    signUpFirebase(email, password).then((response) => {
         if (response && response.user) {
           console.log("logged in")
         }
@@ -48,7 +48,7 @@ export default Register = () => {
           value={password}
           onChangeText={handlePasswordChange}
         />
-       <Button title="Login" onPress={handleSubmit} />
+       <Button title="Register" onPress={handleSubmit} />
       
     </View>
   );

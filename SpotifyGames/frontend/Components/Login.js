@@ -1,4 +1,4 @@
-import { signIn } from "./backend/firebaseConfig"
+import { signInFirebase } from "../../scripts/firebaseConfig.js"
 
 import { useState } from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native';
@@ -19,7 +19,7 @@ export default Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    signIn(email, password).then((response) => {
+    signInFirebase(email, password).then((response) => {
       if (response.user) {
         console.log("logged in")
       }

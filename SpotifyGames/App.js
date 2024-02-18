@@ -3,8 +3,10 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import UserLogin from './frontend/Components/UserLogin';
 
-import Login from './Login.js';
-import Register from './Register.js'
+import Login from './frontend/Components/Login.js';
+import Register from './frontend/Components/Register.js'
+import Logout from './frontend/Components/Logout.js';
+import TestProfile from './frontend/Components/TestProfile.js';
 
 
 export default function App() {
@@ -13,10 +15,13 @@ export default function App() {
 
       < UserLogin />
 
+      <TestProfile/>
 
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      {/* <Text>Open up App.js to start working on your app!</Text>
+      <StatusBar style="auto" /> */}
+
       <Login/>
+      <Logout/>
       <Register/>
 
     </View>

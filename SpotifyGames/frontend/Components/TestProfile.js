@@ -20,6 +20,17 @@ export default function TestProfile(){
                     })
                 }}
             />
+            {/* <Button
+                disabled={!getValueFor("user")}
+                title="Test Firebase Auth"
+                onPress={() => {
+                    getValueFor("user").then((at) => {
+                        console.log("hello")
+                        console.log("user ??????", at)
+
+                    })
+                }}
+            /> */}
     </>
     )
 }
