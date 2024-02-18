@@ -2,8 +2,7 @@ import { initializeApp } from 'firebase/app';
 
 import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, onAuthStateChanged} from "firebase/auth";
 
-import { save, getValueFor } from './SecureStore.js'
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Initialize Firebase
 export const firebaseConfig = {
@@ -18,6 +17,8 @@ export const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app, AsyncStorage);
+export {auth};
 // const analytics = getAnalytics(app);
 
 // Returns user credential if successful login, otherwise returns respective error code from Firebase
@@ -25,7 +26,7 @@ const app = initializeApp(firebaseConfig);
 export async function signInFirebase(email, password) {
   let response;
   try {
-    const auth = getAuth(app);
+    
     const userCredential = await signInWithEmailAndPassword(auth, email, password)
 
     const user = userCredential.user;
@@ -45,11 +46,10 @@ export async function signInFirebase(email, password) {
   return response;
 }
 
-
 export async function signUpFirebase(email, password) {
   let response
   try {
-    const auth = getAuth(app);
+    
     const userCredential = createUserWithEmailAndPassword(auth, email, password)
     const user = userCredential.user;
     response = { user: user, errorcode: undefined, errorMessage: undefined }
@@ -71,7 +71,7 @@ export async function signUpFirebase(email, password) {
 
 export async function signOutFirebase() {
   try {
-    const auth = getAuth(app);
+    
     const res = await signOut(auth);
     alert("signout successful!");
   }
@@ -80,19 +80,10 @@ export async function signOutFirebase() {
   }
 }
 
-// export async function getAuthStatusFirebase(){
-//   try{
-//     const auth = getAuth(app);
-//     return auth;
-//   }
-//   catch (error){
-//     console.log("unable to get auth")
-//   }
-// }
 
 export const getAuthStateChangeFirebase = (setIsLoggedIn) => {
   try {
-    const auth = getAuth(app);
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsLoggedIn(!!user);
     });
