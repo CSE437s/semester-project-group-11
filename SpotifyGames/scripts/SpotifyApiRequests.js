@@ -1,12 +1,13 @@
 import {Buffer} from 'buffer';
 
+
 export async function getProfile (token) {
+
     const result = await fetch("https://api.spotify.com/v1/me", {
         method: "GET", headers: { Authorization: `Bearer ${token}` }
     });
     return await result.json();
 }
-
 
 // https://stackoverflow.com/questions/70660873/how-to-use-spotify-30sec-previews-with-expo-react-native-app
 export const getFirstTokenData = async (code, redirect_uri) => {
@@ -72,5 +73,4 @@ export const getRefreshTokenData = async (refreshToken) => {
     }catch (error){
         console.log(error)
     }
-    
 }
