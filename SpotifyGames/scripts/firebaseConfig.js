@@ -83,7 +83,6 @@ export async function signOutFirebase() {
 
 export const getAuthStateChangeFirebase = (setIsLoggedIn) => {
   try {
-    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsLoggedIn(!!user);
     });

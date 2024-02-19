@@ -50,7 +50,7 @@ export default RegisterScreen = ({navigation}) => {
         />
        <Button title="Register" onPress={handleSubmit} />
 
-       <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
+       <Button title="Go to Landing" onPress={() => navigation.navigate('Landing')} />
       
     </View>
   );

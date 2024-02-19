@@ -4,17 +4,6 @@ import { StyleSheet, Text, TextInput, View, Button } from 'react-native';
 
 export default LogoutButton = () => {
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    useEffect(() => {
-        const unsubscribe = getAuthStateChangeFirebase(setIsLoggedIn);
-        return () => {
-            unsubscribe()
-            //also clear spotify token from cache
-        };
-    }, []);
-
-
     const handleLogout = (e) => {
         e.preventDefault();
         signOutFirebase();
@@ -24,7 +13,6 @@ export default LogoutButton = () => {
         <View style={styles.container}>
 
             <Button
-                disabled={!isLoggedIn}
                 title="Logout"
                 onPress={handleLogout}
             />

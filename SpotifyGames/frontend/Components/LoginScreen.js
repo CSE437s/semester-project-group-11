@@ -22,7 +22,6 @@ export default LoginScreen = ({ navigation }) => {
     signInFirebase(email, password).then((response) => {
       if (response.user) {
         console.log("logged in")
-        navigation.navigate("Dashboard")
       }
       else {
         console.log("log in failed")
@@ -52,7 +51,7 @@ export default LoginScreen = ({ navigation }) => {
         />
         <Button title="Login" onPress={handleSubmit} />
 
-        <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
+        <Button title="Go to Landing" onPress={() => navigation.navigate('Landing')} />
       
     </View>
   );

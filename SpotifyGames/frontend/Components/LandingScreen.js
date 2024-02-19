@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Button } from 'react-native';
 
-const HomeScreen = ({ navigation }) => {
+const LandingScreen = ({ navigation }) => {
   return (
     <View>
       <Text>Welcome to Gamify</Text>
@@ -11,4 +11,4 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
-export default HomeScreen;
+export default LandingScreen;
