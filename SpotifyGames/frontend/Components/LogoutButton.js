@@ -2,15 +2,7 @@ import { signOutFirebase, getAuthStateChangeFirebase } from "../../scripts/fireb
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native';
 
-export default Logout = () => {
-
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    useEffect(() => {
-        const unsubscribe = getAuthStateChangeFirebase(setIsLoggedIn);
-        return () => unsubscribe();
-    }, []);
-
+export default LogoutButton = () => {
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -21,7 +13,6 @@ export default Logout = () => {
         <View style={styles.container}>
 
             <Button
-                disabled={!isLoggedIn}
                 title="Logout"
                 onPress={handleLogout}
             />

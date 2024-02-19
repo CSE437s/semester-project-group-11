@@ -1,38 +1,63 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import UserLogin from './frontend/Components/UserLogin';
+import { getAuthStateChangeFirebase } from './scripts/firebaseConfig.js'
 
-import Login from './frontend/Components/Login.js';
-import Register from './frontend/Components/Register.js'
-import Logout from './frontend/Components/Logout.js';
+import LoginScreen from './frontend/Components/LoginScreen.js';
+import RegisterScreen from './frontend/Components/RegisterScreen.js'
 import TestProfile from './frontend/Components/TestProfile.js';
+import LandingScreen from './frontend/Components/LandingScreen.js';
+import DashboardScreen from './frontend/Components/DashboardScreen.js';
+import ProfileScreen from './frontend/Components/ProfileScreen.js';
+
+const Stack = createNativeStackNavigator();
 
 
 export default function App() {
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = getAuthStateChangeFirebase(setIsLoggedIn);
+    return () => {
+      unsubscribe()
+    };
+  }, []);
+
   return (
-    <View style={styles.container}>
+    <NavigationContainer>
 
-      < UserLogin />
+      <Stack.Navigator initialRouteName={isLoggedIn ? "Dashboard" : "Landing"}>
 
-      <TestProfile/>
+        {isLoggedIn ? (
+          <>
+            <Stack.Screen name="Dashboard" component={DashboardScreen} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Landing" component={LandingScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
 
-      {/* <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" /> */}
+          // screens that can be accessed when the user is logged in or logged out should be denoted as such
+          // <Stack.Screen navigationKey={isLoggedIn ? 'user' : 'guest'} name="Help" component={HelpScreen} />
+          //NOTE: this would be outside the isLoggedIn ? ternary operator
+        )}
 
-      <Login/>
-      <Logout/>
-      <Register/>
+      </Stack.Navigator>
 
-    </View>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#fff',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+// });
