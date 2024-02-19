@@ -1,12 +1,17 @@
-import { signUpFirebase } from "../../scripts/firebaseConfig.js"
-
+import { signUpFirebase } from "../../scripts/FirebaseAuth.js"
+import { addUser, isUniqueUsername } from "../../scripts/FirebaseFirestore.js"
 import { useState } from 'react'
 import { StyleSheet, Text, View, TextInput, Button} from 'react-native';
 
 export default RegisterScreen = ({navigation}) => {
 
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleUsernameChange = (text) => {
+    setUsername(text);
+  };
 
   const handleEmailChange = (text) => {
     setEmail(text);
@@ -19,20 +24,34 @@ export default RegisterScreen = ({navigation}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    signUpFirebase(email, password).then((response) => {
-        if (response && response.user) {
-          console.log("logged in")
-        }
-        else {
-          console.log("log in failed")
-        }
-      })
-
+    isUniqueUsername(username).then((isUnique) => {
+      if (isUnique){
+        signUpFirebase(email, password).then((response) => {
+          if (response && response.user) {
+            console.log("logged in")
+            addUser(username, email)
+          }
+          else {
+            console.log("log in failed")
+          }
+        })
+      }
+      else{
+        alert(username, "is already taken")
+      }
+    })
   };
 
   return (
     <View style={styles.container}>
       <Text>Register</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          value={username}
+          onChangeText={handleUsernameChange}
+        />
 
         <TextInput
           style={styles.input}

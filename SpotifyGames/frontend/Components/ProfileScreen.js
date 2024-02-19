@@ -60,6 +60,9 @@ const ProfileScreen = ({ navigation }) => {
                 </>
             )
             }
+
+            <FriendList/>
+
         </>
     );
 };

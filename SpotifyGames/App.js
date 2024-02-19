@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { getAuthStateChangeFirebase } from './scripts/firebaseConfig.js'
+import { getAuthStateChangeFirebase } from './scripts/FirebaseAuth.js'
 
 import LoginScreen from './frontend/Components/LoginScreen.js';
 import RegisterScreen from './frontend/Components/RegisterScreen.js'
