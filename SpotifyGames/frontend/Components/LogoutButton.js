@@ -2,13 +2,16 @@ import { signOutFirebase, getAuthStateChangeFirebase } from "../../scripts/fireb
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native';
 
-export default Logout = () => {
+export default LogoutButton = () => {
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
         const unsubscribe = getAuthStateChangeFirebase(setIsLoggedIn);
-        return () => unsubscribe();
+        return () => {
+            unsubscribe()
+            //also clear spotify token from cache
+        };
     }, []);
 
 

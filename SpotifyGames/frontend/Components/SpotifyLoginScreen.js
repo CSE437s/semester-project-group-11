@@ -1,9 +1,8 @@
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest, AccessTokenRequest } from 'expo-auth-session';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, View, StyleSheet } from 'react-native';
 import {save, getValueFor} from '../../scripts/SecureStore.js'
-import { storeUserDataInFirebase } from '../../scripts/firebaseConfig.js';
 
 import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../scripts/SpotifyApiRequests.js';
 
@@ -31,6 +30,15 @@ function calculateExpirationTime(expiresIn){
     const expirationTime = currTime + expiresIn * 1000
     return expirationTime
 }
+
+
+// Handles request to spotify accessing user account
+// if successful, adds the following to SecureStore
+// ([key], [value])
+// ("SpotifyAccessTokenResponse", Spotify's Response Object)
+// ("SpotifyExpiration", Time when token expires and needs to be refreshed)
+
+// if unsuccessful, alerts with an error
 
 export default function SpotifyLoginScreen() {
     const [request, response, promptAsync] = useAuthRequest(
@@ -77,10 +85,13 @@ export default function SpotifyLoginScreen() {
                         token = getFirstTokenData(res.params.code, expoRedirectUri).then(
                             (tokenres) => {
                                 if (tokenres.access_token){
+                                    //calculate the expiration time in milliseconds (UNIX time)
+                                    const expirationTime = calculateExpirationTime(tokenres.expiresIn)
                                     // TODO
                                     // Store in Firebase somehow, or ok to keep in local storage?
                                     // Secure store seems to persist for app installs for iOS, but unsure for Android
-                                    save("authToken", tokenres.access_token)
+                                    save("SpotifyAccessTokenResponse", JSON.stringify(tokenres))
+                                    save("SpotifyExpiration", expirationTime)
                                     console.log("access token in local storage")
                                 }
                                 else{

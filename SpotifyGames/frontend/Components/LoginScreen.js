@@ -22,6 +22,7 @@ export default LoginScreen = ({ navigation }) => {
     signInFirebase(email, password).then((response) => {
       if (response.user) {
         console.log("logged in")
+        navigation.navigate("Dashboard")
       }
       else {
         console.log("log in failed")

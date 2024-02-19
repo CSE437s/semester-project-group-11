@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Initialize Firebase
 export const firebaseConfig = {
-  apiKey: "AIzaSyDTIYbZHcrqFV0uK4sjksxd48zce9h1uM8",
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
   authDomain: 'spotify-games.firebaseapp.com',
   databaseURL: 'https://project-id.firebaseio.com',
   projectId: 'spotify-games',
