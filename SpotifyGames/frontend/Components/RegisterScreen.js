@@ -37,7 +37,7 @@ export default RegisterScreen = ({navigation}) => {
         })
       }
       else{
-        alert(username, "is already taken")
+        alert(username + " is already taken")
       }
     })
   };

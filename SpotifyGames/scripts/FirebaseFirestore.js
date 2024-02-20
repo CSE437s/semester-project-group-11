@@ -21,10 +21,19 @@ export async function addUser(username, email) {
 
 export async function isUniqueUsername(username) {
 
-    const res = await axios.post("http://localhost:3000/users/validate", {
-        headers: { 'Content-Type': 'application/json' },
-        data: { username: username }
-    })
+    console.log("isUniqueUsername called")
 
-    return JSON.parse(res.json).isUniqueUsername;
+    try {
+        const res = await axios.post("http://localhost:3000/user/validate", {
+            headers: {
+                'Content-Type': 'application/json',
+
+            },
+            data: { username: username }
+        })
+        return JSON.parse(res.json).isUniqueUsername;
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
