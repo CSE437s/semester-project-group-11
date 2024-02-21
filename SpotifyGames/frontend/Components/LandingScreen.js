@@ -5,8 +5,8 @@ const LandingScreen = ({ navigation }) => {
   return (
     <View>
       <Text>Welcome to Gamify</Text>
-      <Button title="Login" onPress={() => navigation.navigate('Login')} />
-      <Button title="Register" onPress={() => navigation.navigate('Register')} />
+      <Button title="To Login Page" onPress={() => navigation.navigate('Login')} />
+      <Button title="To Register Page" onPress={() => navigation.navigate('Register')} />
     </View>
   );
 };

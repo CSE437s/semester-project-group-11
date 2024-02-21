@@ -1,4 +1,4 @@
-import { signInFirebase } from "../../scripts/firebaseConfig.js"
+import { signInFirebase } from "../../scripts/FirebaseAuth.js"
 
 import { useState } from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native';

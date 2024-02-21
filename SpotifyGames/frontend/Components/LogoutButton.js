@@ -1,4 +1,4 @@
-import { signOutFirebase, getAuthStateChangeFirebase } from "../../scripts/firebaseConfig.js";
+import { signOutFirebase } from "../../scripts/FirebaseAuth.js";
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native';
 
