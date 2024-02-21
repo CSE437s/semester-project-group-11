@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, where, query, getDocs } from "firebase/firestore";
-import { app } from "./FirebaseConfig.js"
+import { app } from "./firebaseConfig.js"
 import { User, userConverter } from "./UserModel.js";
 import axios from 'axios';
 
