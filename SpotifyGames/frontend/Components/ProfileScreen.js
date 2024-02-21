@@ -61,7 +61,7 @@ const ProfileScreen = ({ navigation }) => {
             )
             }
 
-            <FriendList/>
+            {/* <FriendList/> */}
 
         </>
     );

@@ -7,7 +7,6 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, on
 export async function signInFirebase(email, password) {
     let response;
     try {
-  
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
   
       const user = userCredential.user;
@@ -22,7 +21,6 @@ export async function signInFirebase(email, password) {
       response = { user: undefined, errorcode: errorCode, errorMessage: errorMessage }
       console.log(errorCode, errorMessage)
       alert("error logging in")
-  
     };
     return response;
   }
