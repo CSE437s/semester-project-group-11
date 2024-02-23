@@ -8,11 +8,11 @@ const SpotifyProfileComponent = ({ spotifyToken }) => {
     const [spotifyProfilePictureURL, setSpotifyProfilePictureURL] = useState(null);
 
     useEffect(() => {
-
         const getProfileData = async () => {
             try {
                 if (spotifyToken !== null) {
                     const data = await getProfile(spotifyToken);
+                    console.log("DATA", data)
                     setSpotifyProfile(data);
                     if (data.images[0]) {
                         console.log(data.images)
@@ -36,7 +36,7 @@ const SpotifyProfileComponent = ({ spotifyToken }) => {
                     <Text>User ID: {spotifyProfile.id}</Text>
                     <Text>Email: {spotifyProfile.email}</Text>
                     <Text>Spotify URI: {spotifyProfile.uri}</Text>
-                    <Text> {spotifyProfile.images[0]?.url ?? '(no profile image)'} </Text>
+                    <Text> {spotifyProfilePictureURL == null ?  spotifyProfilePictureURL : '(no profile image)'} </Text>
                 </>
             ) : (
                 <>
