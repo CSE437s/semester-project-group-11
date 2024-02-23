@@ -10,6 +10,7 @@ import TestProfile from './frontend/Components/TestProfile.js';
 import LandingScreen from './frontend/Components/LandingScreen.js';
 import DashboardScreen from './frontend/Components/DashboardScreen.js';
 import ProfileScreen from './frontend/Components/ProfileScreen.js';
+import SpotifyLoginScreen from './frontend/Components/SpotifyLoginScreen.js';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [spotifyToken, setSpotifyToken] = useState(null);
 
   useEffect(() => {
     const unsubscribe = getAuthStateChangeFirebase(setIsLoggedIn);
@@ -31,10 +33,20 @@ export default function App() {
       <Stack.Navigator initialRouteName={isLoggedIn ? "Dashboard" : "Landing"}>
 
         {isLoggedIn ? (
-          <>
-            <Stack.Screen name="Dashboard" component={DashboardScreen} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
+          <>{
+            spotifyToken ? (
+              <>
+                <Stack.Screen name="Dashboard" component={DashboardScreen} />
+                <Stack.Screen name="Profile" component={ProfileScreen} />
+              </>
+            ) : (
+              <>
+                <Stack.Screen name="SpotifyLoginScreen" component={SpotifyLoginScreen} />
+              </>
+            )
+          }
           </>
+
         ) : (
           <>
             <Stack.Screen name="Landing" component={LandingScreen} />
@@ -49,7 +61,7 @@ export default function App() {
 
       </Stack.Navigator>
 
-    </NavigationContainer>
+    </NavigationContainer >
   );
 }
 
