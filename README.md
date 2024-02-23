@@ -10,21 +10,31 @@
 
 ## How to Run:
 
-First, start off by getting the IP address of the computer that will host the server:
+Exposing the backend to https traffic using ngrok:
 
-Open a terminal and run the following command based on your OS
-MacOS:
-```
-ipconfig getifaddr en0
-```
+assuming ngrok is installed on your machine, you can run the following to redirect traffic from the provided static domain to a port on your machine. For example, I run the following because my domain is "harmless-newly-gecko.ngrok-free.app" and I am using port 16969
 
-Windows:
 ```
-ipconfig | findstr /C:"IPv4"
+ngrok http --domain=harmless-newly-gecko.ngrok-free.app 16969
 ```
 
-Next, take the IP address and paste it into SpotifyGames/.env in the section for EXPO_PUBLIC_SERVER_IP
+the generic version would be as such:
 
+```
+ngrok http --domain=[your domain here] [your port here]
+```
+
+NOTE: ensure that both of these values are set in the FRONTEND .env file so that the frontend knows where to make requests
+
+
+For running the backend:
+
+```
+cd ExpressBackend
+npm run start
+```
+
+For running the frontend:
 
 ```
 cd SpotifyGames

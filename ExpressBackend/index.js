@@ -4,7 +4,7 @@ const admin = require('firebase-admin');
 const asyncHandler = require('express-async-handler');
 const cors = require('cors');
 const fs = require('fs');
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -30,9 +30,15 @@ app.use((req, res, next) => {
 
 async function addUser(username, email) {
   try {
-      const ref = doc(db, "users", username).withConverter(userConverter);
-      await setDoc(ref, new User(username, email))
-      return true;
+      const res = await db.collection('users').add({
+        email: email,
+        username: username,
+        friends:[]
+      })
+
+      console.log('Added document with ID: ', res.id);
+      
+      return res;
   } catch (e) {
       console.error("Error adding document: ", e);
       return false;

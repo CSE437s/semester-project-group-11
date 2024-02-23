@@ -1,5 +1,5 @@
 import { signUpFirebase } from "../../scripts/FirebaseAuth.js"
-import { addUser, isUniqueUsername, isSanitizedUsername, isUniqueEmail } from "../../scripts/FirebaseFirestore.js"
+import { addUser } from "../../scripts/FirebaseFirestore.js"
 import { useState } from 'react'
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 
@@ -24,34 +24,6 @@ export default RegisterScreen = ({ navigation }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // isSanitizedUsername(username).then((res) => {
-    //   if (res.sanitized) {
-    //     const approvedUsername = res.username;
-    //     console.log("approved username:", approvedUsername);
-    //     isUniqueUsername(approvedUsername).then((isUnique) => {
-    //       if (isUnique) {
-    //         signUpFirebase(email, password).then((response) => {
-    //           if (response && response.user) {
-    //             console.log("successfully registered")
-    //             addUser(approvedUsername, email)
-    //           }
-    //           else {
-    //             alert("Registration failed. Do you already have an account?")
-    //           }
-    //         }).catch((error) => {
-    //           console.log(error);
-    //         })
-    //       }
-    //       else if (!isUnique) {
-    //         alert("user " + approvedUsername + " already exists");
-    //       }
-    //     })
-    //   }
-    //   else if (!isSanitized) {
-    //     alert(username + " includes illegal characters")
-    //   }
-    // })
-
     async function registerUser() {
       try {
 
@@ -59,59 +31,16 @@ export default RegisterScreen = ({ navigation }) => {
 
         if (response && response.status === 200){
           signUpFirebase(email, password);
-          alert("Yay! You're registered!");
         }
         else {
           alert(response.response.data.message);
         }
 
-        // const res = await isSanitizedUsername(username);
-
-        // if (!res.sanitized) {
-        //   alert(username + " includes illegal characters");
-        //   return;
-        // }
-
-        // const approvedUsername = res.username;
-        // console.log("approved username:", approvedUsername);
-
-        // const uniqueUsername = await isUniqueUsername(approvedUsername);
-
-        // if (!uniqueUsername) {
-        //   alert("user " + approvedUsername + " already exists");
-        //   return;
-        // }
-
-        // const uniqueEmail = await isUniqueEmail(email);
-        // if (!uniqueEmail) {
-        //   alert(email + " is already in use. Do you already have an account?")
-        //   return;
-        // }
-
-        // const response = await signUpFirebase(email, password);
-
-        // if (!response || !response.user) {
-        //   alert("Registration failed. Do you already have an account?");
-        //   return;
-        // }
-
-        // const successfullyAddedUser = await addUser(approvedUsername, email);
-
-        // if (!successfullyAddedUser) {
-        //   console.log("Error registering");
-        //   return;
-        // }
-
-        
-
-
       } catch (error) {
         console.error("An error occurred:", error);
       }
     }
-
     registerUser();
-
   };
 
 return (
