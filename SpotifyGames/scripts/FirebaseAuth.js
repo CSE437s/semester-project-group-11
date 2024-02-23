@@ -45,7 +45,7 @@ export async function signInFirebase(email, password) {
       alert("error registering")
     };
   
-    return response
+    return response;
   }
   
   export async function signOutFirebase() {

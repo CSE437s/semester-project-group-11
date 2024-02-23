@@ -7,6 +7,10 @@ import { getValueFor } from '../../scripts/SecureStore';
 import SpotifyLoginButton from './SpotifyLoginButton';
 import SpotifyProfileComponent from './SpotifyProfileComponent';
 
+
+// MAKE A SCREEN WHILE ITS LOADING THE SPOTIFY AUTH TOKEN FROM SECURESTORE
+
+
 const ProfileScreen = ({ navigation }) => {
 
     // const [spotifyProfile, setSpotifyProfile] = useState(null);
@@ -39,7 +43,7 @@ const ProfileScreen = ({ navigation }) => {
 
     return (
         <>
-            {spotifyToken ? (
+            {spotifyToken != null ? (
                 <>
                     <View>
                         <Text>Your Profile:</Text>
