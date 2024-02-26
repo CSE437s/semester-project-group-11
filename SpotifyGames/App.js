@@ -44,6 +44,8 @@ export default function App() {
               <>
                 <Stack.Screen name="Dashboard" component={DashboardScreen} />
                 <Stack.Screen name="Profile" component={ProfileScreen} />
+                <Stack.Screen name='Game' component={GameScreen} />
+                <Stack.Screen name='Score' component={ScoreScreen} />
               </>
             ) : (
               <>
@@ -51,14 +53,6 @@ export default function App() {
               </>
             )
           }
-
-          <>
-            <Stack.Screen name="Dashboard" component={DashboardScreen} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen name='Game' component={GameScreen} />
-            <Stack.Screen name='Score' component={ScoreScreen} />
-
-          </>
 
         ) : (
           <>
