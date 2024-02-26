@@ -34,14 +34,14 @@ export default function App() {
 
         {isLoggedIn ? (
           <>{
-            spotifyToken ? (
+            spotifyToken != null ? (
               <>
                 <Stack.Screen name="Dashboard" component={DashboardScreen} />
                 <Stack.Screen name="Profile" component={ProfileScreen} />
               </>
             ) : (
               <>
-                <Stack.Screen name="SpotifyLoginScreen" component={SpotifyLoginScreen} />
+                <Stack.Screen name="SpotifyLoginScreen" component={SpotifyLoginScreen} initialParams={{ setSpotifyToken }} />
               </>
             )
           }

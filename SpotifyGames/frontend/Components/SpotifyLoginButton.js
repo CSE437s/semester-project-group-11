@@ -73,9 +73,8 @@ export default function SpotifyLoginButton({setSpotifyToken}) {
                         
                         if (tokenres.access_token) {
 
-                            console.log("EXPIRATION TIME!!!!!", typeof(tokenres.expires_in));
                             const expirationTime = calculateExpirationTime(Number(tokenres.expires_in));
-                            console.log("EXPIRATION TIME!!!!!", expirationTime);
+                            // console.log("EXPIRED?????", expirationTime < Date.now());
                             await save("SpotifyData", JSON.stringify(tokenres));
                             await save("SpotifyExpiration", String(expirationTime));
 

@@ -12,6 +12,7 @@ import SpotifyProfileComponent from './SpotifyProfileComponent';
 
 const ProfileScreen = ({ navigation }) => {
 
+    const [isLoading, setIsLoading] = useState(true);
     const [spotifyToken, setSpotifyToken] = useState(null);
 
     useEffect(() => {
@@ -23,10 +24,12 @@ const ProfileScreen = ({ navigation }) => {
         if (!token){
           console.log("couldn't get token");
           setSpotifyToken(null);
+          setIsLoading(false);
           return;
         }
   
         setSpotifyToken(token);
+        setIsLoading(false);
         
       }
   
@@ -34,6 +37,14 @@ const ProfileScreen = ({ navigation }) => {
   
     }, [spotifyToken]);
     //use token to verify if we're logged in or not
+
+    if (isLoading){
+        return ( 
+        <View>
+            <Text>Loading Profile...</Text>            
+        </View>
+        )
+    }
     
     return (
         <>

@@ -1,13 +1,19 @@
 import { View, Text, Button } from 'react-native';
 import SpotifyLoginButton from './SpotifyLoginButton';
 
-const SpotifyLoginScreen = ({ navigation }) => {
-    const {setSpotifyToken} = navigation.params;
+const SpotifyLoginScreen = ({ navigation, route }) => {
+    const {setSpotifyToken} = route.params;
+
+    const setSpotifyTokenWrapper = (t) => {
+        console.log("called set with: ", t);
+        setSpotifyToken(t);
+    };
+
   return (
     <View>
-      <Text>Login to Spotify!</Text>
+      <Text> Login to Spotify! </Text>
 
-        <SpotifyLoginButton setSpotifyToken={setSpotifyToken}/>
+        <SpotifyLoginButton setSpotifyToken={setSpotifyTokenWrapper} />
       
     </View>
   );

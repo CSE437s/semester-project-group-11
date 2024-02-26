@@ -92,9 +92,9 @@ export const getOrRefreshStoredToken = async () => {
             throw new Error("No Spotify data in SecureStore");
         }
 
-        let SpotifyData = await getValueFor("SpotifyData");
-        const parsedData = JSON.parse(SpotifyData);
-        const refreshToken = parsedData.refresh_token;
+        const SpotifyDataString = await getValueFor("SpotifyData");
+        let SpotifyData = JSON.parse(SpotifyDataString);
+        const refreshToken = SpotifyData.refresh_token;
 
         const currTime = Date.now();
 
@@ -105,11 +105,13 @@ export const getOrRefreshStoredToken = async () => {
             await save("SpotifyExpiration", String(calculateExpirationTime(SpotifyData.expires_in)));
         }
 
+
         if (!SpotifyData) {
             throw new Error("Spotify Response does not exist in Secure Store");
         }
 
         if (SpotifyData.access_token) {
+            console.log(SpotifyData.access_token)
             return SpotifyData.access_token
         }
     }
