@@ -1,29 +1,22 @@
 // ScoreScreen.js
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const ScoreScreen = ({ route, navigation }) => {
-  const { score, timeTaken } = route.params;
+  const { score, timeElapsed } = route.params;
 
-  const playAgain = () => {
-    // This will reset the navigation stack and start a new game
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Game' }],
-    });
-  };
-
-  const returnHome = () => {
-    // This will navigate back to the DashboardScreen
-    navigation.navigate('Dashboard');
+  const handlePlayAgain = () => {
+    // Navigate to GameScreen and reset the game state
+    navigation.navigate('Game', { reset: true });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.score}>Your Score: {score} / 9</Text>
-      <Text style={styles.time}>Time Taken: {timeTaken} seconds</Text>
-      <Button title="Play Again" onPress={playAgain} />
-      <Button title="Return Home" onPress={returnHome} />
+      <Text style={styles.score}>Your Score: {score}</Text>
+      <Text style={styles.time}>Time Elapsed: {timeElapsed} seconds</Text>
+      {/* <Button title="Play Again" onPress={handlePlayAgain} /> */}
+      <Button title="Go to Dashboard" onPress={() => navigation.navigate('Dashboard')} />
     </View>
   );
 };
@@ -36,7 +29,7 @@ const styles = StyleSheet.create({
   },
   score: {
     fontSize: 24,
-    margin: 10,
+    marginBottom: 20,
   },
   time: {
     fontSize: 20,

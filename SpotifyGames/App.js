@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -37,7 +38,7 @@ export default function App() {
             <Stack.Screen name="Dashboard" component={DashboardScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name='Game' component={GameScreen} />
-            <Stack.Screen name='Score' component={ScoreScreen} />
+            <Stack.Screen name="ScoreScreen" component={ScoreScreen} />
           </>
         ) : (
           <>

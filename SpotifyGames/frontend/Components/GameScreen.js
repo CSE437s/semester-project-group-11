@@ -1,60 +1,103 @@
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
-import { TextInput, Menu, Provider } from 'react-native-paper'; // Import Menu directly from react-native-paper
+import React from 'react';
+import { View, Text, StyleSheet, Button, Picker } from 'react-native';
 import useGameLogic from '../../scripts/GameLogic';
 
-const GameScreen = () => {
+const GameScreen = ({ navigation }) => {
   const {
     userSelections,
     handleSelection,
     questions,
-    options,
+    score,
+    timeElapsed,
+    startGame,
+    resetGame,
   } = useGameLogic();
 
-  // Create state to manage visibility for each text input individually
-  const [visibleInputs, setVisibleInputs] = useState(new Array(questions.length).fill(false));
-
-  const handleInputChange = (text, index) => {
-    handleSelection(text, index);
-    // Don't hide the menu here to allow for user selection
+  const handlePickerChange = (itemValue, index) => {
+    handleSelection(itemValue, index);
   };
 
-  // Render function
+  const renderPicker = (question, index) => (
+    <View key={question.id} style={styles.gridItem}>
+      <Text>{`Row ${question.row}, Col ${question.col}`}</Text>
+      <Text>What is the product?</Text>
+      <Picker
+        selectedValue={userSelections[index]}
+        onValueChange={(itemValue) => handlePickerChange(itemValue, index)}
+        mode="dropdown"
+        style={styles.pickerStyle}
+      >
+        {[...Array(9).keys()].map((value) => (
+          <Picker.Item label={`${value + 1}`} value={`${value + 1}`} key={value} />
+        ))}
+      </Picker>
+    </View>
+  );
+
   return (
-    <Provider>
-      <View>
-        {/* Your other components */}
-        {questions.map((question, index) => (
-          <View key={question.id}>
-            <Text>{question.country}</Text>
-            <TextInput
-              label="Select an option"
-              right={<TextInput.Icon name="menu-down" />}
-              onFocus={() => setVisibleInputs(prevState => prevState.map((value, i) => i === index ? true : value))}
-              onBlur={() => setVisibleInputs(prevState => prevState.map((value, i) => i === index ? false : value))}
-              value={userSelections[index]}
-            />
-            <Menu
-              visible={visibleInputs[index]} // Use the visibility state for this input
-              onDismiss={() => setVisibleInputs(prevState => prevState.map((value, i) => i === index ? false : value))}
-              anchor={<></>} // Anchor is empty when not focused
-            >
-              {options.map((option, optionIndex) => (
-                <Menu.Item
-                  key={optionIndex}
-                  onPress={() => {
-                    handleInputChange(option, index);
-                    setVisibleInputs(prevState => prevState.map((value, i) => i === index ? false : value)); // Close this menu
-                  }}
-                  title={option}
-                />
-              ))}
-            </Menu>
+    <View style={styles.container}>
+      <Text style={styles.title}>Answer the questions:</Text>
+      
+      {/* Render Column Labels */}
+      <View style={styles.headerRow}>
+        {['', '1', '2', '3'].map((label, index) => (
+          <View key={`header-${index}`} style={styles.headerItem}>
+            <Text>{label}</Text>
           </View>
         ))}
       </View>
-    </Provider>
+
+      {/* Render Row Labels and Pickers */}
+      <View style={styles.gridContainer}>
+        {questions.map(renderPicker)}
+      </View>
+      
+      <Button
+        title="Submit"
+        onPress={() => {
+          navigation.navigate('ScoreScreen', { score, timeElapsed });
+          console.log('Submit pressed', { score, timeElapsed });
+        }}
+      />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 20,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%', // Take full width
+    marginBottom: 10, // Add some space before the grid starts
+  },
+  headerItem: {
+    width: '33.33%', // 3 items per row for labels
+    alignItems: 'left',
+    padding: 10,
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    width: '100%', // Take full width to accommodate the grid
+  },
+  gridItem: {
+    width: '33.33%', // 3 items per row for the grid
+    alignItems: 'center',
+    padding: 10,
+  },
+  pickerStyle: {
+    width: '100%', // The picker should take the full width of the grid item
+  },
+});
 
 export default GameScreen;
