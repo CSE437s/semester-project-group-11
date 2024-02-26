@@ -9,6 +9,27 @@ export async function getProfile(token) {
     return await result.json();
 }
 
+export async function getTopArtists(token){
+    const result = await fetch("https://api.spotify.com/v1/me/top/artists", {
+        method: "GET", headers: { Authorization: `Bearer ${token}` }
+    });
+    return await result.json();
+}
+
+export async function getTopSongsForArtistID(token, artistID){
+    const result = await fetch(`https://api.spotify.com/v1/artists/${artistID}/top-tracks`, {
+        method: "GET", headers: { Authorization: `Bearer ${token}` }
+    });
+    return await result.json();
+}
+
+export async function getAlbumsForArtistID(token, artistID){
+    const result = await fetch(`https://api.spotify.com/v1/artists/${artistID}/albums`, {
+        method: "GET", headers: { Authorization: `Bearer ${token}` }
+    });
+    return await result.json();
+}
+
 // https://stackoverflow.com/questions/70660873/how-to-use-spotify-30sec-previews-with-expo-react-native-app
 export const getFirstTokenData = async (code, redirect_uri) => {
     var dataToSend = {
