@@ -39,7 +39,8 @@ export default function App() {
 
         {isLoggedIn ? (
 
-          <>{
+          <>
+          {
             spotifyToken != null ? (
               <>
                 <Stack.Screen name="Dashboard" component={DashboardScreen} />
@@ -53,6 +54,7 @@ export default function App() {
               </>
             )
           }
+          </>
 
         ) : (
           <>
