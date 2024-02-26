@@ -13,14 +13,14 @@ export async function signInFirebase(email, password) {
       response = { user: user, errorcode: undefined, errorMessage: undefined }
       // console.log(user)
       // await save("user", JSON.stringify(user))
-      alert("logged in!")
+      alert("Logged in!")
     }
     catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
       response = { user: undefined, errorcode: errorCode, errorMessage: errorMessage }
       console.log(errorCode, errorMessage)
-      alert("error logging in")
+      alert("We didn't find an account with this email and password.")
     };
     return response;
   }
@@ -33,7 +33,7 @@ export async function signInFirebase(email, password) {
       const user = userCredential.user;
       response = { user: user, errorcode: undefined, errorMessage: undefined }
       // console.log(user)
-      alert("registered successfully!")
+      alert("Registered successfully!")
   
     }
   
@@ -42,7 +42,7 @@ export async function signInFirebase(email, password) {
       const errorMessage = error.message;
       response = { user: undefined, errorcode: errorCode, errorMessage: errorMessage }
       console.log(errorCode, errorMessage)
-      alert("error registering")
+      alert("An account with this email already exists")
     };
   
     return response;
@@ -52,10 +52,10 @@ export async function signInFirebase(email, password) {
     try {
   
       const res = await signOut(auth);
-      alert("signout successful!");
+      alert("Signout successful!");
     }
     catch (error) {
-      alert("signout unsuccessful");
+      alert("Signout unsuccessful");
     }
   }
   

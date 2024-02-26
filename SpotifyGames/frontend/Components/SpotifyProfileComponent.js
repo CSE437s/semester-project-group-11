@@ -25,7 +25,13 @@ const SpotifyProfileComponent = ({ spotifyToken }) => {
             }
         }
 
-        getProfileData();
+        //TEMP FIX: add a delay to not overrequest from spotify
+        const delay = 5000; // 5 second delay
+        const timeoutId = setTimeout(() => {
+            getProfileData();
+        }, delay);
+
+        return () => clearTimeout(timeoutId);
     }, [spotifyProfile, spotifyProfilePictureURL])
 
     return (
