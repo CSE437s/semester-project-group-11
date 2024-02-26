@@ -10,7 +10,12 @@ import TestProfile from './frontend/Components/TestProfile.js';
 import LandingScreen from './frontend/Components/LandingScreen.js';
 import DashboardScreen from './frontend/Components/DashboardScreen.js';
 import ProfileScreen from './frontend/Components/ProfileScreen.js';
+
 import SpotifyLoginScreen from './frontend/Components/SpotifyLoginScreen.js';
+
+import GameScreen from './frontend/Components/GameScreen.js';
+import ScoreScreen from './frontend/Components/ScoreScreen.js';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +38,7 @@ export default function App() {
       <Stack.Navigator initialRouteName={isLoggedIn ? "Dashboard" : "Landing"}>
 
         {isLoggedIn ? (
+
           <>{
             spotifyToken != null ? (
               <>
@@ -45,6 +51,13 @@ export default function App() {
               </>
             )
           }
+
+          <>
+            <Stack.Screen name="Dashboard" component={DashboardScreen} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name='Game' component={GameScreen} />
+            <Stack.Screen name='Score' component={ScoreScreen} />
+
           </>
 
         ) : (

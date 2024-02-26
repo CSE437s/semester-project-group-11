@@ -7,11 +7,19 @@ import { getOrRefreshStoredToken } from '../../scripts/SpotifyApiRequests';
 const DashboardScreen = ({ navigation }) => {
   return (
     <View>
-      <Text>Welcome to Gamify</Text>
-      
-      <Button title="My Profile" onPress={() => navigation.navigate('Profile')} />
 
-      <LogoutButton />
+      <Text>Welcome to Gamify!</Text>
+      <Button
+        title="My Profile"
+        onPress={() => navigation.navigate('Profile')}
+      />
+      {/* Add a Start Game button */}
+      <Button
+        title="Start Game"
+        onPress={() => navigation.navigate('Game')} // Replace 'Game' with your actual game screen name
+      />
+      <LogoutButton/>
+
     </View>
   );
 };
