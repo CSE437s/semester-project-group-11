@@ -6,9 +6,17 @@ import LogoutButton from './LogoutButton';
 const DashboardScreen = ({ navigation }) => {
   return (
     <View>
-      <Text>Welcome to Gamify</Text>
+      <Text>Welcome to Gamify!</Text>
+      <Button
+        title="My Profile"
+        onPress={() => navigation.navigate('Profile')}
+      />
+      {/* Add a Start Game button */}
+      <Button
+        title="Start Game"
+        onPress={() => navigation.navigate('Game')} // Replace 'Game' with your actual game screen name
+      />
       <LogoutButton/>
-      <Button title="My Profile" onPress={() => navigation.navigate('Profile')} />
     </View>
   );
 };
