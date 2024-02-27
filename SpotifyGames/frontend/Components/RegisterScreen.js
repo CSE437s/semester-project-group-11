@@ -25,13 +25,52 @@ export default RegisterScreen = ({ navigation }) => {
 
     async function registerUser() {
       try {
-        const response = await addUser(username, email);
 
-        if (response && response.status === 200) {
-          signUpFirebase(email, password);
-        } else {
-          alert(response.response.data.message);
+
+        if (!username) {
+          alert("please enter a username")
+          return;
         }
+
+        if (!password) {
+          alert("please enter a password")
+          return;
+        }
+
+        if (!email) {
+          alert("please enter an email")
+          return;
+        }
+
+        const isUniqueUsernameRes = await validateUniqueUsername(username);
+
+        if (isUniqueUsernameRes && isUniqueUsernameRes.status === 200) {
+
+          signUpFirebase(email, password).then((data) => {
+            console.log("DATTTTATATTATATATATATTA", data);
+            if (data.user) {
+              addUser(username, email).then(() => {
+                console.log("added user to both firebase auth and firestore");
+              })
+                .catch((e) => {
+                  console.log(e)
+                });
+            }
+            else {
+              console.log("firebase auth failed");
+              alert(data.message);
+            }
+          })
+            .catch((e) => console.log(e));
+        }
+        else {
+          console.log("AHHHHHHHHH", isUniqueUsernameRes.response.data);
+          console.log(isUniqueUsernameRes.response.data.message);
+          alert(isUniqueUsernameRes.response.data.message);
+        }
+
+        const response = await addUser(username, email);
+        
       } catch (error) {
         console.error("An error occurred:", error);
       }
@@ -81,6 +120,7 @@ export default RegisterScreen = ({ navigation }) => {
       >
         <Text style={{ color: "white" }}>Go to Landing</Text>
       </TouchableOpacity>
+
     </View>
   );
 };
