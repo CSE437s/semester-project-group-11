@@ -45,7 +45,13 @@ export default LoginScreen = ({ navigation }) => {
         value={password}
         onChangeText={handlePasswordChange}
       />
-      <Button color="#191414" title="Login" onPress={handleSubmit} />
+
+      <Button style={styles.login}> 
+        
+        color="#191414" 
+        title="Login" 
+        onPress={handleSubmit} 
+      </Button>
 
       <Button
         color="#191414"
@@ -73,12 +79,12 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     width: "80%",
-    backgroundColor:"#3AB4BA",
+    backgroundColor: "#3AB4BA",
     borderRadius: 25,
     borderColor: "#191414",
     // borderWidth: 2,
     marginBottom: 20,
-    justifyContent:"center",
+    justifyContent: "center",
     // paddingLeft: 8,
     padding: 20,
     color: "#191414",
