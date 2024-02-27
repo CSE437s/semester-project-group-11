@@ -1,12 +1,17 @@
-import { signInFirebase } from "../../scripts/FirebaseAuth.js"
+import { signInFirebase } from "../../scripts/FirebaseAuth.js";
 
-import { useState } from 'react'
-import { StyleSheet, Text, TextInput, View, Button } from 'react-native';
+import { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+} from "react-native";
 
 export default LoginScreen = ({ navigation }) => {
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleEmailChange = (text) => {
     setEmail(text);
@@ -21,58 +26,95 @@ export default LoginScreen = ({ navigation }) => {
 
     signInFirebase(email, password).then((response) => {
       if (response.user) {
-        console.log("logged in")
+        console.log("logged in");
+      } else {
+        console.log("log in failed");
       }
-      else {
-        console.log("log in failed")
-      }
-    })
-    
-
+    });
   };
 
   return (
     <View style={styles.container}>
-      <Text>Login</Text>
+      <Text style={styles.title}>Login</Text>
 
+      <View style={styles.inputView}>
         <TextInput
-          style={styles.input}
+          style={styles.inputText}
           placeholder="Email"
           value={email}
           onChangeText={handleEmailChange}
         />
+      </View>
 
+      <View style={styles.inputView}>
         <TextInput
-          style={styles.input}
+          style={styles.inputText}
           placeholder="Password"
           secureTextEntry
           value={password}
           onChangeText={handlePasswordChange}
         />
-        <Button title="Login" onPress={handleSubmit} />
+      </View>
 
-        <Button title="Go to Landing" onPress={() => navigation.navigate('Landing')} />
-      
+      <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
+        <Text style={{ color: "white" }}>Login</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.landingButton}
+        onPress={() => navigation.navigate("Landing")}
+      >
+        <Text style={{ color: "white" }}>Go to Landing</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
+//https://alitalhacoban.medium.com/basic-login-screen-with-react-native-c9f7fdcc8dae
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#1DB954",
   },
   title: {
-    fontSize: 20,
-    marginBottom: 16,
+    fontSize: 50,
+    marginBottom: 40,
+    color: "#191414",
+    fontWeight: "bold",
   },
-  input: {
-    height: 40,
-    width: '80%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 16,
-    paddingLeft: 8,
+  inputView: {
+    width: "80%",
+    backgroundColor: "#3AB4BA",
+    borderRadius: 25,
+    height: 50,
+    marginBottom: 20,
+    justifyContent: "center",
+    padding: 20,
+  },
+  inputText: {
+    height: 50,
+    color: "white",
+  },
+  loginButton: {
+    width: "80%",
+    backgroundColor: "#191414",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    marginBottom: 10,
+  },
+  landingButton: {
+    width: "80%",
+    backgroundColor: "#191414",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    marginBottom: 10,
   },
 });

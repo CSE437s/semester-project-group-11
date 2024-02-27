@@ -1,13 +1,12 @@
-import { signUpFirebase } from "../../scripts/FirebaseAuth.js"
-import { addUser, removeUser, validateUniqueUsername } from "../../scripts/FirebaseFirestore.js"
-import { useState } from 'react'
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { signUpFirebase } from "../../scripts/FirebaseAuth.js";
+import { addUser } from "../../scripts/FirebaseFirestore.js";
+import { useState } from "react";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
 
 export default RegisterScreen = ({ navigation }) => {
-
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleUsernameChange = (text) => {
     setUsername(text);
@@ -26,6 +25,7 @@ export default RegisterScreen = ({ navigation }) => {
 
     async function registerUser() {
       try {
+
 
         if (!username) {
           alert("please enter a username")
@@ -70,7 +70,7 @@ export default RegisterScreen = ({ navigation }) => {
         }
 
         const response = await addUser(username, email);
-
+        
       } catch (error) {
         console.error("An error occurred:", error);
       }
@@ -80,54 +80,96 @@ export default RegisterScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text>Register</Text>
+      <Text style={styles.title}>Register</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={handleUsernameChange}
-      />
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Username"
+          value={email}
+          onChangeText={handleUsernameChange}
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={handleEmailChange}
-      />
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Email"
+          value={password}
+          onChangeText={handleEmailChange}
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={handlePasswordChange}
-      />
-      <Button title="Register" onPress={handleSubmit} />
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Password"
+          secureTextEntry
+          value={password}
+          onChangeText={handlePasswordChange}
+        />
+      </View>
 
-      <Button title="Go to Landing" onPress={() => navigation.navigate('Landing')} />
+      <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
+        <Text style={{ color: "white" }}>Register</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.landingButton}
+        onPress={() => navigation.navigate("Landing")}
+      >
+        <Text style={{ color: "white" }}>Go to Landing</Text>
+      </TouchableOpacity>
 
     </View>
   );
 };
 
+//https://alitalhacoban.medium.com/basic-login-screen-with-react-native-c9f7fdcc8dae
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#1DB954",
   },
   title: {
-    fontSize: 20,
-    marginBottom: 16,
+    fontSize: 50,
+    marginBottom: 40,
+    color: "#191414",
+    fontWeight: "bold",
   },
-  input: {
-    height: 40,
-    width: '80%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 16,
-    paddingLeft: 8,
+  inputView: {
+    width: "80%",
+    backgroundColor: "#3AB4BA",
+    borderRadius: 25,
+    height: 50,
+    marginBottom: 20,
+    justifyContent: "center",
+    padding: 20,
+  },
+  inputText: {
+    height: 50,
+    color: "white",
+  },
+  loginButton: {
+    width: "80%",
+    backgroundColor: "#191414",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    marginBottom: 10,
+  },
+  landingButton: {
+    width: "80%",
+    backgroundColor: "#191414",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    marginBottom: 10,
   },
 });
-
