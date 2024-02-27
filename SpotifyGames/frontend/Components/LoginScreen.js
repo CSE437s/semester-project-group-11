@@ -46,14 +46,15 @@ export default LoginScreen = ({ navigation }) => {
         onChangeText={handlePasswordChange}
       />
 
-      <Button style={styles.login}> 
-        
+      <Button 
+        style={styles.loginButton}
         color="#191414" 
         title="Login" 
         onPress={handleSubmit} 
-      </Button>
+      />
 
       <Button
+        style={styles.landingButton}
         color="#191414"
         title="Go to Landing"
         onPress={() => navigation.navigate("Landing")}
@@ -88,5 +89,25 @@ const styles = StyleSheet.create({
     // paddingLeft: 8,
     padding: 20,
     color: "#191414",
+  },
+  loginButton: {
+    width:"80%",
+    backgroundColor:"#fb5b5a",
+    borderRadius:25,
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:40,
+    marginBottom:10
+  },
+  landingButton: {
+    width:"80%",
+    backgroundColor:"#fb5b5a",
+    borderRadius:25,
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:40,
+    marginBottom:10
   },
 });
