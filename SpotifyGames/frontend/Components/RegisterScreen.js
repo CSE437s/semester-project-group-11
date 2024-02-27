@@ -1,5 +1,5 @@
 import { signUpFirebase } from "../../scripts/FirebaseAuth.js"
-import { addUser } from "../../scripts/FirebaseFirestore.js"
+import { addUser, removeUser, validateUniqueUsername } from "../../scripts/FirebaseFirestore.js"
 import { useState } from 'react'
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 
@@ -27,14 +27,49 @@ export default RegisterScreen = ({ navigation }) => {
     async function registerUser() {
       try {
 
-        const response = await addUser(username, email);
+        if (!username) {
+          alert("please enter a username")
+          return;
+        }
 
-        if (response && response.status === 200){
-          signUpFirebase(email, password);
+        if (!password) {
+          alert("please enter a password")
+          return;
+        }
+
+        if (!email) {
+          alert("please enter an email")
+          return;
+        }
+
+        const isUniqueUsernameRes = await validateUniqueUsername(username);
+
+        if (isUniqueUsernameRes && isUniqueUsernameRes.status === 200) {
+
+          signUpFirebase(email, password).then((data) => {
+            console.log("DATTTTATATTATATATATATTA", data);
+            if (data.user) {
+              addUser(username, email).then(() => {
+                console.log("added user to both firebase auth and firestore");
+              })
+                .catch((e) => {
+                  console.log(e)
+                });
+            }
+            else {
+              console.log("firebase auth failed");
+              alert(data.message);
+            }
+          })
+            .catch((e) => console.log(e));
         }
         else {
-          alert(response.response.data.message);
+          console.log("AHHHHHHHHH", isUniqueUsernameRes.response.data);
+          console.log(isUniqueUsernameRes.response.data.message);
+          alert(isUniqueUsernameRes.response.data.message);
         }
+
+        const response = await addUser(username, email);
 
       } catch (error) {
         console.error("An error occurred:", error);
@@ -43,37 +78,37 @@ export default RegisterScreen = ({ navigation }) => {
     registerUser();
   };
 
-return (
-  <View style={styles.container}>
-    <Text>Register</Text>
+  return (
+    <View style={styles.container}>
+      <Text>Register</Text>
 
-    <TextInput
-      style={styles.input}
-      placeholder="Username"
-      value={username}
-      onChangeText={handleUsernameChange}
-    />
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        value={username}
+        onChangeText={handleUsernameChange}
+      />
 
-    <TextInput
-      style={styles.input}
-      placeholder="Email"
-      value={email}
-      onChangeText={handleEmailChange}
-    />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={handleEmailChange}
+      />
 
-    <TextInput
-      style={styles.input}
-      placeholder="Password"
-      secureTextEntry
-      value={password}
-      onChangeText={handlePasswordChange}
-    />
-    <Button title="Register" onPress={handleSubmit} />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        secureTextEntry
+        value={password}
+        onChangeText={handlePasswordChange}
+      />
+      <Button title="Register" onPress={handleSubmit} />
 
-    <Button title="Go to Landing" onPress={() => navigation.navigate('Landing')} />
+      <Button title="Go to Landing" onPress={() => navigation.navigate('Landing')} />
 
-  </View>
-);
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
