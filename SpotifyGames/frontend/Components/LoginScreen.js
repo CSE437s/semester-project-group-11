@@ -1,7 +1,13 @@
 import { signInFirebase } from "../../scripts/FirebaseAuth.js";
 
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View, Button } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+} from "react-native";
 
 export default LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -31,34 +37,35 @@ export default LoginScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={handleEmailChange}
-      />
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Email"
+          value={email}
+          onChangeText={handleEmailChange}
+        />
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={handlePasswordChange}
-      />
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Password"
+          secureTextEntry
+          value={password}
+          onChangeText={handlePasswordChange}
+        />
+      </View>
 
-      <Button 
-        style={styles.loginButton}
-        color="#191414" 
-        title="Login" 
-        onPress={handleSubmit} 
-      />
+      <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
+        <Text style={{ color: "white" }}>Login</Text>
+      </TouchableOpacity>
 
-      <Button
+      <TouchableOpacity
         style={styles.landingButton}
-        color="#191414"
-        title="Go to Landing"
         onPress={() => navigation.navigate("Landing")}
-      />
+      >
+        <Text style={{ color: "white" }}>Go to Landing</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -77,37 +84,37 @@ const styles = StyleSheet.create({
     color: "#191414",
     fontWeight: "bold",
   },
-  input: {
-    height: 50,
+  inputView: {
     width: "80%",
     backgroundColor: "#3AB4BA",
     borderRadius: 25,
-    borderColor: "#191414",
-    // borderWidth: 2,
+    height: 50,
     marginBottom: 20,
     justifyContent: "center",
-    // paddingLeft: 8,
     padding: 20,
-    color: "#191414",
+  },
+  inputText: {
+    height: 50,
+    color: "white",
   },
   loginButton: {
-    width:"80%",
-    backgroundColor:"#fb5b5a",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    marginTop:40,
-    marginBottom:10
+    width: "80%",
+    backgroundColor: "#191414",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    marginBottom: 10,
   },
   landingButton: {
-    width:"80%",
-    backgroundColor:"#fb5b5a",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    marginTop:40,
-    marginBottom:10
+    width: "80%",
+    backgroundColor: "#191414",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    marginBottom: 10,
   },
 });
