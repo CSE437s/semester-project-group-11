@@ -3,7 +3,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, View, StyleSheet } from 'react-native';
 import { save, getValueFor } from '../../scripts/SecureStore.js'
-
+import { calculateExpirationTime } from '../../scripts/SpotifyApiRequests.js';
 import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../scripts/SpotifyApiRequests.js';
 
 // Expo has their own version of environment variables
@@ -23,13 +23,6 @@ const discovery = {
     authorizationEndpoint: 'https://accounts.spotify.com/authorize',
     tokenEndpoint: 'https://accounts.spotify.com/api/token',
 };
-
-
-function calculateExpirationTime(expiresIn) {
-    const currTime = Date.now()
-    const expirationTime = currTime + expiresIn * 1000
-    return expirationTime
-}
 
 
 // Handles request to spotify accessing user account
@@ -71,16 +64,19 @@ export default function SpotifyLoginButton({setSpotifyToken}) {
                 title="Connect your Spotify"
                 onPress={async () => {
 
+                    console.log("calling login");
+
                     try {
                         const res = await promptAsync();
 
                         const tokenres = await getFirstTokenData(res.params.code, expoRedirectUri);
-
+                        
                         if (tokenres.access_token) {
-                            const expirationTime = calculateExpirationTime(tokenres.expiresIn);
-                            
+
+                            const expirationTime = calculateExpirationTime(Number(tokenres.expires_in));
+                            // console.log("EXPIRED?????", expirationTime < Date.now());
                             await save("SpotifyData", JSON.stringify(tokenres));
-                            await save("SpotifyExpiration", JSON.stringify(expirationTime));
+                            await save("SpotifyExpiration", String(expirationTime));
 
                             console.log("Access token saved in local storage");
                             setSpotifyToken(tokenres.access_token);
