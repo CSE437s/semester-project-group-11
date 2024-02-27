@@ -14,7 +14,7 @@ import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../script
 WebBrowser.maybeCompleteAuthSession();
 
 
-const expoRedirectUri = "exp://localhost:19006/--/spotify-auth-callback"
+const expoRedirectUri = makeRedirectUri({ scheme: 'spotgames', path:'callback', preferLocalhost: true,});
 
 // console.log("test")
 

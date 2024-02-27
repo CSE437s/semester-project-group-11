@@ -36,7 +36,7 @@ export default function App() {
   return (
     <NavigationContainer>
 
-      <Stack.Navigator initialRouteName={isLoggedIn ? "Dashboard" : "Landing"}>
+      <Stack.Navigator initialRouteName={isLoggedIn ? "Login" : "Landing"}>
 
         {isLoggedIn ? (
 
@@ -61,7 +61,7 @@ export default function App() {
 
         ) : (
           <>
-            <Stack.Screen name="Landing" component={LandingScreen} />
+            {/* <Stack.Screen name="Landing" component={LandingScreen} /> */}
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
           </>

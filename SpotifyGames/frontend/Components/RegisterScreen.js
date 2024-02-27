@@ -1,6 +1,7 @@
 import { signUpFirebase } from "../../scripts/FirebaseAuth.js";
-import { addUser } from "../../scripts/FirebaseFirestore.js";
+import { addUser, validateUniqueUsername } from "../../scripts/FirebaseFirestore.js";
 import { useState } from "react";
+
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
 
 export default RegisterScreen = ({ navigation }) => {
@@ -26,7 +27,6 @@ export default RegisterScreen = ({ navigation }) => {
     async function registerUser() {
       try {
 
-
         if (!username) {
           alert("please enter a username")
           return;
@@ -47,7 +47,6 @@ export default RegisterScreen = ({ navigation }) => {
         if (isUniqueUsernameRes && isUniqueUsernameRes.status === 200) {
 
           signUpFirebase(email, password).then((data) => {
-            console.log("DATTTTATATTATATATATATTA", data);
             if (data.user) {
               addUser(username, email).then(() => {
                 console.log("added user to both firebase auth and firestore");
@@ -64,7 +63,6 @@ export default RegisterScreen = ({ navigation }) => {
             .catch((e) => console.log(e));
         }
         else {
-          console.log("AHHHHHHHHH", isUniqueUsernameRes.response.data);
           console.log(isUniqueUsernameRes.response.data.message);
           alert(isUniqueUsernameRes.response.data.message);
         }
@@ -86,7 +84,7 @@ export default RegisterScreen = ({ navigation }) => {
         <TextInput
           style={styles.inputText}
           placeholder="Username"
-          value={email}
+          value={username}
           onChangeText={handleUsernameChange}
         />
       </View>
@@ -95,7 +93,7 @@ export default RegisterScreen = ({ navigation }) => {
         <TextInput
           style={styles.inputText}
           placeholder="Email"
-          value={password}
+          value={email}
           onChangeText={handleEmailChange}
         />
       </View>
@@ -116,9 +114,9 @@ export default RegisterScreen = ({ navigation }) => {
 
       <TouchableOpacity
         style={styles.landingButton}
-        onPress={() => navigation.navigate("Landing")}
+        onPress={() => navigation.navigate("Login")}
       >
-        <Text style={{ color: "white" }}>Go to Landing</Text>
+        <Text style={{ color: "white" }}>Go to Login Page</Text>
       </TouchableOpacity>
 
     </View>

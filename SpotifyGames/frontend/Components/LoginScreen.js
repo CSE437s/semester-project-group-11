@@ -62,9 +62,9 @@ export default LoginScreen = ({ navigation }) => {
 
       <TouchableOpacity
         style={styles.landingButton}
-        onPress={() => navigation.navigate("Landing")}
+        onPress={() => navigation.navigate("Register")}
       >
-        <Text style={{ color: "white" }}>Go to Landing</Text>
+        <Text style={{ color: "white" }}>Sign Up Here!</Text>
       </TouchableOpacity>
     </View>
   );
