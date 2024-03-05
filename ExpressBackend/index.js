@@ -35,7 +35,7 @@ async function addUser(uid, username, email) {
       friends: [],
       spotifyInfo: ""
     })
-
+    
     console.log('Added document with ID: ', res.id);
 
     return res;
