@@ -21,14 +21,14 @@ export async function validateUniqueUsername(username){
     }
 }
 
-export async function addUser(username, email) {
+export async function addUser(uid, username, email) {
     const endpointURL = process.env.EXPO_PUBLIC_SERVER_URL + "/user/add";
     try {
         const res = await axios.post(endpointURL, {
             headers: {
                 'Content-Type': 'application/json',
             },
-            data: { email: email, username: username }
+            data: { uid: uid, email: email, username: username }
         });
         return res;
     }

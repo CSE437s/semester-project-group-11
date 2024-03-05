@@ -3,14 +3,14 @@ import { auth } from "./firebaseConfig.js";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 
 // Returns user credential if successful login, otherwise returns respective error code from Firebase
-// output formatted as {user:user,  errorcode: errorCode, errorMessage:errorMessage}
+// output formatted as {user:user,  errorcode: errorcode, message:message}
 export async function signInFirebase(email, password) {
     let response;
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
   
       const user = userCredential.user;
-      response = { user: user, errorcode: undefined, errorMessage: undefined }
+      response = { user: user, errorcode: undefined, message: "success" }
       // console.log(user)
       // await save("user", JSON.stringify(user))
       alert("Logged in!")
@@ -18,7 +18,7 @@ export async function signInFirebase(email, password) {
     catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      response = { user: undefined, errorcode: errorCode, errorMessage: errorMessage }
+      response = { user: undefined, errorcode: errorCode, message: errorMessage }
       console.log(errorCode, errorMessage)
       alert("We didn't find an account with this email and password.")
     };
@@ -29,18 +29,17 @@ export async function signInFirebase(email, password) {
     let response
     try {
   
-      const userCredential = createUserWithEmailAndPassword(auth, email, password)
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const user = userCredential.user;
-      response = { user: user, errorcode: undefined, errorMessage: undefined }
+      response = { user: user, errorcode: undefined, message: "success" }
       // console.log(user)
       alert("Registered successfully!")
   
     }
-  
     catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      response = { user: undefined, errorcode: errorCode, errorMessage: errorMessage }
+      response = { user: undefined, errorcode: errorCode, message: errorMessage }
       console.log(errorCode, errorMessage)
       alert("An account with this email already exists")
     };
