@@ -42,9 +42,7 @@ export default function App() {
       <Stack.Navigator initialRouteName={user ? "Login" : "Dashboard"}>
 
         {user ? (
-
           <>
-
           {
             spotifyToken ? (
               <>

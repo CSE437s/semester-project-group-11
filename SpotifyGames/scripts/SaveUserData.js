@@ -13,6 +13,8 @@ import { doc, getDoc, updateDoc, getFirestore, where } from 'firebase/firestore'
 import { app } from "./firebaseConfig.js";
 import { getAuth } from 'firebase/auth';
 
+import { Platform } from 'react-native';
+
 export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration) {
 
     const auth = getAuth();
@@ -27,11 +29,18 @@ export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration)
         const userRef = doc(db, "users", user.uid);
         console.log(user.uid);
         console.log(spotifyInfo, spotifyTokenExpiration);
+
+        if (Platform.OS === "web"){
+            localStorage.setItem("spotifyInfo", spotifyInfo);
+            localStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
+            console.log("stored in local storage");
+        }
+        
         return updateDoc(userRef, { "spotifyInfo": spotifyInfo, "spotifyTokenExpiration": spotifyTokenExpiration }).then(() => {
             console.log("worked");
             return "success";
         }).catch((error) => {
-            console.log("this shit did not work");
+            console.log("updating doc did not work");
             throw error;
         })
 

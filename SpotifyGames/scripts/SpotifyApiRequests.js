@@ -68,7 +68,7 @@ export const getFirstTokenData = async (code, redirect_uri) => {
 
 export function calculateExpirationTime(expiresIn) {
     const currTime = Date.now()
-    const expirationTime = currTime + expiresIn * 1000
+    const expirationTime = currTime + (expiresIn * 1000)
     return expirationTime
 }
 
