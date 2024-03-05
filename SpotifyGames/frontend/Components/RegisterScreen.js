@@ -48,6 +48,7 @@ export default RegisterScreen = ({ navigation }) => {
 
           signUpFirebase(email, password).then((data) => {
             if (data.user) {
+              console.log("USERRRRRR", data.user.email);
               addUser(data.user.uid, username, email).then(() => {
                 console.log("added user to both firebase auth and firestore");
               })

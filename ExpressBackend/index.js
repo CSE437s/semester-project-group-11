@@ -13,8 +13,6 @@ app.use(express.json());
 app.use(cors());
 
 
-// GET IP THROUGH TERMINAL COMMAND FIRST, STORE IN ENV?
-
 const firebaseApp = admin.initializeApp({
   credential: admin.credential.applicationDefault(),
   databaseURL: "https://group11-8368c-default-rtdb.firebaseio.com"
@@ -28,12 +26,14 @@ app.use((req, res, next) => {
   next();
 });
 
-async function addUser(username, email) {
+
+async function addUser(uid, username, email) {
   try {
-    const res = await db.collection('users').add({
+    const res = await db.collection('users').doc(uid).set({
       email: email,
       username: username,
-      friends: []
+      friends: [],
+      spotifyInfo: ""
     })
 
     console.log('Added document with ID: ', res.id);
@@ -110,8 +110,11 @@ app.post("/user/username/validate", asyncHandler(async (req, res) => {
 
 app.post("/user/add", asyncHandler(async (req, res) => {
 
+  console.log("HELLOOO WHAT THE FUCK", req.body.data.email)
+
   const username = String(req.body.data.username).toLowerCase();
   const email = req.body.data.email;
+  const uid = req.body.data.uid;
 
   try {
 
@@ -137,7 +140,7 @@ app.post("/user/add", asyncHandler(async (req, res) => {
 
     console.log("username is unique...");
 
-    const addedUser = await addUser(username, email);
+    const addedUser = await addUser(uid, username, email);
 
     if (!addedUser) {
       return res.status(500).json({ message: "Unable to add user to database" })
@@ -153,61 +156,6 @@ app.post("/user/add", asyncHandler(async (req, res) => {
     return res.status(500).json({ message: "Error registering user", error: error });
   }
 }));
-
-// app.post("/user/username/sanitized", asyncHandler(async (req, res) => {
-//   if (!req.body.data.username){
-//     console.log("no username");
-//     return res.status(400).json({sanitized:false, username: null, message:"Username not given"});
-//   }
-//   const username = new String(req.body.data.username);
-//   const usernameLower = username.toLowerCase();
-//   console.log("username??", usernameLower);
-//   if (isUsernameSanitized(usernameLower)){
-//     return res.status(200).json({sanitized:true, username:usernameLower, message:"Username is sanitized"});
-//   }
-//   else{
-//     return res.status(400).json({sanitized:false, username: null, message:"Username not sanitized"});
-//   }
-
-// }))
-
-// app.post("/user/username/unique", asyncHandler(async (req, res) => {
-
-//   const username = req.body.data.username;
-
-//   try{
-//     const isUnique = await isUniqueUsername(username);
-//     if (isUnique){
-//       return res.status(200).json({message: "Success", unique:true});
-//     }
-//     else{
-//       return res.status(400).json({message: "Username already exists", unique:false});
-//     }
-//   }
-//   catch (error) {
-//     console.log(error)
-//     return res.status(500).json({message: "Error querying username in database"});
-//   }
-// }));
-
-// app.post("/user/email/unique", asyncHandler(async (req, res) => {
-
-//   const email = req.body.data.email;
-
-//   try{
-//     const isUnique = await isUniqueEmail(email);
-//     if (isUnique){
-//       return res.status(200).json({message: "Success", unique:true});
-//     }
-//     else{
-//       return res.status(400).json({message: "Email already exists", unique:false});
-//     }
-//   }
-//   catch (error) {
-//     console.log(error)
-//     return res.status(500).json({message: "Error querying username in database"});
-//   }
-// }));
 
 app.get('/test', (req, res) => {
   console.log("got it")
