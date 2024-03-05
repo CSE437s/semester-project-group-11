@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, View, StyleSheet } from 'react-native';
-import { save, getValueFor } from '../../scripts/SecureStore.js'
+import { save, getValueFor } from '../../scripts/SaveUserData.js'
 import { calculateExpirationTime } from '../../scripts/SpotifyApiRequests.js';
 import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../scripts/SpotifyApiRequests.js';
 
@@ -12,7 +12,6 @@ import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../script
 // import {SPOTIFY_CLIENT_SECRET, SPOTIFY_CLIENT_ID} from "@env";
 
 WebBrowser.maybeCompleteAuthSession();
-
 
 // const expoRedirectUri = makeRedirectUri({ scheme: 'spotgames', path:'callback', preferLocalhost: true,});
 const expoRedirectUri = makeRedirectUri({ native: 'your.app://', path:"callback", preferLocalhost:true});
@@ -76,8 +75,8 @@ export default function SpotifyLoginButton({setSpotifyToken}) {
 
                             const expirationTime = calculateExpirationTime(Number(tokenres.expires_in));
                             // console.log("EXPIRED?????", expirationTime < Date.now());
-                            await save("SpotifyData", JSON.stringify(tokenres));
-                            await save("SpotifyExpiration", String(expirationTime));
+                            // await save("SpotifyData", JSON.stringify(tokenres));
+                            // await save("SpotifyExpiration", String(expirationTime));
 
                             console.log("Access token saved in local storage");
                             setSpotifyToken(tokenres.access_token);

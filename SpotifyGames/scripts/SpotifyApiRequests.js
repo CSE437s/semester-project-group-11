@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { save, getValueFor } from './SecureStore';
+import { save, getValueFor } from './SaveUserData';
 
 export async function getProfile(token) {
 
