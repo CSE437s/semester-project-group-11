@@ -3,8 +3,6 @@ import { Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { getAuthStateChangeFirebase } from './scripts/FirebaseAuth.js'
-
 import LoginScreen from './frontend/Components/LoginScreen.js';
 import RegisterScreen from './frontend/Components/RegisterScreen.js'
 import TestProfile from './frontend/Components/TestProfile.js';
@@ -16,6 +14,8 @@ import SpotifyLoginScreen from './frontend/Components/SpotifyLoginScreen.js';
 
 import GameScreen from './frontend/Components/GameScreen.js';
 import ScoreScreen from './frontend/Components/ScoreScreen.js';
+import { onAuthStateChanged } from 'firebase/auth';
+import {auth} from './scripts/firebaseConfig.js';
 
 
 const Stack = createNativeStackNavigator();
@@ -23,11 +23,14 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [hasSpotifyToken, setHasSpotifyToken] = useState(false);
+  const [user, setUser] = useState(null);
+  const [spotifyToken, setSpotifyToken] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = getAuthStateChangeFirebase(setIsLoggedIn);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+
     return () => {
       unsubscribe()
     };
@@ -36,14 +39,14 @@ export default function App() {
   return (
     <NavigationContainer>
 
-      <Stack.Navigator initialRouteName={isLoggedIn ? "Login" : "Landing"}>
+      <Stack.Navigator initialRouteName={user ? "Login" : "Dashboard"}>
 
-        {isLoggedIn ? (
+        {user ? (
 
           <>
-          
+
           {
-            hasSpotifyToken ? (
+            spotifyToken ? (
               <>
                 <Stack.Screen name="Dashboard" component={DashboardScreen} />
                 <Stack.Screen name="Profile" component={ProfileScreen} />
@@ -52,7 +55,7 @@ export default function App() {
               </>
             ) : (
               <>
-                <Stack.Screen name="SpotifyLoginScreen" component={SpotifyLoginScreen} initialParams={{ setHasSpotifyToken }} />
+                <Stack.Screen name="SpotifyLoginScreen" component={SpotifyLoginScreen} initialParams={{ setSpotifyToken:setSpotifyToken }} />
               </>
             )
           }

@@ -9,7 +9,7 @@
 //     return result;
 // }
 
-import { doc, getDoc, updateDoc, getFirestore } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, getFirestore, where } from 'firebase/firestore';
 import { app } from "./firebaseConfig.js";
 import { getAuth } from 'firebase/auth';
 
@@ -26,7 +26,15 @@ export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration)
         console.log("firestore?");
         const userRef = doc(db, "users", user.uid);
         console.log(user.uid);
-        await updateDoc(userRef, { spotifyInfo: spotifyInfo, spotifyTokenExpiration:spotifyTokenExpiration }, { merge: true });
+        console.log(spotifyInfo, spotifyTokenExpiration);
+        return updateDoc(userRef, { "spotifyInfo": spotifyInfo, "spotifyTokenExpiration": spotifyTokenExpiration }).then(() => {
+            console.log("worked");
+            return "success";
+        }).catch((error) => {
+            console.log("this shit did not work");
+            throw error;
+        })
+
     }
     else{
         return Error("User is not signed in, not authorized to save spotify data")
@@ -42,7 +50,7 @@ export async function getSpotifyTokenInfo() {
     if (user) {
 
         const db = getFirestore(app);
-        const userRef = doc(db, "users", user.uid);
+        const userRef = doc(db, "users", user.uid).where("id", "==", user.uid);
         const userInfo = await getDoc(userRef);
 
         if (userInfo.exists()){

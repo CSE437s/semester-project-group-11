@@ -14,7 +14,7 @@ import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../script
 WebBrowser.maybeCompleteAuthSession();
 
 // const expoRedirectUri = makeRedirectUri({ scheme: 'spotgames', path:'callback', preferLocalhost: true,});
-const expoRedirectUri = makeRedirectUri({ native: 'your.app://', path:"callback", preferLocalhost:true});
+const expoRedirectUri = makeRedirectUri({ native: 'your.app://', path: "callback", preferLocalhost: true });
 
 console.log("URLLLLLLLL", expoRedirectUri);
 
@@ -33,7 +33,7 @@ const discovery = {
 
 // if unsuccessful, alerts with an error
 
-export default function SpotifyLoginButton({setHasSpotifyToken}) {
+export default function SpotifyLoginButton({ setSpotifyToken }) {
     const [request, response, promptAsync] = useAuthRequest(
         {
             clientId: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID,
@@ -70,17 +70,15 @@ export default function SpotifyLoginButton({setHasSpotifyToken}) {
                         const res = await promptAsync();
 
                         const tokenres = await getFirstTokenData(res.params.code, expoRedirectUri);
-                        
+
                         if (tokenres.access_token) {
 
                             const expirationTime = calculateExpirationTime(Number(tokenres.expires_in));
-                            // console.log("EXPIRED?????", expirationTime < Date.now());
-                            // await save("SpotifyData", JSON.stringify(tokenres));
-                            // await save("SpotifyExpiration", String(expirationTime));
 
                             await saveSpotifyTokenInfo(JSON.stringify(tokenres), String(expirationTime));
                             console.log("Access token saved in local storage");
-                            setHasSpotifyToken(true);
+                            setSpotifyToken(true);
+
                         } else {
                             console.error("Error getting access token", tokenres);
                         }
