@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, View, StyleSheet } from 'react-native';
-import { save, getValueFor } from '../../scripts/SaveUserData.js'
+import { save, getValueFor, saveSpotifyTokenInfo } from '../../scripts/SaveUserData.js'
 import { calculateExpirationTime } from '../../scripts/SpotifyApiRequests.js';
 import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../scripts/SpotifyApiRequests.js';
 
@@ -33,7 +33,7 @@ const discovery = {
 
 // if unsuccessful, alerts with an error
 
-export default function SpotifyLoginButton({setSpotifyToken}) {
+export default function SpotifyLoginButton({setHasSpotifyToken}) {
     const [request, response, promptAsync] = useAuthRequest(
         {
             clientId: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID,
@@ -78,8 +78,9 @@ export default function SpotifyLoginButton({setSpotifyToken}) {
                             // await save("SpotifyData", JSON.stringify(tokenres));
                             // await save("SpotifyExpiration", String(expirationTime));
 
+                            await saveSpotifyTokenInfo(JSON.stringify(tokenres), String(expirationTime));
                             console.log("Access token saved in local storage");
-                            setSpotifyToken(tokenres.access_token);
+                            setHasSpotifyToken(true);
                         } else {
                             console.error("Error getting access token", tokenres);
                         }

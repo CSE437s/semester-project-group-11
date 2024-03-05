@@ -9,20 +9,24 @@
 //     return result;
 // }
 
-import { getAuth } from 'firebase/auth';
-import { doc, getDoc, setDoc, getFirestore } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, getFirestore } from 'firebase/firestore';
 import { app } from "./firebaseConfig.js";
+import { getAuth } from 'firebase/auth';
 
-export async function saveSpotifyTokenInfo (spotifyToken, spotifyTokenExpiration) {
+export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration) {
 
     const auth = getAuth();
-
     const user = auth.currentUser;
 
+    console.log(auth);
+
     if (user) {
+        console.log("trying to store");
         const db = getFirestore(app);
+        console.log("firestore?");
         const userRef = doc(db, "users", user.uid);
-        await setDoc(userRef, { spotifyToken: spotifyToken, spotifyTokenExpiration:spotifyTokenExpiration }, { merge: true });
+        console.log(user.uid);
+        await updateDoc(userRef, { spotifyInfo: spotifyInfo, spotifyTokenExpiration:spotifyTokenExpiration }, { merge: true });
     }
     else{
         return Error("User is not signed in, not authorized to save spotify data")
@@ -33,7 +37,6 @@ export async function saveSpotifyTokenInfo (spotifyToken, spotifyTokenExpiration
 export async function getSpotifyTokenInfo() {
 
     const auth = getAuth();
-
     const user = auth.currentUser;
 
     if (user) {
@@ -43,6 +46,7 @@ export async function getSpotifyTokenInfo() {
         const userInfo = await getDoc(userRef);
 
         if (userInfo.exists()){
+            console.log("THE DICTIONARY RETURNED IS BROKEN RN, BUT HERES THE RAW DATA WE GOT",userInfo.data())
             return {"spotifyToken": spotifyToken, "spotifyTokenExpiration": expirationTime};
         }
         else{

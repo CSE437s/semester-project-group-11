@@ -24,7 +24,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [spotifyToken, setSpotifyToken] = useState(null);
+  const [hasSpotifyToken, setHasSpotifyToken] = useState(false);
 
   useEffect(() => {
     const unsubscribe = getAuthStateChangeFirebase(setIsLoggedIn);
@@ -41,9 +41,9 @@ export default function App() {
         {isLoggedIn ? (
 
           <>
-
+          
           {
-            spotifyToken != null ? (
+            hasSpotifyToken ? (
               <>
                 <Stack.Screen name="Dashboard" component={DashboardScreen} />
                 <Stack.Screen name="Profile" component={ProfileScreen} />
@@ -52,7 +52,7 @@ export default function App() {
               </>
             ) : (
               <>
-                <Stack.Screen name="SpotifyLoginScreen" component={SpotifyLoginScreen} initialParams={{ setSpotifyToken }} />
+                <Stack.Screen name="SpotifyLoginScreen" component={SpotifyLoginScreen} initialParams={{ setHasSpotifyToken }} />
               </>
             )
           }
