@@ -14,7 +14,8 @@ import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../script
 WebBrowser.maybeCompleteAuthSession();
 
 
-const expoRedirectUri = makeRedirectUri({ scheme: 'spotgames', path:'callback', preferLocalhost: true,});
+// const expoRedirectUri = makeRedirectUri({ scheme: 'spotgames', path:'callback', preferLocalhost: true,});
+const expoRedirectUri = makeRedirectUri({ native: 'spotgames://'});
 
 // console.log("test")
 

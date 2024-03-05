@@ -18,11 +18,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-const auth = getAuth();
+// const auth = getAuth();
 // might want to revert the persisted version for testing, since this automatically signs in the user if they have a login stored
-// const auth = initializeAuth(app, {
-//   persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-// });
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
 
 export { auth, firebaseConfig, app }
 // const analytics = getAnalytics(app);
