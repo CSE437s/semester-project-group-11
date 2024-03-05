@@ -3,6 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, onAuthStateChanged, initializeAuth, getReactNativePersistence } from "firebase/auth";
 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import {Platform} from 'react-native';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -18,11 +19,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// const auth = getAuth();
-// might want to revert the persisted version for testing, since this automatically signs in the user if they have a login stored
-const auth = initializeAuth(app, {
+const auth = Platform.OS === "web" ? getAuth() : initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage)
 });
+// might want to revert the persisted version for testing, since this automatically signs in the user if they have a login stored
 
 export { auth, firebaseConfig, app }
 // const analytics = getAnalytics(app);

@@ -15,9 +15,9 @@ WebBrowser.maybeCompleteAuthSession();
 
 
 // const expoRedirectUri = makeRedirectUri({ scheme: 'spotgames', path:'callback', preferLocalhost: true,});
-const expoRedirectUri = makeRedirectUri({ native: 'spotgames://'});
+const expoRedirectUri = makeRedirectUri({ native: 'your.app://', path:"callback", preferLocalhost:true});
 
-// console.log("test")
+console.log("URLLLLLLLL", expoRedirectUri);
 
 // Endpoint
 const discovery = {
