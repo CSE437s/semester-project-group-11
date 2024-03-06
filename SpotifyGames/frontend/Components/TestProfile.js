@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { getProfile } from '../../scripts/SpotifyApiRequests';
 import { Button, View, StyleSheet } from 'react-native';
-import {save, getValueFor} from '../../scripts/SecureStore.js'
+import {save, getValueFor} from '../../scripts/SaveUserData.js'
 
 export default function TestProfile(){
     

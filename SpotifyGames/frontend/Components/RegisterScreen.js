@@ -48,7 +48,8 @@ export default RegisterScreen = ({ navigation }) => {
 
           signUpFirebase(email, password).then((data) => {
             if (data.user) {
-              addUser(username, email).then(() => {
+              console.log("USERRRRRR", data.user.email);
+              addUser(data.user.uid, username, email).then(() => {
                 console.log("added user to both firebase auth and firestore");
               })
                 .catch((e) => {
@@ -67,7 +68,7 @@ export default RegisterScreen = ({ navigation }) => {
           alert(isUniqueUsernameRes.response.data.message);
         }
 
-        const response = await addUser(username, email);
+        // const response = await addUser(username, email);
         
       } catch (error) {
         console.error("An error occurred:", error);

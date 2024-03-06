@@ -20,6 +20,11 @@ const DashboardScreen = ({ navigation }) => {
       />
       <LogoutButton/>
 
+      <Button
+      title="Test token in localstorage"
+      onPress={() => console.log("token? ", localStorage.getItem("spotifyInfo"))}
+      />
+
     </View>
   );
 };
