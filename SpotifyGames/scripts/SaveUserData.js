@@ -30,6 +30,7 @@ export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration)
         console.log(user.uid);
         console.log(spotifyInfo, spotifyTokenExpiration);
 
+        // TEMPORARY WORKAROUND FOR TOKEN
         if (Platform.OS === "web"){
             localStorage.setItem("spotifyInfo", spotifyInfo);
             localStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
@@ -40,7 +41,6 @@ export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration)
             console.log("worked");
             return "success";
         }).catch((error) => {
-            console.log("updating doc did not work");
             throw error;
         })
 

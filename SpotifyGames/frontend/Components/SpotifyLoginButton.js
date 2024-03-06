@@ -68,7 +68,7 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
 
     return (
         <>
-            {!tokenInLocalStorage() ?
+            {
                 (<>
                     <Button
                         disabled={!request}
@@ -102,11 +102,11 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
                     />
                 </>)
 
-                :
+                // :
 
-                (<>
-                    {setSpotifyToken(true)};
-                </>)
+                // (<>
+                //     {setSpotifyToken(true)};
+                // </>)
 
             }
         </>
