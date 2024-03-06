@@ -1,21 +1,22 @@
 import { initializeApp } from 'firebase/app';
 
-import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, onAuthStateChanged, initializeAuth, getReactNativePersistence } from "firebase/auth";
+import { getAuth, initializeAuth, getReactNativePersistence } from "firebase/auth";
 
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import {Platform} from 'react-native';
 
 // Initialize Firebase
 const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
-  authDomain: 'spotify-games.firebaseapp.com',
-  databaseURL: 'https://project-id.firebaseio.com',
-  projectId: 'spotify-games',
-  storageBucket: 'spotify-games.appspot.com',
-  messagingSenderId: '16243974718',
-  appId: '1:16243974718:web:d69ba35a2d588a91d9276f',
-  measurementId: 'G-V06PHVMN3L',
+  apiKey: "AIzaSyB4fmzBG3QrFzsqz_jf-Zu-S94lQk3FWUs",
+  authDomain: "group11-8368c.firebaseapp.com",
+  databaseURL: "https://group11-8368c-default-rtdb.firebaseio.com",
+  projectId: "group11-8368c",
+  storageBucket: "group11-8368c.appspot.com",
+  messagingSenderId: "589132747393",
+  appId: "1:589132747393:web:1ccd2c1053702d301e3380",
+  measurementId: "G-J4P3HWXMQJ"
 };
+
 
 const app = initializeApp(firebaseConfig);
 
