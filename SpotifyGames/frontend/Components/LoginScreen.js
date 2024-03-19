@@ -34,7 +34,8 @@ export default LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    // <View style={styles.container}>
+    <ThemeProvider>
       <Text style={styles.title}>Login</Text>
 
       <View style={styles.inputView}>
@@ -66,55 +67,55 @@ export default LoginScreen = ({ navigation }) => {
       >
         <Text style={{ color: "white" }}>Sign Up Here!</Text>
       </TouchableOpacity>
-    </View>
+    </ThemeProvider>
   );
 };
 
 //https://alitalhacoban.medium.com/basic-login-screen-with-react-native-c9f7fdcc8dae
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#1DB954",
-  },
-  title: {
-    fontSize: 50,
-    marginBottom: 40,
-    color: "#191414",
-    fontWeight: "bold",
-  },
-  inputView: {
-    width: "80%",
-    backgroundColor: "#3AB4BA",
-    borderRadius: 25,
-    height: 50,
-    marginBottom: 20,
-    justifyContent: "center",
-    padding: 20,
-  },
-  inputText: {
-    height: 50,
-    color: "white",
-  },
-  loginButton: {
-    width: "80%",
-    backgroundColor: "#191414",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    marginBottom: 10,
-  },
-  landingButton: {
-    width: "80%",
-    backgroundColor: "#191414",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    marginBottom: 10,
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     backgroundColor: "#1DB954",
+//   },
+//   title: {
+//     fontSize: 50,
+//     marginBottom: 40,
+//     color: "#191414",
+//     fontWeight: "bold",
+//   },
+//   inputView: {
+//     width: "80%",
+//     backgroundColor: "#3AB4BA",
+//     borderRadius: 25,
+//     height: 50,
+//     marginBottom: 20,
+//     justifyContent: "center",
+//     padding: 20,
+//   },
+//   inputText: {
+//     height: 50,
+//     color: "white",
+//   },
+//   loginButton: {
+//     width: "80%",
+//     backgroundColor: "#191414",
+//     borderRadius: 25,
+//     height: 50,
+//     alignItems: "center",
+//     justifyContent: "center",
+//     marginTop: 40,
+//     marginBottom: 10,
+//   },
+//   landingButton: {
+//     width: "80%",
+//     backgroundColor: "#191414",
+//     borderRadius: 25,
+//     height: 50,
+//     alignItems: "center",
+//     justifyContent: "center",
+//     marginTop: 40,
+//     marginBottom: 10,
+//   },
+// });
