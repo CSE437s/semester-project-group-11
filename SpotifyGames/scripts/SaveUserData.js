@@ -27,14 +27,17 @@ export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration)
         const db = getFirestore(app);
         console.log("firestore?");
         const userRef = doc(db, "users", user.uid);
-        console.log(user.uid);
-        console.log(spotifyInfo, spotifyTokenExpiration);
+        // console.log(user.uid);
+        // console.log(spotifyInfo, spotifyTokenExpiration);
 
-        // TEMPORARY WORKAROUND FOR TOKEN
         if (Platform.OS === "web"){
             localStorage.setItem("spotifyInfo", spotifyInfo);
             localStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
-            console.log("stored in local storage");
+
+            console.log("testing if set in localStorage", localStorage.getItem("spotifyInfo"));
+        }
+        else{
+
         }
         
         return updateDoc(userRef, { "spotifyInfo": spotifyInfo, "spotifyTokenExpiration": spotifyTokenExpiration }).then(() => {
@@ -76,3 +79,12 @@ export async function getSpotifyTokenInfo() {
     }
 }
 
+export function parseTokenFromInfo(info){
+    const json = JSON.parse(info);
+    return json.access_token;
+}
+
+export function parseRefreshTokenFromInfo(info){
+    const json = JSON.parse(info);
+    return json.refresh_token;
+}
