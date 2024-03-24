@@ -9,18 +9,47 @@ export async function getProfile(token) {
     return await result.json();
 }
 
-export async function getTopArtists(token){
-    const result = await fetch("https://api.spotify.com/v1/me/top/artists", {
-        method: "GET", headers: { Authorization: `Bearer ${token}` }
+export async function getTopArtists(token) {
+    let totalArtists = [];
+
+    // First fetch the top 50 artists
+    let result = await fetch(`https://api.spotify.com/v1/me/top/artists?limit=50`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` }
     });
-    return await result.json();
+    let data = await result.json();
+    totalArtists = totalArtists.concat(data.items);
+
+    // The API might allow only up to 50 items per request, so you might not need to make a second call
+    // for the next 50 artists. If you do, here's how you could do it:
+
+    // // Check if there are more artists to be fetched
+    // if (data.total > 50) {
+    //     // Fetch the next 50 artists
+    //     result = await fetch(`https://api.spotify.com/v1/me/top/artists?limit=50&offset=50`, {
+    //         method: "GET",
+    //         headers: { Authorization: `Bearer ${token}` }
+    //     });
+    //     data = await result.json();
+    //     totalArtists = totalArtists.concat(data.items);
+    // }
+
+    return totalArtists;
 }
 
 export async function getTopSongsForArtistID(token, artistID){
-    const result = await fetch(`https://api.spotify.com/v1/artists/${artistID}/top-tracks`, {
-        method: "GET", headers: { Authorization: `Bearer ${token}` }
+    const result = await fetch(`https://api.spotify.com/v1/artists/${artistID}/top-tracks?market=US`, {  // Ensure you specify a market
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` }
     });
-    return await result.json();
+    const data = await result.json();
+    // Map the tracks to a structure that includes only the data you need
+    return data.tracks.map(track => ({
+        name: track.name,
+        artist: track.artists.map(artist => artist.name).join(', '),  // Assuming there can be more than one artist
+        popularity: track.popularity,
+        albumCover: track.album.images[0].url  // This takes the first image
+    }));
 }
 
 export async function getAlbumsForArtistID(token, artistID){

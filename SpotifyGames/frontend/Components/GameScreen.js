@@ -1,103 +1,127 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, Picker } from 'react-native';
-import useGameLogic from '../../scripts/GameLogic';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { getTopArtists, getTopSongsForArtistID } from '../../scripts/SpotifyApiRequests';
+import { parseTokenFromInfo } from '../../scripts/SaveUserData';
 
 const GameScreen = ({ navigation }) => {
-  const {
-    userSelections,
-    handleSelection,
-    questions,
-    score,
-    timeElapsed,
-    startGame,
-    resetGame,
-  } = useGameLogic();
+  const [songs, setSongs] = useState([]);
+  const [currentSongs, setCurrentSongs] = useState([]);
+  const [lives, setLives] = useState(3);
+  const [score, setScore] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userChoice, setUserChoice] = useState(null);
+  const [correctChoice, setCorrectChoice] = useState(null);
+  const [result, setResult] = useState(null);
+  const [showResult, setShowResult] = useState(false);
 
-  const handlePickerChange = (itemValue, index) => {
-    handleSelection(itemValue, index);
+  useEffect(() => {
+    async function fetchArtistsAndTracks() {
+      setIsLoading(true);
+      const spotifyInfo = localStorage.getItem("spotifyInfo");
+      const spotifyToken = parseTokenFromInfo(spotifyInfo);
+      
+      if (!spotifyToken) {
+        console.error('Spotify token is not available.');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const artists = await getTopArtists(spotifyToken);
+        const tracksPromises = artists.map(artist => getTopSongsForArtistID(spotifyToken, artist.id));
+        const tracks = await Promise.all(tracksPromises);
+        
+        const combinedTracks = tracks.flat(); // Flatten the tracks array
+        setSongs(combinedTracks);
+        setCurrentSongs(pickRandomSongs(combinedTracks, 2)); // Pick 2 random songs
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchArtistsAndTracks();
+  }, []);
+
+  const pickRandomSongs = (songs, number) => {
+    let randomSongs = [];
+    let usedIndices = new Set();
+
+    while(randomSongs.length < number && randomSongs.length < songs.length) {
+      let randomIndex = Math.floor(Math.random() * songs.length);
+      if (!usedIndices.has(randomIndex)) {
+        randomSongs.push(songs[randomIndex]);
+        usedIndices.add(randomIndex);
+      }
+    }
+
+    return randomSongs;
+  };
+  const handleSongSelection = (selectedSongIndex) => {
+    const newRandomSong = pickRandomSongs(songs, 1)[0];
+
+    setUserChoice(currentSongs[selectedSongIndex]);
+    setCorrectChoice(currentSongs[0]); // Correct song is always the first one in the queue
+  
+    if (currentSongs[selectedSongIndex].popularity >= currentSongs[0].popularity) {
+      setScore(prevScore => prevScore + 1);
+      setResult('Correct');
+    } else {
+      setLives(prevLives => prevLives - 1);
+      setResult('Incorrect');
+    }
+  
+    setShowResult(true);
+  
+    setTimeout(() => {
+      const nextSongs = [...currentSongs, newRandomSong].slice(1); // Remove the first song and add a new random song
+      setCurrentSongs(nextSongs);
+      setShowResult(false);  // Hide result and show next question
+    }, 3000);  // Adjust time as needed
+  
+    if (lives <= 0) {
+      navigation.navigate('ScoreScreen', { score });
+    }
   };
 
-  const renderPicker = (question, index) => (
-    <View key={question.id} style={styles.gridItem}>
-      <Text>{`Row ${question.row}, Col ${question.col}`}</Text>
-      <Text>What is the product?</Text>
-      <Picker
-        selectedValue={userSelections[index]}
-        onValueChange={(itemValue) => handlePickerChange(itemValue, index)}
-        mode="dropdown"
-        style={styles.pickerStyle}
-      >
-        {[...Array(9).keys()].map((value) => (
-          <Picker.Item label={`${value + 1}`} value={`${value + 1}`} key={value} />
+return (
+  <View style={styles.container}>
+    {isLoading ? (
+      <Text>Loading...</Text>
+    ) : (
+      <>
+        <Text style={styles.title}>Choose the More Popular Song</Text>
+        <Text>Lives: {lives}</Text>
+        <Text>Score: {score}</Text>
+        {currentSongs.map((song, index) => (
+          <TouchableOpacity key={song.id} onPress={() => handleSongSelection(index)}>
+            <Image source={{ uri: song.albumCover }} style={styles.albumCover} />
+            <Text>{song.name} - {song.artist}</Text>
+            {showResult && userChoice && song.id === userChoice.id && (
+              <Text>{result} - Popularity: {song.popularity}</Text>
+            )}
+          </TouchableOpacity>
         ))}
-      </Picker>
-    </View>
-  );
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Answer the questions:</Text>
-      
-      {/* Render Column Labels */}
-      <View style={styles.headerRow}>
-        {['', '1', '2', '3'].map((label, index) => (
-          <View key={`header-${index}`} style={styles.headerItem}>
-            <Text>{label}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Render Row Labels and Pickers */}
-      <View style={styles.gridContainer}>
-        {questions.map(renderPicker)}
-      </View>
-      
-      <Button
-        title="Submit"
-        onPress={() => {
-          navigation.navigate('ScoreScreen', { score, timeElapsed });
-          console.log('Submit pressed', { score, timeElapsed });
-        }}
-      />
-    </View>
-  );
+      </>
+    )}
+  </View>
+);
 };
 
+// Styles
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 20,
-    alignItems: 'center',
+  // Add your styles here
+  albumCover: {
+    width: 100,
+    height: 100
   },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    width: '100%', // Take full width
-    marginBottom: 10, // Add some space before the grid starts
-  },
-  headerItem: {
-    width: '33.33%', // 3 items per row for labels
-    alignItems: 'left',
-    padding: 10,
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    width: '100%', // Take full width to accommodate the grid
-  },
-  gridItem: {
-    width: '33.33%', // 3 items per row for the grid
-    alignItems: 'center',
-    padding: 10,
-  },
-  pickerStyle: {
-    width: '100%', // The picker should take the full width of the grid item
-  },
+  // ...
 });
 
 export default GameScreen;
+
+
+
+
+
