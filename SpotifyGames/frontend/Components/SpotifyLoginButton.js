@@ -37,7 +37,7 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
     const [request, response, promptAsync] = useAuthRequest(
         {
             clientId: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID,
-            scopes: ['user-read-private', 'user-read-email', 'playlist-modify-public'],
+            scopes: ['user-read-private', 'user-read-email', 'playlist-modify-public','user-top-read'],
             // To follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
             // this must be set to false
             clientSecret: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_SECRET,
