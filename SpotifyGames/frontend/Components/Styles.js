@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
       marginTop: 40,
       marginBottom: 10,
     },
+    
   });
 
   export default styles;

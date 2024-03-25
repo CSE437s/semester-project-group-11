@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button, Picker } from 'react-native';
 import useGameLogic from '../../scripts/GameLogic';
+import styles from "./Styles"
 
 const GameScreen = ({ navigation }) => {
   const {
@@ -35,20 +36,20 @@ const GameScreen = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Answer the questions:</Text>
+    <View style={stylesGame.container}>
+      <Text style={stylesGame.title}>Answer the questions:</Text>
       
       {/* Render Column Labels */}
-      <View style={styles.headerRow}>
+      <View style={stylesGame.headerRow}>
         {['', '1', '2', '3'].map((label, index) => (
-          <View key={`header-${index}`} style={styles.headerItem}>
+          <View key={`header-${index}`} style={stylesGame.headerItem}>
             <Text>{label}</Text>
           </View>
         ))}
       </View>
 
       {/* Render Row Labels and Pickers */}
-      <View style={styles.gridContainer}>
+      <View style={stylesGame.gridContainer}>
         {questions.map(renderPicker)}
       </View>
       
@@ -63,7 +64,7 @@ const GameScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const stylesGame = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
@@ -89,11 +90,13 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     width: '100%', // Take full width to accommodate the grid
+    aspectRatio: 1,
   },
   gridItem: {
     width: '33.33%', // 3 items per row for the grid
     alignItems: 'center',
     padding: 10,
+    aspectRatio: 1,
   },
   pickerStyle: {
     width: '100%', // The picker should take the full width of the grid item

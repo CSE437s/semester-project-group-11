@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
-import { Button, View, StyleSheet } from "react-native";
+import { Button, View, StyleSheet, Text } from "react-native";
 import {
   save,
   getValueFor,
@@ -15,6 +15,7 @@ import {
 } from "../../scripts/SpotifyApiRequests.js";
 import { TouchableOpacity } from "react-native-web";
 import styles from "./Styles";
+import { ThemeProvider } from "@react-navigation/native";
 
 // Expo has their own version of environment variables
 // https://docs.expo.dev/guides/environment-variables/
@@ -84,53 +85,43 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
   }
 
   return (
-    <>
-      {
-        <>
-          <TouchableOpacity
-            style={styles.button}
-            disabled={!request}
-            onPress={async () => {
-              console.log("calling login");
+    <ThemeProvider>
+      <TouchableOpacity
+        style={styles.loginButton}
+        disabled={!request}
+        onPress={async () => {
+          console.log("calling login");
 
-              try {
-                const res = await promptAsync();
+          try {
+            const res = await promptAsync();
 
-                const tokenres = await getFirstTokenData(
-                  res.params.code,
-                  expoRedirectUri
-                );
+            const tokenres = await getFirstTokenData(
+              res.params.code,
+              expoRedirectUri
+            );
 
-                if (tokenres.access_token) {
-                  const expirationTime = calculateExpirationTime(
-                    Number(tokenres.expires_in)
-                  );
+            if (tokenres.access_token) {
+              const expirationTime = calculateExpirationTime(
+                Number(tokenres.expires_in)
+              );
 
-                  await saveSpotifyTokenInfo(
-                    JSON.stringify(tokenres),
-                    String(expirationTime)
-                  );
-                  console.log("Access token saved in local storage");
-                  setSpotifyToken(true);
-                } else {
-                  console.error("Error getting access token", tokenres);
-                }
-              } catch (error) {
-                console.error("An error occurred:", error.message);
-                console.log("Unable to store token in secure store");
-              }
-            }}
-          >
-            <Text style={{ color: "white" }}>Connect your Spotify</Text>
-          </TouchableOpacity>
-        </>
-
-        // :
-
-        // (<>
-        //     {setSpotifyToken(true)};
-        // </>)
-      }
-    </>
+              await saveSpotifyTokenInfo(
+                JSON.stringify(tokenres),
+                String(expirationTime)
+              );
+              console.log("Access token saved in local storage");
+              setSpotifyToken(true);
+            } else {
+              console.error("Error getting access token", tokenres);
+            }
+          } catch (error) {
+            console.error("An error occurred:", error.message);
+            console.log("Unable to store token in secure store");
+          }
+        }}
+      >
+        <Text style={{ color: "white" }}>Connect your Spotify</Text>
+      </TouchableOpacity>
+    </ThemeProvider>
   );
 }

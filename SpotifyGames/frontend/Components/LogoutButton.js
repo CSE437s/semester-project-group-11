@@ -13,11 +13,9 @@ export default LogoutButton = () => {
 
   return (
     <ThemeProvider>
-      <View style={styles.container}>
         <TouchableOpacity style={styles.button} onPress={handleLogout}>
             <Text style={{color:"white"}}>Logout</Text>
         </TouchableOpacity>
-      </View>
     </ThemeProvider>
   );
 };
