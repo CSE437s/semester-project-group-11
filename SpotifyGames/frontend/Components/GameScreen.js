@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { getTopArtists, getTopSongsForArtistID } from '../../scripts/SpotifyApiRequests';
-import { parseTokenFromInfo } from '../../scripts/SaveUserData';
-import styles from "./Styles"
+import React, { useState, useEffect } from "react";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  getTopArtists,
+  getTopSongsForArtistID,
+} from "../../scripts/SpotifyApiRequests";
+import { parseTokenFromInfo } from "../../scripts/SaveUserData";
+import styles from "./Styles";
+import { ThemeProvider } from "@react-navigation/native";
 
 const GameScreen = ({ navigation }) => {
   const [songs, setSongs] = useState([]);
@@ -20,23 +24,25 @@ const GameScreen = ({ navigation }) => {
       setIsLoading(true);
       const spotifyInfo = localStorage.getItem("spotifyInfo");
       const spotifyToken = parseTokenFromInfo(spotifyInfo);
-      
+
       if (!spotifyToken) {
-        console.error('Spotify token is not available.');
+        console.error("Spotify token is not available.");
         setIsLoading(false);
         return;
       }
 
       try {
         const artists = await getTopArtists(spotifyToken);
-        const tracksPromises = artists.map(artist => getTopSongsForArtistID(spotifyToken, artist.id));
+        const tracksPromises = artists.map((artist) =>
+          getTopSongsForArtistID(spotifyToken, artist.id)
+        );
         const tracks = await Promise.all(tracksPromises);
-        
+
         const combinedTracks = tracks.flat(); // Flatten the tracks array
         setSongs(combinedTracks);
         setCurrentSongs(pickRandomSongs(combinedTracks, 2)); // Pick 2 random songs
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -49,7 +55,7 @@ const GameScreen = ({ navigation }) => {
     let randomSongs = [];
     let usedIndices = new Set();
 
-    while(randomSongs.length < number && randomSongs.length < songs.length) {
+    while (randomSongs.length < number && randomSongs.length < songs.length) {
       let randomIndex = Math.floor(Math.random() * songs.length);
       if (!usedIndices.has(randomIndex)) {
         randomSongs.push(songs[randomIndex]);
@@ -64,65 +70,117 @@ const GameScreen = ({ navigation }) => {
 
     setUserChoice(currentSongs[selectedSongIndex]);
     setCorrectChoice(currentSongs[0]); // Correct song is always the first one in the queue
-  
-    if (currentSongs[selectedSongIndex].popularity >= currentSongs[0].popularity) {
-      setScore(prevScore => prevScore + 1);
-      setResult('Correct');
+
+    if (
+      currentSongs[selectedSongIndex].popularity >= currentSongs[0].popularity
+    ) {
+      setScore((prevScore) => prevScore + 1);
+      setResult("Correct");
     } else {
-      setLives(prevLives => prevLives - 1);
-      setResult('Incorrect');
+      setLives((prevLives) => prevLives - 1);
+      setResult("Incorrect");
     }
-  
+
     setShowResult(true);
-  
+
     setTimeout(() => {
       const nextSongs = [...currentSongs, newRandomSong].slice(1); // Remove the first song and add a new random song
       setCurrentSongs(nextSongs);
-      setShowResult(false);  // Hide result and show next question
-    }, 3000);  // Adjust time as needed
-  
+      setShowResult(false); // Hide result and show next question
+    }, 3000); // Adjust time as needed
+
     if (lives <= 0) {
-      navigation.navigate('ScoreScreen', { score });
+      navigation.navigate("ScoreScreen", { score });
     }
   };
 
-return (
-  <View style={styles.container}>
-    {isLoading ? (
-      <Text>Loading...</Text>
-    ) : (
-      <>
-        <Text style={styles.title}>Choose the More Popular Song</Text>
-        <Text>Lives: {lives}</Text>
-        <Text>Score: {score}</Text>
-        {currentSongs.map((song, index) => (
-          <TouchableOpacity key={song.id} onPress={() => handleSongSelection(index)}>
-            <Image source={{ uri: song.albumCover }} style={styles.albumCover} />
-            <Text>{song.name} - {song.artist}</Text>
-            {showResult && userChoice && song.id === userChoice.id && (
-              <Text>{result} - Popularity: {song.popularity}</Text>
-            )}
-          </TouchableOpacity>
-        ))}
-      </>
-    )}
-  </View>
-);
+  return (
+    <ThemeProvider>
+      <View style={styles.imageContainer}>
+        {isLoading ? (
+          <Text>Loading...</Text>
+        ) : (
+          <>
+            {currentSongs.map((song, index) => (
+              <>
+                <Image
+                  source={{ uri: song.albumCover }}
+                  style={styles.bottomImageContainer}
+                />
+                <Text>
+                  {song.name} - {song.artist}
+                </Text>
+                {showResult && userChoice && song.id === userChoice.id && (
+                  <Text>
+                    {result} - Popularity: {song.popularity}
+                  </Text>
+                )}
+              </>
+            ))}
+            {/* {currentSongs.map((song, index) => (
+              <Image
+                source={{ uri: song.albumCover }}
+                style={styles.bottomImageContainer}
+              />
+            ))} */}
+            {/* {currentSongs.map((song, index) => (
+              <TouchableOpacity
+                key={song.id}
+                onPress={() => handleSongSelection(index)}
+              >
+                <Image
+                  source={{ uri: song.albumCover }}
+                  style={styles.bottomImageContainer}
+                />
+                <Text>
+                  {song.name} - {song.artist}
+                </Text>
+                {showResult && userChoice && song.id === userChoice.id && (
+                  <Text>
+                    {result} - Popularity: {song.popularity}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            ))} */}
+            <Text style={styles.gameTitle}>Choose the More Popular Song</Text>
+            <Text style={{ position: "absolute", top: 10, left: 20 }}>
+              Lives: {lives}
+            </Text>
+            <Text style={{ position: "absolute", top: 10, right: 20 }}>Score: {score}</Text>
+            {/* {currentSongs.map((song, index) => (
+              // <TouchableOpacity
+              //   key={song.id}
+              //   onPress={() => handleSongSelection(index)}
+              // >
+              //   <Image
+              //     source={{ uri: song.albumCover }}
+              //     style={styles.topImageContainer}
+              //   />
+              //   <Text>
+              //     {song.name} - {song.artist}
+              //   </Text>
+              //   {showResult && userChoice && song.id === userChoice.id && (
+              //     <Text>
+              //       {result} - Popularity: {song.popularity}
+              //     </Text>
+              //   )}
+              // </TouchableOpacity>
+            ))} */}
+          </>
+        )}
+      </View>
+    </ThemeProvider>
+  );
 };
 
 // Styles
-const styles = StyleSheet.create({
+const stylesGameScreen = StyleSheet.create({
   // Add your styles here
   albumCover: {
     width: 100,
-    height: 100
+    height: 100,
   },
   // ...
 });
 
 export default GameScreen;
-
-
-
-
-

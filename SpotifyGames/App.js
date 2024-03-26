@@ -20,7 +20,7 @@ import { auth } from "./scripts/firebaseConfig.js";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, createTheme } from "@rneui/themed";
 
-import styles from './Styles';
+import styles from "./Styles";
 
 const Stack = createNativeStackNavigator();
 
@@ -49,35 +49,38 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer>
-
-      <Stack.Navigator initialRouteName={user ? "Login" : "Dashboard"}>
-
-        {user ? (
-          <>
-          {
-            spotifyToken ? (
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName={user ? "Login" : "Dashboard"}>
+            {user ? (
               <>
-                <Stack.Screen name="Dashboard" component={DashboardScreen} />
-                <Stack.Screen name="Profile" component={ProfileScreen} />
-                <Stack.Screen name='Game' component={GameScreen} />
-                <Stack.Screen name='ScoreScreen' component={ScoreScreen} />
+                {spotifyToken ? (
+                  <>
+                    <Stack.Screen
+                      name="Dashboard"
+                      component={DashboardScreen}
+                    />
+                    <Stack.Screen name="Profile" component={ProfileScreen} />
+                    <Stack.Screen name="Game" component={GameScreen} />
+                    <Stack.Screen name="ScoreScreen" component={ScoreScreen} />
+                  </>
+                ) : (
+                  <>
+                    <Stack.Screen
+                      name="SpotifyLoginScreen"
+                      component={SpotifyLoginScreen}
+                      initialParams={{ setSpotifyToken: setSpotifyToken }}
+                    />
+                  </>
+                )}
               </>
             ) : (
               <>
-                <Stack.Screen name="SpotifyLoginScreen" component={SpotifyLoginScreen} initialParams={{ setSpotifyToken:setSpotifyToken }} />
+                {/* <Stack.Screen name="Landing" component={LandingScreen} /> */}
+                <Stack.Screen name="Login" component={LoginScreen} />
+                <Stack.Screen name="Register" component={RegisterScreen} />
               </>
-            )
-          }
-
-          </>
-
-        ) : (
-          <>
-            {/* <Stack.Screen name="Landing" component={LandingScreen} /> */}
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-          </>
 
               // screens that can be accessed when the user is logged in or logged out should be denoted as such
               // <Stack.Screen navigationKey={isLoggedIn ? 'user' : 'guest'} name="Help" component={HelpScreen} />
