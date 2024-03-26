@@ -6,7 +6,7 @@ import { parseTokenFromInfo } from '../../scripts/SaveUserData';
 const GameScreen = ({ navigation }) => {
   const [songs, setSongs] = useState([]);
   const [currentSongs, setCurrentSongs] = useState([]);
-  const [lives, setLives] = useState(3);
+  const [lives, setLives] = useState(5);
   const [score, setScore] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [userChoice, setUserChoice] = useState(null);
@@ -59,29 +59,40 @@ const GameScreen = ({ navigation }) => {
     return randomSongs;
   };
   const handleSongSelection = (selectedSongIndex) => {
-    const newRandomSong = pickRandomSongs(songs, 1)[0];
+    const selectedSong = currentSongs[selectedSongIndex];
+    const otherSong = currentSongs[selectedSongIndex === 0 ? 1 : 0];
 
-    setUserChoice(currentSongs[selectedSongIndex]);
-    setCorrectChoice(currentSongs[0]); // Correct song is always the first one in the queue
-  
-    if (currentSongs[selectedSongIndex].popularity >= currentSongs[0].popularity) {
+    setUserChoice(selectedSong);
+    setCorrectChoice(selectedSong.popularity >= otherSong.popularity ? selectedSong : otherSong);
+
+    let isCorrect = selectedSong.popularity >= otherSong.popularity;
+    
+    if (isCorrect) {
       setScore(prevScore => prevScore + 1);
       setResult('Correct');
     } else {
-      setLives(prevLives => prevLives - 1);
+      // Delay the update of lives and potential navigation to score screen
+      setTimeout(() => {
+        setLives(prevLives => {
+          if (prevLives - 1 <= 0) {
+            navigation.navigate('ScoreScreen', { score });
+            return prevLives;
+          } 
+          return prevLives - 1;
+        });
+      }, 3000); // Delay to show result before redirecting
       setResult('Incorrect');
     }
-  
+    
     setShowResult(true);
-  
-    setTimeout(() => {
-      const nextSongs = [...currentSongs, newRandomSong].slice(1); // Remove the first song and add a new random song
-      setCurrentSongs(nextSongs);
-      setShowResult(false);  // Hide result and show next question
-    }, 3000);  // Adjust time as needed
-  
-    if (lives <= 0) {
-      navigation.navigate('ScoreScreen', { score });
+
+    if (isCorrect || lives > 1) {
+      setTimeout(() => {
+        const newRandomSong = pickRandomSongs(songs, 1)[0];
+        const nextSongs = [...currentSongs, newRandomSong].slice(1); // Remove the first song and add a new random song
+        setCurrentSongs(nextSongs);
+        setShowResult(false);  // Hide result and show next question
+      }, 3000);  // Adjust time as needed
     }
   };
 
