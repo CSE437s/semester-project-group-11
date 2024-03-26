@@ -18,12 +18,7 @@ const DashboardScreen = ({ navigation }) => {
         title="Start Game"
         onPress={() => navigation.navigate('Game')} // Replace 'Game' with your actual game screen name
       />
-      <LogoutButton/>
-
-      <Button
-      title="Test token in localstorage"
-      onPress={() => console.log("token? ", localStorage.getItem("spotifyInfo"))}
-      />
+      {/* <LogoutButton/> */}
 
     </View>
   );

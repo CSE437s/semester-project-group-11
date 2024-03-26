@@ -55,10 +55,7 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
         <>
             {
                 (<>
-                    <Button
-                        title="TEST"
-                        onPress={console.log("Hello")}
-                    />
+                    
                     <Button
                         disabled={!request}
                         title="Connect your Spotify"
