@@ -116,6 +116,10 @@ return (
         ))}
       </>
     )}
+<TouchableOpacity style={styles.quitButton} onPress={() => navigation.navigate('Dashboard')}>
+  <Text style={styles.quitButtonText}>Quit</Text>
+</TouchableOpacity>
+
   </View>
 );
 };
@@ -126,6 +130,18 @@ const styles = StyleSheet.create({
   albumCover: {
     width: 100,
     height: 100
+  },
+  quitButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#f44336', // or any color you prefer
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  quitButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   // ...
 });
