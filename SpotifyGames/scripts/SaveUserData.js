@@ -14,6 +14,7 @@ import { app } from "./firebaseConfig.js";
 import { getAuth } from 'firebase/auth';
 
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration) {
 
@@ -31,10 +32,10 @@ export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration)
         // console.log(spotifyInfo, spotifyTokenExpiration);
 
         if (Platform.OS === "web"){
-            localStorage.setItem("spotifyInfo", spotifyInfo);
-            localStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
+            AsyncStorage.setItem("spotifyInfo", spotifyInfo);
+            AsyncStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
 
-            console.log("testing if set in localStorage", localStorage.getItem("spotifyInfo"));
+            console.log("testing if set in AsyncStorage", AsyncStorage.getItem("spotifyInfo"));
         }
         else{
 
@@ -62,20 +63,22 @@ export async function getSpotifyTokenInfo() {
     if (user) {
 
         const db = getFirestore(app);
-        const userRef = doc(db, "users", user.uid).where("id", "==", user.uid);
+        const userRef = doc(db, "users", user.uid);
         const userInfo = await getDoc(userRef);
 
         if (userInfo.exists()){
-            console.log("THE DICTIONARY RETURNED IS BROKEN RN, BUT HERES THE RAW DATA WE GOT",userInfo.data())
-            return {"spotifyToken": spotifyToken, "spotifyTokenExpiration": expirationTime};
+            const data = userInfo.data();
+            // console.log("THE DICTIONARY RETURNED IS BROKEN RN, BUT HERES THE RAW DATA WE GOT", data);
+            return {"spotifyInfo": data.spotifyInfo, "spotifyTokenExpiration": data.spotifyTokenExpiration};
         }
         else{
-            console.log("Uh oh, no such user with uid:",user.uid + " (there should be though)");
+            console.log("Uh oh, no such user with uid:", user.uid + " (there should be though)");
+            console.log("might be a permissions issue");
         }
 
     }
     else{
-        return Error("User is not signed in, not authorized to retrieve spotify data")
+        return Error("User is not signed in, not authorized to retrieve spotify data");
     }
 }
 

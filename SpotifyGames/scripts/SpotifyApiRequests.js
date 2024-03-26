@@ -1,5 +1,6 @@
 import { Buffer } from 'buffer';
-import { save, getValueFor } from './SaveUserData';
+import { saveSpotifyTokenInfo } from './SaveUserData';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export async function getProfile(token) {
 
@@ -106,14 +107,14 @@ export const getRefreshTokenData = async (refreshToken) => {
 
 export const getOrRefreshStoredToken = async () => {
     try {
-        const expirationTime = await getValueFor("SpotifyExpiration");
+        const expirationTime = AsyncStorage.getItem("spotifyTokenExpiration");
 
         if (expirationTime == null) {
             console.log("no spotify token found, gotta log in");
             throw new Error("No Spotify data in SecureStore");
         }
 
-        const SpotifyDataString = await getValueFor("SpotifyData");
+        const SpotifyDataString = AsyncStorage.getItem("spotifyInfo")
         let SpotifyData = JSON.parse(SpotifyDataString);
         const refreshToken = SpotifyData.refresh_token;
 
@@ -122,13 +123,13 @@ export const getOrRefreshStoredToken = async () => {
         if (expirationTime <= currTime) {
             console.log("token expired");
             SpotifyData = await getRefreshTokenData(refreshToken);
-            await save("SpotifyData", JSON.stringify(SpotifyData));
-            await save("SpotifyExpiration", String(calculateExpirationTime(SpotifyData.expires_in)));
+            // await save("SpotifyData", JSON.stringify(SpotifyData));
+            // await save("SpotifyTokenExpiration", String(calculateExpirationTime(SpotifyData.expires_in)));
+            await saveSpotifyTokenInfo(JSON.stringify(SpotifyData), String(calculateExpirationTime(SpotifyData.expires_in)))
         }
 
-
         if (!SpotifyData) {
-            throw new Error("Spotify Response does not exist in Secure Store");
+            throw new Error("Spotify Response does not exist in AsyncStorage");
         }
 
         if (SpotifyData.access_token) {

@@ -20,7 +20,6 @@ import {auth} from './scripts/firebaseConfig.js';
 
 const Stack = createNativeStackNavigator();
 
-
 export default function App() {
 
   const [user, setUser] = useState(null);

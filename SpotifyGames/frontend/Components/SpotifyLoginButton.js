@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, View, StyleSheet } from 'react-native';
-import { save, getValueFor, saveSpotifyTokenInfo } from '../../scripts/SaveUserData.js'
+import { saveSpotifyTokenInfo } from '../../scripts/SaveUserData.js'
 import { calculateExpirationTime } from '../../scripts/SpotifyApiRequests.js';
 import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../scripts/SpotifyApiRequests.js';
 
@@ -55,17 +55,7 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
         }
     }, [response]);
 
-    function tokenInLocalStorage() {
-        const token = localStorage.getItem("spotifyInfo")
-        const expirationTime = localStorage.getItem("spotifyTokenExpiration");
-
-        console.log(expirationTime + " " + Date.now());
-
-        if (token == null || expirationTime == null);
-
-        return token != null && expirationTime > Date.now();
-    }
-
+    
     return (
         <>
             {
