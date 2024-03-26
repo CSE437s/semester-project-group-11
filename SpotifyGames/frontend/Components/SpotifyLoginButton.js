@@ -2,21 +2,17 @@ import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button, View, StyleSheet } from 'react-native';
-import { save, getValueFor, saveSpotifyTokenInfo } from '../../scripts/SaveUserData.js'
+import { saveSpotifyTokenInfo } from '../../scripts/SaveUserData.js'
 import { calculateExpirationTime } from '../../scripts/SpotifyApiRequests.js';
 import { getProfile, getFirstTokenData, getRefreshTokenData } from '../../scripts/SpotifyApiRequests.js';
 
-// Expo has their own version of environment variables
-// https://docs.expo.dev/guides/environment-variables/
-// no need for external package
-// import {SPOTIFY_CLIENT_SECRET, SPOTIFY_CLIENT_ID} from "@env";
 
 WebBrowser.maybeCompleteAuthSession();
 
-// const expoRedirectUri = makeRedirectUri({ scheme: 'spotgames', path:'callback', preferLocalhost: true,});
-const expoRedirectUri = makeRedirectUri({ native: 'your.app://', path: "callback", preferLocalhost: true });
+// const expoRedirectUri = makeRedirectUri({ native: 'your.app://', path: "callback", preferLocalhost: true });
+// const expoRedirectUri = makeRedirectUri({ native: 'your.app://', preferLocalhost: true });
 
-console.log("URLLLLLLLL", expoRedirectUri);
+const expoRedirectUri = makeRedirectUri({scheme: 'your.app'}); //maybe the version to use for netlify?????
 
 // Endpoint
 const discovery = {
@@ -32,12 +28,11 @@ const discovery = {
 // ("SpotifyExpiration", Time when token expires and needs to be refreshed)
 
 // if unsuccessful, alerts with an error
-
 export default function SpotifyLoginButton({ setSpotifyToken }) {
     const [request, response, promptAsync] = useAuthRequest(
         {
             clientId: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID,
-            scopes: ['user-read-private', 'user-read-email', 'playlist-modify-public','user-top-read'],
+            scopes: ['user-read-private', 'user-read-email', 'playlist-modify-public'],
             // To follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
             // this must be set to false
             clientSecret: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_SECRET,
@@ -55,26 +50,21 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
         }
     }, [response]);
 
-    function tokenInLocalStorage() {
-        const token = localStorage.getItem("spotifyInfo")
-        const expirationTime = localStorage.getItem("spotifyTokenExpiration");
-
-        console.log(expirationTime + " " + Date.now());
-
-        if (token == null || expirationTime == null);
-
-        return token != null && expirationTime > Date.now();
-    }
-
+    
     return (
         <>
             {
                 (<>
                     <Button
+                        title="TEST"
+                        onPress={console.log("Hello")}
+                    />
+                    <Button
                         disabled={!request}
                         title="Connect your Spotify"
                         onPress={async () => {
 
+                            console.log("URLLLLLLLL", expoRedirectUri);
                             console.log("calling login");
 
                             try {

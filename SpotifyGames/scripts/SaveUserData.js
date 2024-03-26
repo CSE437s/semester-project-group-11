@@ -1,13 +1,3 @@
-// import * as SecureStore from 'expo-secure-store';
-// export async function save(key, value) {
-//     await SecureStore.setItemAsync(key, value);
-// }
-
-// export async function getValueFor(key) {
-//     let result = await SecureStore.getItemAsync(key);
-
-//     return result;
-// }
 
 import { doc, getDoc, updateDoc, getFirestore, where } from 'firebase/firestore';
 import { app } from "./firebaseConfig.js";
@@ -37,7 +27,7 @@ export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration)
             console.log("testing if set in localStorage", localStorage.getItem("spotifyInfo"));
         }
         else{
-
+                
         }
         
         return updateDoc(userRef, { "spotifyInfo": spotifyInfo, "spotifyTokenExpiration": spotifyTokenExpiration }).then(() => {
