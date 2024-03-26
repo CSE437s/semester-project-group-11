@@ -1,31 +1,44 @@
-import { useState, useEffect } from 'react';
-import { View, Text, Button } from 'react-native';
-import LogoutButton from './LogoutButton';
-import SpotifyLoginButton from './SpotifyLoginButton';
-import { getOrRefreshStoredToken } from '../../scripts/SpotifyApiRequests';
+import { useState, useEffect } from "react";
+import { View, Text, Button } from "react-native";
+import LogoutButton from "./LogoutButton";
+import SpotifyLoginButton from "./SpotifyLoginButton";
+import { getOrRefreshStoredToken } from "../../scripts/SpotifyApiRequests";
+import { ThemeProvider } from "@react-navigation/native";
+import styles from "./Styles";
+import { TouchableOpacity } from "react-native-web";
 
 const DashboardScreen = ({ navigation }) => {
   return (
-    <View>
+    <ThemeProvider>
+      <View style={styles.container}>
+        <Text style={styles.title}>Welcome to Gamify!</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("Profile")}
+        >
+          <Text style={{ color: "white" }}>My Profile</Text>
+        </TouchableOpacity>
 
-      <Text>Welcome to Gamify!</Text>
-      <Button
-        title="My Profile"
-        onPress={() => navigation.navigate('Profile')}
-      />
-      {/* Add a Start Game button */}
-      <Button
-        title="Start Game"
-        onPress={() => navigation.navigate('Game')} // Replace 'Game' with your actual game screen name
-      />
-      <LogoutButton/>
+        {/* Add a Start Game button */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("Game")}
+        >
+          <Text style={{ color: "white" }}>Start Game</Text>
+        </TouchableOpacity>
 
-      {/* <Button
-      title="Test token in localstorage"
-      onPress={() => console.log("token? ", localStorage.getItem("spotifyInfo"))}
-      /> */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() =>
+            console.log("token? ", localStorage.getItem("spotifyInfo"))
+          }
+        >
+          <Text style={{ color: "white" }}>Test token in localstorage</Text>
+        </TouchableOpacity>
 
-    </View>
+        <LogoutButton />
+      </View>
+    </ThemeProvider>
   );
 };
 
