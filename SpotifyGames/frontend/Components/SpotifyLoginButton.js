@@ -12,7 +12,7 @@ WebBrowser.maybeCompleteAuthSession();
 // const expoRedirectUri = makeRedirectUri({ native: 'your.app://', path: "callback", preferLocalhost: true });
 // const expoRedirectUri = makeRedirectUri({ native: 'your.app://', preferLocalhost: true });
 
-const expoRedirectUri = makeRedirectUri({scheme: 'your.app'}); //maybe the version to use for netlify?????
+const expoRedirectUri = makeRedirectUri({scheme: 'your.app'}); //NETLIFY PATH
 
 // Endpoint
 const discovery = {
