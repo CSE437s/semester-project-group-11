@@ -19,6 +19,7 @@ const DashboardScreen = ({ navigation }) => {
           <Text style={{ color: "white" }}>My Profile</Text>
         </TouchableOpacity>
 
+
         {/* Add a Start Game button */}
         <TouchableOpacity
           style={styles.button}
@@ -35,6 +36,7 @@ const DashboardScreen = ({ navigation }) => {
         >
           <Text style={{ color: "white" }}>Test token in localstorage</Text>
         </TouchableOpacity>
+
 
         <LogoutButton />
       </View>

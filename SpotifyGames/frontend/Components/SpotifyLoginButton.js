@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
@@ -17,21 +18,11 @@ import { TouchableOpacity } from "react-native-web";
 import styles from "./Styles";
 import { ThemeProvider } from "@react-navigation/native";
 
-// Expo has their own version of environment variables
-// https://docs.expo.dev/guides/environment-variables/
-// no need for external package
-// import {SPOTIFY_CLIENT_SECRET, SPOTIFY_CLIENT_ID} from "@env";
+
 
 WebBrowser.maybeCompleteAuthSession();
 
-// const expoRedirectUri = makeRedirectUri({ scheme: 'spotgames', path:'callback', preferLocalhost: true,});
-const expoRedirectUri = makeRedirectUri({
-  native: "your.app://",
-  path: "callback",
-  preferLocalhost: true,
-});
-
-console.log("URLLLLLLLL", expoRedirectUri);
+const expoRedirectUri = makeRedirectUri({scheme: 'your.app'}); //NETLIFY PATH
 
 // Endpoint
 const discovery = {
@@ -46,12 +37,11 @@ const discovery = {
 // ("SpotifyExpiration", Time when token expires and needs to be refreshed)
 
 // if unsuccessful, alerts with an error
-
 export default function SpotifyLoginButton({ setSpotifyToken }) {
     const [request, response, promptAsync] = useAuthRequest(
         {
             clientId: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID,
-            scopes: ['user-read-private', 'user-read-email', 'playlist-modify-public','user-top-read'],
+            scopes: ['user-read-private', 'user-read-email', 'playlist-modify-public', 'user-top-read'],
             // To follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
             // this must be set to false
             clientSecret: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_SECRET,
@@ -60,6 +50,7 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
         },
         discovery
     );
+
 
   React.useEffect(() => {
     if (response?.type === "success") {
@@ -109,6 +100,7 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
               setSpotifyToken(true);
             } else {
               console.error("Error getting access token", tokenres);
+
             }
           } catch (error) {
             console.error("An error occurred:", error.message);
