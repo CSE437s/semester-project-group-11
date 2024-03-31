@@ -28,7 +28,7 @@ const SpotifyTopArtistsAndTracksComponent = () => {
                 const artistsTracks = artists.map((artist, index) => {
                     return {
                         ...artist,
-                        topTracks: tracks[index].slice(0, 5)  // only take the first 5 tracks
+                        topTracks: tracks[index].slice(0, 10)  // only take the first 5 tracks
                     };
                 });
                 
