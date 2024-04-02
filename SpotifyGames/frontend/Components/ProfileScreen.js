@@ -55,8 +55,8 @@ const ProfileScreen = ({ navigation }) => {
     return (
 
         <>
-            <View style={{flex: 1}}>
-            {/* <View style={styles.container}> */}
+            {/* <View style={{flex: 1}}> */}
+            <View style={styles.container}>
                 {isLoggedIntoSpotify ? (
                     <View style={{flex: 1}}>
                         <Text style={styles.title}>Your Profile:</Text>

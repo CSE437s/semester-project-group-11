@@ -4,6 +4,7 @@ import { getProfile } from "../../scripts/SpotifyApiRequests";
 import { parseTokenFromInfo } from "../../scripts/SaveUserData";
 import { ListItem, Avatar } from "@rneui/themed";
 import { getTopArtists } from "../../scripts/SpotifyApiRequests";
+import styles from "./Styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SpotifyProfileComponent = () => {
@@ -92,7 +93,7 @@ const SpotifyProfileComponent = () => {
             {topArtists ? (
               <>
                 <View style={{ flex : 1, flexGrow :1}}>
-                <Text>Your Top Artists:</Text>
+                <Text style={styles.subtitle}>Your Top Artists:</Text>
                 <FlatList
                   scrollEnabled
                   data={topArtists}
