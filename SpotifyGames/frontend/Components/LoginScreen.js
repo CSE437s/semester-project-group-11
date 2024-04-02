@@ -9,7 +9,7 @@ import {
 } from "react-native";
 
 import styles from './Styles';
-import { ThemeProvider, createTheme } from "@rneui/themed";
+import { ThemeProvider, ThemeConsumer, createTheme } from "@rneui/themed";
 
 export default LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -36,41 +36,42 @@ export default LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <ThemeProvider>
-      <View style={styles.container}>
-        <Text style={styles.title}>Login</Text>
+    <>
+        <View style={styles.container}>
+          <Text style={styles.title}>Login</Text>
 
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.inputText}
-            placeholder="Email"
-            value={email}
-            onChangeText={handleEmailChange}
-          />
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.inputText}
+              placeholder="Email"
+              value={email}
+              onChangeText={handleEmailChange}
+            />
+          </View>
+
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.inputText}
+              placeholder="Password"
+              secureTextEntry
+              value={password}
+              onChangeText={handlePasswordChange}
+            />
+          </View>
+
+          <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
+            <Text style={{ color: "white" }}>Login</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.landingButton}
+            onPress={() => navigation.navigate("Register")}
+          >
+            <Text style={{ color: "white" }}>Sign Up Here!</Text>
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.inputText}
-            placeholder="Password"
-            secureTextEntry
-            value={password}
-            onChangeText={handlePasswordChange}
-          />
-        </View>
-
-        <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
-          <Text style={{ color: "white" }}>Login</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.landingButton}
-          onPress={() => navigation.navigate("Register")}
-        >
-          <Text style={{ color: "white" }}>Sign Up Here!</Text>
-        </TouchableOpacity>
-      </View>
-    </ThemeProvider>
+    </>
   );
 };
 

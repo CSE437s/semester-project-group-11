@@ -19,7 +19,6 @@ import { auth } from "./scripts/firebaseConfig.js";
 
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, createTheme } from "@rneui/themed";
-
 import styles from "./Styles";
 
 const Stack = createNativeStackNavigator();
@@ -50,7 +49,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider>
+      <ThemeProvider theme={theme}>
         <NavigationContainer>
           <Stack.Navigator initialRouteName={user ? "Login" : "Dashboard"}>
             {user ? (

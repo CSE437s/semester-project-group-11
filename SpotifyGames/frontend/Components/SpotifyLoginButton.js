@@ -4,30 +4,32 @@ import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 import { Button, View, StyleSheet, Text } from "react-native";
 import {
-  save,
-  getValueFor,
-  saveSpotifyTokenInfo,
+    save,
+    getValueFor,
+    saveSpotifyTokenInfo,
 } from "../../scripts/SaveUserData.js";
 import { calculateExpirationTime } from "../../scripts/SpotifyApiRequests.js";
 import {
-  getProfile,
-  getFirstTokenData,
-  getRefreshTokenData,
+    getProfile,
+    getFirstTokenData,
+    getRefreshTokenData,
 } from "../../scripts/SpotifyApiRequests.js";
 import { TouchableOpacity } from "react-native-web";
 import styles from "./Styles";
-import { ThemeProvider } from "@react-navigation/native";
+import { ThemeProvider, ThemeConsumer } from "@react-navigation/native";
 
 
 
 WebBrowser.maybeCompleteAuthSession();
 
-const expoRedirectUri = makeRedirectUri({scheme: 'your.app'}); //NETLIFY PATH
+// const expoRedirectUri = makeRedirectUri({ scheme: 'your.app' }); //NETLIFY PATH
+
+const expoRedirectUri = makeRedirectUri({scheme: 'your.app', path:"callback", preferLocalhost:true});
 
 // Endpoint
 const discovery = {
-  authorizationEndpoint: "https://accounts.spotify.com/authorize",
-  tokenEndpoint: "https://accounts.spotify.com/api/token",
+    authorizationEndpoint: "https://accounts.spotify.com/authorize",
+    tokenEndpoint: "https://accounts.spotify.com/api/token",
 };
 
 // Handles request to spotify accessing user account
@@ -52,64 +54,65 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
     );
 
 
-  React.useEffect(() => {
-    if (response?.type === "success") {
-      const { code } = response.params;
-      //   save("code", code)
-      //   console.log("code", code)
+    React.useEffect(() => {
+        if (response?.type === "success") {
+            const { code } = response.params;
+            //   save("code", code)
+            //   console.log("code", code)
+        }
+    }, [response]);
+
+    function tokenInLocalStorage() {
+        const token = localStorage.getItem("spotifyInfo");
+        const expirationTime = localStorage.getItem("spotifyTokenExpiration");
+
+        console.log(expirationTime + " " + Date.now());
+
+        if (token == null || expirationTime == null);
+
+        return token != null && expirationTime > Date.now();
     }
-  }, [response]);
 
-  function tokenInLocalStorage() {
-    const token = localStorage.getItem("spotifyInfo");
-    const expirationTime = localStorage.getItem("spotifyTokenExpiration");
+    return (
+        <>
+            <TouchableOpacity
+                style={styles.loginButton}
+                disabled={!request}
+                onPress={async () => {
+                    console.log("calling login");
 
-    console.log(expirationTime + " " + Date.now());
+                    try {
+                        const res = await promptAsync();
 
-    if (token == null || expirationTime == null);
+                        const tokenres = await getFirstTokenData(
+                            res.params.code,
+                            expoRedirectUri
+                        );
 
-    return token != null && expirationTime > Date.now();
-  }
+                        if (tokenres.access_token) {
+                            const expirationTime = calculateExpirationTime(
+                                Number(tokenres.expires_in)
+                            );
 
-  return (
-    <ThemeProvider>
-      <TouchableOpacity
-        style={styles.loginButton}
-        disabled={!request}
-        onPress={async () => {
-          console.log("calling login");
+                            await saveSpotifyTokenInfo(
+                                JSON.stringify(tokenres),
+                                String(expirationTime)
+                            );
+                            console.log("Access token saved in local storage");
+                            setSpotifyToken(true);
+                        } else {
+                            console.error("Error getting access token", tokenres);
 
-          try {
-            const res = await promptAsync();
+                        }
+                    } catch (error) {
+                        console.error("An error occurred:", error.message);
+                        console.log("Unable to store token in secure store");
+                    }
+                }}
+            >
+                <Text style={{ color: "white" }}>Connect your Spotify</Text>
+            </TouchableOpacity>
 
-            const tokenres = await getFirstTokenData(
-              res.params.code,
-              expoRedirectUri
-            );
-
-            if (tokenres.access_token) {
-              const expirationTime = calculateExpirationTime(
-                Number(tokenres.expires_in)
-              );
-
-              await saveSpotifyTokenInfo(
-                JSON.stringify(tokenres),
-                String(expirationTime)
-              );
-              console.log("Access token saved in local storage");
-              setSpotifyToken(true);
-            } else {
-              console.error("Error getting access token", tokenres);
-
-            }
-          } catch (error) {
-            console.error("An error occurred:", error.message);
-            console.log("Unable to store token in secure store");
-          }
-        }}
-      >
-        <Text style={{ color: "white" }}>Connect your Spotify</Text>
-      </TouchableOpacity>
-    </ThemeProvider>
-  );
+        </>
+    );
 }

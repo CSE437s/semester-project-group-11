@@ -3,13 +3,13 @@ import { View, Text, Button } from "react-native";
 import LogoutButton from "./LogoutButton";
 import SpotifyLoginButton from "./SpotifyLoginButton";
 import { getOrRefreshStoredToken } from "../../scripts/SpotifyApiRequests";
-import { ThemeProvider } from "@react-navigation/native";
+import { ThemeProvider, } from "@react-navigation/native";
 import styles from "./Styles";
 import { TouchableOpacity } from "react-native-web";
 
 const DashboardScreen = ({ navigation }) => {
   return (
-    <ThemeProvider>
+    
       <View style={styles.container}>
         <Text style={styles.title}>Welcome to Gamify!</Text>
         <TouchableOpacity
@@ -40,7 +40,7 @@ const DashboardScreen = ({ navigation }) => {
 
         <LogoutButton />
       </View>
-    </ThemeProvider>
+   
   );
 };
 

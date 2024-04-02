@@ -12,11 +12,11 @@ export default LogoutButton = () => {
   };
 
   return (
-    <ThemeProvider>
+    
         <TouchableOpacity style={styles.button} onPress={handleLogout}>
             <Text style={{color:"white"}}>Logout</Text>
         </TouchableOpacity>
-    </ThemeProvider>
+    
   );
 };
 

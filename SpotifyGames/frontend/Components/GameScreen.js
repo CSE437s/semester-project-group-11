@@ -6,7 +6,7 @@ import {
 } from "../../scripts/SpotifyApiRequests";
 import { parseTokenFromInfo } from "../../scripts/SaveUserData";
 import styles from "./Styles";
-import { ThemeProvider } from "@react-navigation/native";
+import { ThemeProvider, ThemeConsumer } from "@react-navigation/native";
 
 const GameScreen = ({ navigation }) => {
   const [songs, setSongs] = useState([]);
@@ -125,35 +125,35 @@ const GameScreen = ({ navigation }) => {
       }
 
       return (
-        <ThemeProvider>
-          <View style={styles.imageContainer}>
-            {isLoading ? (
-              <Text>Loading...</Text>
-            ) : (
-              <>
-                {currentSongs.map((song, index) => (
-                  <>
-                    <Image
-                      source={{ uri: song.albumCover }}
-                      style={styles.bottomImageContainer}
-                    />
-                    <Text>
-                      {song.name} - {song.artist}
-                    </Text>
-                    {showResult && userChoice && song.id === userChoice.id && (
+        <>
+            <View style={styles.imageContainer}>
+              {isLoading ? (
+                <Text>Loading...</Text>
+              ) : (
+                <>
+                  {currentSongs.map((song, index) => (
+                    <>
+                      <Image
+                        source={{ uri: song.albumCover }}
+                        style={styles.bottomImageContainer}
+                      />
                       <Text>
-                        {result} - Popularity: {song.popularity}
+                        {song.name} - {song.artist}
                       </Text>
-                    )}
-                  </>
-                ))}
-                {/* {currentSongs.map((song, index) => (
+                      {showResult && userChoice && song.id === userChoice.id && (
+                        <Text>
+                          {result} - Popularity: {song.popularity}
+                        </Text>
+                      )}
+                    </>
+                  ))}
+                  {/* {currentSongs.map((song, index) => (
                 <Image
                   source={{ uri: song.albumCover }}
                   style={styles.bottomImageContainer}
                 />
               ))} */}
-                {/* {currentSongs.map((song, index) => (
+                  {/* {currentSongs.map((song, index) => (
                 <TouchableOpacity
                   key={song.id}
                   onPress={() => handleSongSelection(index)}
@@ -172,16 +172,16 @@ const GameScreen = ({ navigation }) => {
                   )}
                 </TouchableOpacity>
               ))} */}
-                <Text style={styles.gameTitle}>
-                  Choose the More Popular Song
-                </Text>
-                <Text style={{ position: "absolute", top: 10, left: 20 }}>
-                  Lives: {lives}
-                </Text>
-                <Text style={{ position: "absolute", top: 10, right: 20 }}>
-                  Score: {score}
-                </Text>
-                {/* {currentSongs.map((song, index) => (
+                  <Text style={styles.gameTitle}>
+                    Choose the More Popular Song
+                  </Text>
+                  <Text style={{ position: "absolute", top: 10, left: 20 }}>
+                    Lives: {lives}
+                  </Text>
+                  <Text style={{ position: "absolute", top: 10, right: 20 }}>
+                    Score: {score}
+                  </Text>
+                  {/* {currentSongs.map((song, index) => (
                 // <TouchableOpacity
                 //   key={song.id}
                 //   onPress={() => handleSongSelection(index)}
@@ -200,16 +200,18 @@ const GameScreen = ({ navigation }) => {
                 //   )}
                 // </TouchableOpacity>
               ))} */}
-              </>
-            )}
-            <TouchableOpacity
-              style={stylesGameScreen.quitButton}
-              onPress={() => navigation.navigate("Dashboard")}
-            >
-              <Text style={stylesGameScreen.quitButtonText}>Quit</Text>
-            </TouchableOpacity>
-          </View>
-        </ThemeProvider>
+                </>
+              )}
+              <TouchableOpacity
+                style={stylesGameScreen.quitButton}
+                onPress={() => navigation.navigate("Dashboard")}
+              >
+                <Text style={stylesGameScreen.quitButtonText}>Quit</Text>
+              </TouchableOpacity>
+            </View>
+        
+
+        </>
       );
     }
   };
