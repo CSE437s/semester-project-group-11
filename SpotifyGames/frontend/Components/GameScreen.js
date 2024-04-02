@@ -19,6 +19,7 @@ const GameScreen = ({ navigation }) => {
   const [result, setResult] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState('white');
+  
 
   useEffect(() => {
     async function fetchArtistsAndTracks() {
@@ -90,24 +91,21 @@ const GameScreen = ({ navigation }) => {
     }
   
     setShowResult(true);
-    setTimeout(() => setBackgroundColor('white'), 2000);
   
     setTimeout(() => {
-      setLives((prevLives) => {
-        if (prevLives > 0) {
-          // Update the current songs with one new song and the selected song
-          const newSongs = pickRandomSongs(songs, 2);
-          const newCurrentSongs = newSongs[0].id === selectedSong.id || newSongs[1].id === selectedSong.id 
-            ? newSongs 
-            : [selectedSong, newSongs[Math.floor(Math.random() * newSongs.length)]];
+      setBackgroundColor('white'); // Reset background color
   
-          setCurrentSongs(newCurrentSongs);
-          setShowResult(false);
-        }
-        return prevLives;
-      });
+      // Update the songs immediately after resetting the background color
+      const newRandomSong = pickRandomSongs(songs, 1)[0];
+      setCurrentSongs([currentSongs[1], newRandomSong]); // Keep the second song and add a new random song
+  
+      setShowResult(false);
     }, 2000);
   };
+  
+  
+  
+  
 
   return (
     <ThemeProvider>
