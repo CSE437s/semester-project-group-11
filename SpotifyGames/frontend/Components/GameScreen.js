@@ -118,23 +118,27 @@ const GameScreen = ({ navigation }) => {
               Score: {score}
             </Text>
             {currentSongs.map((song, index) => (
-              <TouchableOpacity
-                key={song.id}
-                onPress={() => handleSongSelection(index)}
-              >
-                <Image
-                  source={{ uri: song.albumCover }}
-                  style={styles.topImageContainer}
-                />
-                <Text>
-                  {song.name} - {song.artist}
-                </Text>
-                {showResult && userChoice && song.id === userChoice.id && (
-                  <Text>
-                    {result} - Popularity: {song.popularity}
+              <>
+                <TouchableOpacity
+                  key={song.id}
+                  onPress={() => handleSongSelection(index)}
+                  style={styles.songButton}
+                >
+                  <Image
+                    source={{ uri: song.albumCover }}
+                    style={stylesGameScreen.albumCover}
+                  />
+
+                  <Text style={styles.songText}>
+                    {song.name} - {song.artist}
                   </Text>
-                )}
-              </TouchableOpacity>
+                  {showResult && userChoice && song.id === userChoice.id && (
+                    <Text style={styles.resultText}>
+                      {result} - Popularity: {song.popularity}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </>
             ))}
           </>
         )}
@@ -153,8 +157,10 @@ const GameScreen = ({ navigation }) => {
 const stylesGameScreen = StyleSheet.create({
   // Add your styles here
   albumCover: {
-    width: 100,
-    height: 100,
+    width: 250,
+    height: 250,
+    borderWidth: 10,
+    borderColor: "black",
   },
   quitButton: {
     marginTop: 20,
@@ -175,12 +181,6 @@ const stylesGameScreen = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
   },
-  quitButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  // ...
 });
 
 export default GameScreen;
