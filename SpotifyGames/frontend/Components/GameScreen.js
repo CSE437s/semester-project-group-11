@@ -18,6 +18,7 @@ const GameScreen = ({ navigation }) => {
   const [correctChoice, setCorrectChoice] = useState(null);
   const [result, setResult] = useState(null);
   const [showResult, setShowResult] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState('white');
 
   useEffect(() => {
     async function fetchArtistsAndTracks() {
@@ -68,16 +69,17 @@ const GameScreen = ({ navigation }) => {
 
   const handleSongSelection = (selectedSongIndex) => {
     const selectedSong = currentSongs[selectedSongIndex];
-    const otherSong = currentSongs[selectedSongIndex === 0 ? 1 : 0];
-
-    const isCorrect = selectedSong.popularity >= otherSong.popularity;
+    const isCorrect = selectedSong.popularity >= currentSongs[1 - selectedSongIndex].popularity;
+  
     setUserChoice(selectedSong);
-    setCorrectChoice(isCorrect ? selectedSong : otherSong);
+    setCorrectChoice(isCorrect ? selectedSong : currentSongs[1 - selectedSongIndex]);
     setResult(isCorrect ? "Correct" : "Incorrect");
-
+  
     if (isCorrect) {
+      setBackgroundColor('green');
       setScore((prevScore) => prevScore + 1);
     } else {
+      setBackgroundColor('red');
       setLives((prevLives) => {
         const newLives = prevLives - 1;
         if (newLives <= 0) {
@@ -86,26 +88,30 @@ const GameScreen = ({ navigation }) => {
         return newLives;
       });
     }
-
+  
     setShowResult(true);
-
+    setTimeout(() => setBackgroundColor('white'), 2000);
+  
     setTimeout(() => {
       setLives((prevLives) => {
         if (prevLives > 0) {
-          setCurrentSongs((prevCurrentSongs) => {
-            const newRandomSong = pickRandomSongs(songs, 1)[0];
-            return [prevCurrentSongs[1 - selectedSongIndex], newRandomSong];
-          });
+          // Update the current songs with one new song and the selected song
+          const newSongs = pickRandomSongs(songs, 2);
+          const newCurrentSongs = newSongs[0].id === selectedSong.id || newSongs[1].id === selectedSong.id 
+            ? newSongs 
+            : [selectedSong, newSongs[Math.floor(Math.random() * newSongs.length)]];
+  
+          setCurrentSongs(newCurrentSongs);
           setShowResult(false);
         }
         return prevLives;
       });
-    }, 3000);
+    }, 2000);
   };
 
   return (
     <ThemeProvider>
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: backgroundColor }]}> 
         {isLoading ? (
           <Text>Loading...</Text>
         ) : (
