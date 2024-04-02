@@ -55,7 +55,8 @@ const ProfileScreen = ({ navigation }) => {
     return (
 
         <>
-            <View style={styles.container}>
+            <View>
+            {/* <View style={styles.container}> */}
                 {isLoggedIntoSpotify ? (
                     <View>
                         <Text style={styles.title}>Your Profile:</Text>
@@ -65,7 +66,7 @@ const ProfileScreen = ({ navigation }) => {
                         <Button title="Go Back" onPress={() => navigation.goBack()} />
                     </View>
                 ) : (
-                    <>
+                    <>s
                         <View>
                             <Text>Your Profile:</Text>
                             <Text>You are not logged into Spotify</Text>

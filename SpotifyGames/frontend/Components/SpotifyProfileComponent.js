@@ -6,7 +6,7 @@ import { ListItem, Avatar } from "@rneui/themed";
 import { getTopArtists } from "../../scripts/SpotifyApiRequests";
 
 const SpotifyProfileComponent = () => {
-  const [firebaseProfile, setFirebaseProfile] = useState(null);
+  // const [firebaseProfile, setFirebaseProfile] = useState(null);
   const [spotifyProfile, setSpotifyProfile] = useState(null);
   const [topArtists, setTopArtists] = useState([]);
 
@@ -85,17 +85,17 @@ const SpotifyProfileComponent = () => {
           <>
             {topArtists ? (
               <>
-                <View style={{flex:1}}>
+                <View>
                 <Text>Your Top Artists:</Text>
                 <FlatList
-                  
+                  scrollEnabled
                   data={topArtists}
                   renderItem={renderArtistItem}
                   keyExtractor={(item, index) => {
                     // console.log(index, item.id);
                     return item.id;
-                  }
-                  }
+                  }}
+                  contentContainerStyle={{ flexGrow: 1 }}
                 />
 
                 {/* <Image source={{ uri: spotifyProfilePictureURL != null ? spotifyProfilePictureURL : "icon.png" }} /> */}
