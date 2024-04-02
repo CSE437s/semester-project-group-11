@@ -50,7 +50,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider>
+      <ThemeProvider theme={theme}>
         <NavigationContainer>
           <Stack.Navigator initialRouteName={user ? "Login" : "Dashboard"}>
             {user ? (

@@ -28,14 +28,14 @@ const DashboardScreen = ({ navigation }) => {
           <Text style={{ color: "white" }}>Start Game</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.button}
           onPress={() =>
             console.log("token? ", localStorage.getItem("spotifyInfo"))
           }
         >
           <Text style={{ color: "white" }}>Test token in localstorage</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
 
         <LogoutButton />
