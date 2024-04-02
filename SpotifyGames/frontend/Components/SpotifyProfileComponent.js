@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { View, Text, Button, Image, FlatList } from "react-native";
+import { View, Text, Button, Image, FlatList, ScrollView } from "react-native";
 import { getProfile } from "../../scripts/SpotifyApiRequests";
 import { parseTokenFromInfo } from "../../scripts/SaveUserData";
-import { ThemeProvider, ThemeConsumer, ListItem } from "@rneui/themed";
+import { ListItem, Avatar } from "@rneui/themed";
 import { getTopArtists } from "../../scripts/SpotifyApiRequests";
 
 const SpotifyProfileComponent = () => {
@@ -34,9 +34,11 @@ const SpotifyProfileComponent = () => {
           const artists = await getTopArtists(spotifyToken);
 
           if (artists) {
-            for (const artist in artists) {
-              console.log("ARTIST", typeof (artist));
-            }
+            // for (const artist in artists) {
+            //   console.log("ARTIST", (artist));
+            // }
+            // console.log(artists);
+            setTopArtists(artists.slice(0, 3));
             setTopArtists(artists);
           }
         }
@@ -57,59 +59,71 @@ const SpotifyProfileComponent = () => {
     );
   }
 
-  function renderArtistItem({ artist, index }) {
-
+  function renderArtistItem({ item, index }) {
+    // console.log("ARTIST ITEM PARAMS", index);
     return (<>
       {/* <Text>{index + 1}. {artist.name} - Popularity: {artist.popularity}</Text>
       <Text>Genres: {artist.genres}</Text> */}
+      {/* <View> */}
+
       <ListItem bottomDivider>
+        {item.images[0] && <Avatar source={{ uri: item.images[0].url }} size={"medium"} rounded /> }
         <ListItem.Content>
-          <ListItem.Title>{index + 1}. {artist.name}</ListItem.Title>
-          <ListItem.Subtitle>{artist.genres}</ListItem.Subtitle>
+          <ListItem.Title>{index + 1}. {item.name}</ListItem.Title>
+          <ListItem.Subtitle>Popularity: {item.popularity}</ListItem.Subtitle>
         </ListItem.Content>
       </ListItem>
+      {/* </View> */}
     </>);
   }
 
 
   return (
     <>
-        {
-          spotifyProfile ? (
-            <>
-              {/* <Image source={{ uri: spotifyProfilePictureURL != null ? spotifyProfilePictureURL : "icon.png" }} /> */}
-              <Text>User ID: {spotifyProfile.id}</Text>
-              <Text>Email: {spotifyProfile.email}</Text>
-              <Text>Spotify URI: {spotifyProfile.uri}</Text>
-              {/* <Text> {spotifyProfilePictureURL == null ?  spotifyProfilePictureURL : '(no profile image)'} </Text> */}
-              {topArtists ? (
+      {
+        spotifyProfile ? (
+          <>
+            {topArtists ? (
+              <>
+                <View style={{flex:1}}>
+                <Text>Your Top Artists:</Text>
+                <FlatList
+                  
+                  data={topArtists}
+                  renderItem={renderArtistItem}
+                  keyExtractor={(item, index) => {
+                    // console.log(index, item.id);
+                    return item.id;
+                  }
+                  }
+                />
+
+                {/* <Image source={{ uri: spotifyProfilePictureURL != null ? spotifyProfilePictureURL : "icon.png" }} /> */}
+                <Text>User ID: {spotifyProfile.id}</Text>
+                <Text>Email: {spotifyProfile.email}</Text>
+                <Text>Spotify URI: {spotifyProfile.uri}</Text>
+
+                {/* <Text> {spotifyProfilePictureURL == null ?  spotifyProfilePictureURL : '(no profile image)'} </Text> */}
+
+                </View>
+              </>
+            )
+              : (
                 <>
-                  <View>
-                    <Text>Your Top Artists:</Text>
-                    <FlatList
-                      data={topArtists}
-                      renderItem={renderArtistItem}
-                      keyExtractor={(item, index) => index.toString()}
-                    />
-                  </View>
+                  <Text>Unable to Retrieve Top Artists</Text>
                 </>
               )
-                : (
-                  <>
-                    <Text>Unable to Retrieve Top Artists</Text>
-                  </>
-                )
-              }
-            </>
-          ) : (
-            <>
-              <Text>Log in to see your Spotify Profile</Text>
-              {/* maybe replace with a spotify logo or something similar */}
-            </>
-          )
-        }
-      
-    
+            }
+          </>
+        ) : (
+          <>
+            <Text>Log in to see your Spotify Profile</Text>
+            {/* maybe replace with a spotify logo or something similar */}
+          </>
+        )
+      }
+
+
     </>
   );
 };
