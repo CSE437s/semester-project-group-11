@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, Pressable } from "react-native";
 
 import { useState, useEffect } from "react";
 import SpotifyLoginButton from "./SpotifyLoginButton";
@@ -9,7 +9,7 @@ import { Platform } from "react-native";
 import { ThemeProvider, ThemeConsumer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import styles from "./Styles";
-import { TouchableOpacity } from "react-native-web";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 // MAKE A SCREEN WHILE ITS LOADING THE SPOTIFY AUTH TOKEN FROM SECURESTORE
@@ -25,7 +25,7 @@ const ProfileScreen = ({ navigation }) => {
                 spotifyInfo = localStorage.getItem("spotifyInfo");
             } else {
                 // CHANGE FOR USE ON MOBILE
-                spotifyInfo = localStorage.getItem("spotifyInfo");
+                spotifyInfo = await AsyncStorage.getItem("spotifyInfo");
             }
 
             if (!spotifyInfo) {
@@ -55,10 +55,10 @@ const ProfileScreen = ({ navigation }) => {
     return (
 
         <>
-            <View>
+            <View style={{flex: 1}}>
             {/* <View style={styles.container}> */}
                 {isLoggedIntoSpotify ? (
-                    <View>
+                    <View style={{flex: 1}}>
                         <Text style={styles.title}>Your Profile:</Text>
 
                         <SpotifyProfileComponent />
@@ -66,16 +66,16 @@ const ProfileScreen = ({ navigation }) => {
                         <Button title="Go Back" onPress={() => navigation.goBack()} />
                     </View>
                 ) : (
-                    <>s
+                    <>
                         <View>
                             <Text>Your Profile:</Text>
                             <Text>You are not logged into Spotify</Text>
-                            <TouchableOpacity
+                            <Pressable
                                 style={styles.button}
                                 onPress={() => navigation.goBack()}
                             >
                                 <Text style={{ color: "white" }}>Go back</Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
                     </>
                 )}

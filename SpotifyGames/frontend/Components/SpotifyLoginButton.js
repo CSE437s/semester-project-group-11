@@ -2,7 +2,7 @@
 import * as React from "react";
 import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
-import { Button, View, StyleSheet, Text } from "react-native";
+import { Button, View, StyleSheet, Text, Pressable } from "react-native";
 import {
     save,
     getValueFor,
@@ -14,17 +14,14 @@ import {
     getFirstTokenData,
     getRefreshTokenData,
 } from "../../scripts/SpotifyApiRequests.js";
-import { TouchableOpacity } from "react-native-web";
 import styles from "./Styles";
 import { ThemeProvider, ThemeConsumer } from "@react-navigation/native";
-
-
 
 WebBrowser.maybeCompleteAuthSession();
 
 // const expoRedirectUri = makeRedirectUri({ scheme: 'your.app' }); //NETLIFY PATH
 
-const expoRedirectUri = makeRedirectUri({scheme: 'your.app', path:"callback", preferLocalhost:true});
+const expoRedirectUri = makeRedirectUri({ scheme: 'your.app', path: "callback", preferLocalhost: true });
 
 // Endpoint
 const discovery = {
@@ -75,43 +72,46 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
 
     return (
         <>
-            <TouchableOpacity
-                style={styles.loginButton}
-                disabled={!request}
-                onPress={async () => {
-                    console.log("calling login");
+            <View>
+                <Pressable
+                    style={styles.loginButton}
+                    disabled={!request}
+                    onPress={async () => {
+                        console.log("calling login");
 
-                    try {
-                        const res = await promptAsync();
+                        try {
+                            const res = await promptAsync();
 
-                        const tokenres = await getFirstTokenData(
-                            res.params.code,
-                            expoRedirectUri
-                        );
-
-                        if (tokenres.access_token) {
-                            const expirationTime = calculateExpirationTime(
-                                Number(tokenres.expires_in)
+                            const tokenres = await getFirstTokenData(
+                                res.params.code,
+                                expoRedirectUri
                             );
 
-                            await saveSpotifyTokenInfo(
-                                JSON.stringify(tokenres),
-                                String(expirationTime)
-                            );
-                            console.log("Access token saved in local storage");
-                            setSpotifyToken(true);
-                        } else {
-                            console.error("Error getting access token", tokenres);
+                            if (tokenres.access_token) {
+                                const expirationTime = calculateExpirationTime(
+                                    Number(tokenres.expires_in)
+                                );
 
+                                await saveSpotifyTokenInfo(
+                                    JSON.stringify(tokenres),
+                                    String(expirationTime)
+                                );
+                                console.log("Access token saved in local storage");
+                                setSpotifyToken(true);
+                            } else {
+                                console.error("Error getting access token", tokenres);
+
+                            }
+                        } catch (error) {
+                            console.error("An error occurred:", error.message);
+                            console.log("Unable to store token in secure store");
                         }
-                    } catch (error) {
-                        console.error("An error occurred:", error.message);
-                        console.log("Unable to store token in secure store");
-                    }
-                }}
-            >
-                <Text style={{ color: "white" }}>Connect your Spotify</Text>
-            </TouchableOpacity>
+                    }}
+                >
+                    <Text style={{ color: "white" }}>Connect your Spotify</Text>
+                </Pressable>
+
+            </View>
 
         </>
     );

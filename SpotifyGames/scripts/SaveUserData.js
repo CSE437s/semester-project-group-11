@@ -4,6 +4,7 @@ import { app } from "./firebaseConfig.js";
 import { getAuth } from 'firebase/auth';
 
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration) {
 
@@ -27,7 +28,10 @@ export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration)
             console.log("testing if set in localStorage", localStorage.getItem("spotifyInfo"));
         }
         else{
-                
+            await AsyncStorage.setItem("spotifyInfo", spotifyInfo);
+            await AsyncStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
+            const testGet = await AsyncStorage.getItem("spotifyInfo");
+            console.log("testing if set in ASYNCStorage", testGet);
         }
         
         return updateDoc(userRef, { "spotifyInfo": spotifyInfo, "spotifyTokenExpiration": spotifyTokenExpiration }).then(() => {

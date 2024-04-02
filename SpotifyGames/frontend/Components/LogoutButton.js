@@ -1,8 +1,7 @@
 import { ThemeProvider } from "@react-navigation/native";
 import { signOutFirebase } from "../../scripts/FirebaseAuth.js";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, View, Button, Touchable } from "react-native";
-import { TouchableOpacity } from "react-native-web";
+import { StyleSheet, Text, TextInput, View, Button, Touchable, Pressable } from "react-native";
 import styles from "./Styles.js";
 
 export default LogoutButton = () => {
@@ -13,9 +12,9 @@ export default LogoutButton = () => {
 
   return (
     
-        <TouchableOpacity style={styles.button} onPress={handleLogout}>
+        <Pressable style={styles.button} onPress={handleLogout}>
             <Text style={{color:"white"}}>Logout</Text>
-        </TouchableOpacity>
+        </Pressable>
     
   );
 };

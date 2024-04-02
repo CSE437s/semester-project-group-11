@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { View, Text, Button, Image, FlatList, ScrollView } from "react-native";
+import { View, Text, Button, Image, FlatList, ScrollView, Platform } from "react-native";
 import { getProfile } from "../../scripts/SpotifyApiRequests";
 import { parseTokenFromInfo } from "../../scripts/SaveUserData";
 import { ListItem, Avatar } from "@rneui/themed";
 import { getTopArtists } from "../../scripts/SpotifyApiRequests";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SpotifyProfileComponent = () => {
   // const [firebaseProfile, setFirebaseProfile] = useState(null);
@@ -19,7 +20,14 @@ const SpotifyProfileComponent = () => {
 
     const getProfileData = async () => {
       // NEED MOBILE VERSION HERE AS WELL
-      let spotifyInfo = localStorage.getItem("spotifyInfo");
+      let spotifyInfo;
+      if (Platform.OS === "web"){
+        spotifyInfo = localStorage.getItem("spotifyInfo");
+      }
+      else{
+        spotifyInfo = await AsyncStorage.getItem("spotifyInfo");
+      }
+      
       const spotifyToken = parseTokenFromInfo(spotifyInfo);
       console.log("spotifyTOKEN", spotifyToken);
 
@@ -29,7 +37,6 @@ const SpotifyProfileComponent = () => {
           const data = await getProfile(spotifyToken);
           console.log("DATA", data);
           setSpotifyProfile(data);
-          // localStorage.setItem("spotifyProfile", data);
 
           const artists = await getTopArtists(spotifyToken);
 
@@ -38,7 +45,7 @@ const SpotifyProfileComponent = () => {
             //   console.log("ARTIST", (artist));
             // }
             // console.log(artists);
-            setTopArtists(artists.slice(0, 3));
+            // setTopArtists(artists.slice(0, 3));
             setTopArtists(artists);
           }
         }
@@ -77,7 +84,6 @@ const SpotifyProfileComponent = () => {
     </>);
   }
 
-
   return (
     <>
       {
@@ -85,7 +91,7 @@ const SpotifyProfileComponent = () => {
           <>
             {topArtists ? (
               <>
-                <View>
+                <View style={{ flex : 1, flexGrow :1}}>
                 <Text>Your Top Artists:</Text>
                 <FlatList
                   scrollEnabled
