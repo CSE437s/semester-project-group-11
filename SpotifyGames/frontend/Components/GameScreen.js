@@ -69,12 +69,12 @@ const GameScreen = ({ navigation }) => {
   const handleSongSelection = (selectedSongIndex) => {
     const selectedSong = currentSongs[selectedSongIndex];
     const otherSong = currentSongs[selectedSongIndex === 0 ? 1 : 0];
-  
+
     const isCorrect = selectedSong.popularity >= otherSong.popularity;
     setUserChoice(selectedSong);
     setCorrectChoice(isCorrect ? selectedSong : otherSong);
     setResult(isCorrect ? "Correct" : "Incorrect");
-  
+
     if (isCorrect) {
       setScore((prevScore) => prevScore + 1);
     } else {
@@ -86,9 +86,9 @@ const GameScreen = ({ navigation }) => {
         return newLives;
       });
     }
-  
+
     setShowResult(true);
-  
+
     setTimeout(() => {
       setLives((prevLives) => {
         if (prevLives > 0) {
@@ -103,89 +103,39 @@ const GameScreen = ({ navigation }) => {
     }, 3000);
   };
 
-
   return (
     <ThemeProvider>
-      <View style={styles.imageContainer}>
+      <View style={styles.container}>
         {isLoading ? (
           <Text>Loading...</Text>
         ) : (
           <>
-            {currentSongs.map((song, index) => (
-              <>
-                <Image
-                  source={{ uri: song.albumCover }}
-                  style={styles.bottomImageContainer}
-                />
-                <TouchableOpacity
-                  key={song.id}
-                  onPress={() => handleSongSelection(index)}
-                >
-                  <Text>
-                    {song.name} - {song.artist}
-                  </Text>
-                  {showResult && userChoice && song.id === userChoice.id && (
-                    <Text>
-                      {result} - Popularity: {song.popularity}
-                    </Text>
-                  )}
-                </TouchableOpacity>
-
-              </>
-            ))}
-            {/* {currentSongs.map((song, index) => (
-                <Image
-                  source={{ uri: song.albumCover }}
-                  style={styles.bottomImageContainer}
-                />
-              ))} */}
-            {/* {currentSongs.map((song, index) => (
-                <TouchableOpacity
-                  key={song.id}
-                  onPress={() => handleSongSelection(index)}
-                >
-                  <Image
-                    source={{ uri: song.albumCover }}
-                    style={styles.bottomImageContainer}
-                  />
-                  <Text>
-                    {song.name} - {song.artist}
-                  </Text>
-                  {showResult && userChoice && song.id === userChoice.id && (
-                    <Text>
-                      {result} - Popularity: {song.popularity}
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              ))} */}
-            <Text style={[styles.gameTitle, { position: "absolute", top: 20, left: 60 }, { fontSize: 20 }]}>
-              Choose the More Popular Song
-            </Text>
+            <Text style={styles.title}>Choose the More Popular Song</Text>
             <Text style={{ position: "absolute", top: 10, left: 20 }}>
               Lives: {lives}
             </Text>
             <Text style={{ position: "absolute", top: 10, right: 20 }}>
               Score: {score}
             </Text>
-            {/* {currentSongs.map((song, index) => (
-                // <TouchableOpacity
-                //   key={song.id}
-                //   onPress={() => handleSongSelection(index)}
-                // >
-                //   <Image
-                //     source={{ uri: song.albumCover }}
-                //     style={styles.topImageContainer}
-                //   />
-                //   <Text>
-                //     {song.name} - {song.artist}
-                //   </Text>
-                //   {showResult && userChoice && song.id === userChoice.id && (
-                //     <Text>
-                //       {result} - Popularity: {song.popularity}
-                //     </Text>
-                //   )}
-                // </TouchableOpacity>
-              ))} */}
+            {currentSongs.map((song, index) => (
+              <TouchableOpacity
+                key={song.id}
+                onPress={() => handleSongSelection(index)}
+              >
+                <Image
+                  source={{ uri: song.albumCover }}
+                  style={styles.topImageContainer}
+                />
+                <Text>
+                  {song.name} - {song.artist}
+                </Text>
+                {showResult && userChoice && song.id === userChoice.id && (
+                  <Text>
+                    {result} - Popularity: {song.popularity}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            ))}
           </>
         )}
         <TouchableOpacity

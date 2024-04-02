@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
     // marginBottom: 40,
     color: "#191414",
     fontWeight: "bold",
-    position: "absolute",
-    justifyContent: "center",
+    // position: "absolute",
+    // justifyContent: "center",
     // alignItems: "center",
   },
   inputView: {
