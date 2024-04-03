@@ -6,7 +6,7 @@ import { getAuth } from 'firebase/auth';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration) {
+export async function saveSpotifyTokenInfo(spotifyInfo, spotifyTokenExpiration) {
 
     const auth = getAuth();
     const user = auth.currentUser;
@@ -21,19 +21,19 @@ export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration)
         // console.log(user.uid);
         // console.log(spotifyInfo, spotifyTokenExpiration);
 
-        if (Platform.OS === "web"){
+        if (Platform.OS === "web") {
             localStorage.setItem("spotifyInfo", spotifyInfo);
             localStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
 
             console.log("testing if set in localStorage", localStorage.getItem("spotifyInfo"));
         }
-        else{
+        else {
             await AsyncStorage.setItem("spotifyInfo", spotifyInfo);
             await AsyncStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
             const testGet = await AsyncStorage.getItem("spotifyInfo");
             console.log("testing if set in ASYNCStorage", testGet);
         }
-        
+
         return updateDoc(userRef, { "spotifyInfo": spotifyInfo, "spotifyTokenExpiration": spotifyTokenExpiration }).then(() => {
             console.log("worked");
             return "success";
@@ -42,13 +42,60 @@ export async function saveSpotifyTokenInfo (spotifyInfo, spotifyTokenExpiration)
         })
 
     }
-    else{
+    else {
         return Error("User is not signed in, not authorized to save spotify data")
     }
-
 }
 
-export async function getSpotifyTokenInfo() {
+export async function saveScoreForGame(game, score){
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    console.log(auth);
+
+    if (user) {
+        console.log("trying to store");
+        const db = getFirestore(app);
+        console.log("firestore?");
+        const userRef = doc(db, "users", user.uid);
+
+        const userInfo = await getDoc(userRef);
+        if (!userInfo.exists()){
+            console.log("Uh oh, no such user with uid:", user.uid + " (there should be though)");
+            return;
+        }
+
+        const data = userInfo.data();
+
+        console.log(data);
+
+        // console.log(user.uid);
+        // console.log(spotifyInfo, spotifyTokenExpiration);
+
+        const scoreMap = new Map(Obect.entries(data.scores))
+
+        const gameScoreField = game;
+
+        let currHighScore = scoreMap[gameScoreField] instanceof int ? scoreMap[gameScoreField] : 0;
+
+        scoreMap [gameScoreField] = Math.max(currHighScore, score);
+
+        console.log("old was",currHighScore,"new is",newScores[gameScoreField]);
+
+        return updateDoc(userRef, {"scores" : Object.fromEntries(newScores) }).then(() => {
+            console.log("worked");
+            return "success";
+        }).catch((error) => {
+            throw error;
+        })
+
+    }
+    else {
+        return Error("User is not signed in, not authorized to save spotify data")
+    }
+}
+
+export async function getUserDataFromFirestore() {
 
     const auth = getAuth();
     const user = auth.currentUser;
@@ -56,29 +103,46 @@ export async function getSpotifyTokenInfo() {
     if (user) {
 
         const db = getFirestore(app);
-        const userRef = doc(db, "users", user.uid).where("id", "==", user.uid);
+        const userRef = doc(db, "users", user.uid);
         const userInfo = await getDoc(userRef);
 
-        if (userInfo.exists()){
-            console.log("THE DICTIONARY RETURNED IS BROKEN RN, BUT HERES THE RAW DATA WE GOT",userInfo.data())
-            return {"spotifyToken": userInfo.data().spotifyToken, "spotifyTokenExpiration": userInfo.data().spotifyExpirationTime};
+        if (userInfo.exists()) {
+            console.log("THE DICTIONARY RETURNED IS BROKEN RN, BUT HERES THE RAW DATA WE GOT", userInfo.data())
+            return(userInfo.data());
         }
-        else{
-            console.log("Uh oh, no such user with uid:",user.uid + " (there should be though)");
+        else {
+            console.log("Uh oh, no such user with uid:", user.uid + " (there should be though)");
         }
 
     }
-    else{
+    else {
         return Error("User is not signed in, not authorized to retrieve spotify data")
     }
 }
 
-export function parseTokenFromInfo(info){
+export async function getDataFromStorage(key) {
+    try {
+        let value;
+        if (Platform.OS === "web") {
+            value = localStorage.getItem(key);
+        }
+        else {
+            value = await AsyncStorage.getItem(key);
+        }
+        return value;
+    }
+    catch (error) {
+        console.log("From SaveUserData.js, getDataFromStorage called with", key);
+        console.log(error);
+    } 
+}
+
+export function parseTokenFromInfo(info) {
     const json = JSON.parse(info);
     return json.access_token;
 }
 
-export function parseRefreshTokenFromInfo(info){
+export function parseRefreshTokenFromInfo(info) {
     const json = JSON.parse(info);
     return json.refresh_token;
 }

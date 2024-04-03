@@ -8,7 +8,6 @@ import styles from "./Styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SpotifyProfileComponent = () => {
-  const [firebaseProfile, setFirebaseProfile] = useState(null);
   const [spotifyProfile, setSpotifyProfile] = useState(null);
   const [topArtists, setTopArtists] = useState([]);
 
@@ -18,10 +17,6 @@ const SpotifyProfileComponent = () => {
   useEffect(() => {
 
     if (!isLoading) return;
-
-    // const getFirebaseData = async () => {
-      
-    // }
 
     const getProfileData = async () => {
       // NEED MOBILE VERSION HERE AS WELL

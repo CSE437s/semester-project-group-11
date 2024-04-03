@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Button, Pressable } from "react-native";
+import { View, Text, Button, Pressable, FlatList } from "react-native";
 
 import { useState, useEffect } from "react";
 import SpotifyLoginButton from "./SpotifyLoginButton";
@@ -10,16 +10,29 @@ import { ThemeProvider, ThemeConsumer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import styles from "./Styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getUserDataFromFirestore } from "../../scripts/SaveUserData";
 
 
 // MAKE A SCREEN WHILE ITS LOADING THE SPOTIFY AUTH TOKEN FROM SECURESTORE
 
 const ProfileScreen = ({ navigation }) => {
+    const [firebaseProfile, setFirebaseProfile] = useState(null);
     const [isLoggedIntoSpotify, setIsLoggedIntoSpotify] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const retrieve = async () => {
+
+        if (!isLoading) {
+            return;
+        }
+
+        const retrieveFirebase = async () => {
+            const data = await getUserDataFromFirestore();
+            console.log("Firebase Data in profile:", data);
+            setFirebaseProfile(data);
+        }
+
+        const retrieveSpotify = async () => {
             let spotifyInfo;
             if (Platform.OS === "web") {
                 spotifyInfo = localStorage.getItem("spotifyInfo");
@@ -31,16 +44,18 @@ const ProfileScreen = ({ navigation }) => {
             if (!spotifyInfo) {
                 console.log("couldn't get token");
                 console.log(spotifyInfo);
-                setIsLoading(false);
+
             } else {
                 console.log(spotifyInfo);
 
                 setIsLoggedIntoSpotify(true);
-                setIsLoading(false);
+
             }
         };
 
-        retrieve();
+        retrieveFirebase();
+        retrieveSpotify();
+        setIsLoading(false);
     }, []);
     //use token to verify if we're logged in or not
 
@@ -52,14 +67,37 @@ const ProfileScreen = ({ navigation }) => {
         );
     }
 
+    const renderGameScorePair = ({ item }) => {
+        console.log("ITEM",item);
+        
+        return (
+          <Text>
+            {item.key}: {item.value}
+          </Text>
+        );
+      };
+
     return (
 
         <>
             {/* <View style={{flex: 1}}> */}
             <View style={styles.container}>
+
                 {isLoggedIntoSpotify ? (
-                    <View style={{flex: 1}}>
+                    <View style={{ flex: 1 }}>
                         <Text style={styles.title}>Your Profile:</Text>
+                        
+                        {firebaseProfile && <View>
+                            <Text>Your High Scores</Text>
+                            
+                            <FlatList 
+                                data={Object.entries(firebaseProfile.scores).map(([key, value]) => ({ key, value }))}
+                                renderItem={renderGameScorePair}
+                                keyExtractor={(item) => item.key}
+                            />
+                            
+                        </View>
+                        }
 
                         <SpotifyProfileComponent />
 

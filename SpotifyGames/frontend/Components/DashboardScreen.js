@@ -3,7 +3,7 @@ import { View, Text, Button, Pressable } from "react-native";
 import LogoutButton from "./LogoutButton";
 import SpotifyLoginButton from "./SpotifyLoginButton";
 import { getOrRefreshStoredToken } from "../../scripts/SpotifyApiRequests";
-import { ThemeProvider, } from "@react-navigation/native";
+import { ThemeProvider } from "@react-navigation/native";
 import styles from "./Styles";
 
 const DashboardScreen = ({ navigation }) => {

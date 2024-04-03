@@ -7,6 +7,10 @@ import { ThemeProvider, ThemeConsumer } from "react-native-paper";
 const ScoreScreen = ({ route, navigation }) => {
   const { score } = route.params; // Receive the score passed from GameScreen
 
+  React.useEffect(() => {
+    saveScoreForGame("game1", score);
+  }, [])
+
   return (
     <>
         <View style={styles.container}>
