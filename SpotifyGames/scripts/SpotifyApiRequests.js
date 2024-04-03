@@ -87,17 +87,18 @@ export const getFirstTokenData = async (code, redirect_uri) => {
         json: true
     })
     try {
-        return await response.json()
+        return await response.json();
     } catch (error) {
-        console.log("first token error", error)
+        console.log("first token error", error);
     }
 }
 
 
 export function calculateExpirationTime(expiresIn) {
-    const currTime = Date.now()
-    const expirationTime = currTime + (expiresIn * 1000)
-    return expirationTime
+    expiresIn = Number(expiresIn);
+    const currTime = Date.now();
+    const expirationTime = currTime + (expiresIn * 1000);
+    return expirationTime;
 }
 
 

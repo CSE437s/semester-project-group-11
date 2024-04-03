@@ -49,7 +49,6 @@ const ProfileScreen = ({ navigation }) => {
                 console.log(spotifyInfo);
 
                 setIsLoggedIntoSpotify(true);
-
             }
         };
 
@@ -68,7 +67,7 @@ const ProfileScreen = ({ navigation }) => {
     }
 
     const renderGameScorePair = ({ item }) => {
-        console.log("ITEM",item);
+        // console.log("ITEM",item);
         
         return (
           <Text>

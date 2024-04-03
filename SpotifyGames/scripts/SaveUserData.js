@@ -5,6 +5,7 @@ import { getAuth } from 'firebase/auth';
 
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { calculateExpirationTime, getRefreshTokenData } from './SpotifyApiRequests.js';
 
 export async function saveSpotifyTokenInfo(spotifyInfo, spotifyTokenExpiration) {
 
@@ -145,4 +146,60 @@ export function parseTokenFromInfo(info) {
 export function parseRefreshTokenFromInfo(info) {
     const json = JSON.parse(info);
     return json.refresh_token;
+}
+
+export async function getOrRefreshTokenFromFirebase(){
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+
+        const db = getFirestore(app);
+        const userRef = doc(db, "users", user.uid);
+        const userInfo = await getDoc(userRef);
+
+        if (userInfo.exists()) {
+            const data = userInfo.data();
+            const expirationTime = parseInt(data.spotifyTokenExpiration);
+            console.log("comparing",expirationTime, Date.now(), "which is",(expirationTime<Date.now()));
+            if (expirationTime < Date.now()){
+                // if the token is expired
+                const refreshToken = JSON.parse(data.spotifyInfo).refresh_token;
+                const refreshedInfo = await getRefreshTokenData(refreshToken);
+                await saveSpotifyTokenInfo(refreshedInfo);
+                saveToCrossPlatformStorage("spotifyInfo", refreshedInfo);
+                saveToCrossPlatformStorage("spotifyTokenExpiration", String(calculateExpirationTime(refreshedInfo.expires_in)));
+                return parseTokenFromInfo(refreshedInfo);
+            }
+            else {
+                saveToCrossPlatformStorage("spotifyInfo", data.spotifyInfo);
+                saveToCrossPlatformStorage("spotifyTokenExpiration", data.spotifyTokenExpiration);
+                return parseTokenFromInfo(data.spotifyInfo);
+            }
+            
+        }
+        else {
+            console.log("Uh oh, no such user with uid:", user.uid + " (there should be though)");
+        }
+
+    }
+    else {
+        return Error("User is not signed in, not authorized to retrieve spotify data")
+    }
+}
+
+export async function getFromCrossPlatformStorage(key){
+    if (Platform.OS === "web") {
+        return localStorage.getItem(key);
+    } else {
+        return await AsyncStorage.getItem(key);
+    }
+}
+
+export async function saveToCrossPlatformStorage(key, value){
+    if (Platform.OS === "web") {
+        localStorage.setItem(key, value);
+    } else {
+        await AsyncStorage.setItem(key, value);
+    }
 }

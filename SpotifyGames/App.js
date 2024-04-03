@@ -20,6 +20,7 @@ import { auth } from "./scripts/firebaseConfig.js";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, createTheme } from "@rneui/themed";
 import styles from "./Styles";
+import { getOrRefreshTokenFromFirebase } from "./scripts/SaveUserData.js";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,12 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user){
+        setSpotifyToken(getOrRefreshTokenFromFirebase())
+      }
+      else{
+        setSpotifyToken(null);
+      }
       setUser(user);
     });
 
@@ -46,6 +53,8 @@ export default function App() {
       unsubscribe();
     };
   }, []);
+
+  
 
   return (
     <SafeAreaProvider>
