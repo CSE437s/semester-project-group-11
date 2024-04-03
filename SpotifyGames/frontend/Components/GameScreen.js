@@ -160,6 +160,13 @@ const GameScreen = ({ navigation }) => {
 // Styles
 const stylesGameScreen = StyleSheet.create({
   // Add your styles here
+  title: {
+    fontSize: 30, // Set the font size to 30pt
+    color: '#1DB954', // Spotify green color
+    textShadowColor: 'black', // Black text shadow to create the border effect
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10 // Adjust the radius to control the border thickness
+  },
   albumCover: {
     width: 250,
     height: 250,
