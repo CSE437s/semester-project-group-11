@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button, Pressable } from "react-native";
 import styles from "./Styles";
 import { ThemeProvider, ThemeConsumer } from "react-native-paper";
-import { TouchableOpacity } from "react-native-web";
+// import { TouchableOpacity } from "react-native-web";
 
 const ScoreScreen = ({ route, navigation }) => {
   const { score } = route.params; // Receive the score passed from GameScreen
@@ -11,12 +11,12 @@ const ScoreScreen = ({ route, navigation }) => {
     <>
         <View style={styles.container}>
           <Text style={styles.title}>Your Score: {score}</Text>
-          <TouchableOpacity
+          <Pressable
             style={styles.button}
             onPress={() => navigation.navigate("Dashboard")}
           >
             <Text style={{ color: "white" }}>Go home</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       
     </>

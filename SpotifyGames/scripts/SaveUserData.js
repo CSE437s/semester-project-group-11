@@ -61,7 +61,7 @@ export async function getSpotifyTokenInfo() {
 
         if (userInfo.exists()){
             console.log("THE DICTIONARY RETURNED IS BROKEN RN, BUT HERES THE RAW DATA WE GOT",userInfo.data())
-            return {"spotifyToken": spotifyToken, "spotifyTokenExpiration": expirationTime};
+            return {"spotifyToken": userInfo.data().spotifyToken, "spotifyTokenExpiration": userInfo.data().spotifyExpirationTime};
         }
         else{
             console.log("Uh oh, no such user with uid:",user.uid + " (there should be though)");

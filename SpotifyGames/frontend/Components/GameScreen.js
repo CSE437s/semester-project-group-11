@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import {
   getTopArtists,
   getTopSongsForArtistID,
@@ -154,7 +154,7 @@ const GameScreen = ({ navigation }) => {
                 />
               ))} */}
                   {/* {currentSongs.map((song, index) => (
-                <TouchableOpacity
+                <Pressable
                   key={song.id}
                   onPress={() => handleSongSelection(index)}
                 >
@@ -170,7 +170,7 @@ const GameScreen = ({ navigation }) => {
                       {result} - Popularity: {song.popularity}
                     </Text>
                   )}
-                </TouchableOpacity>
+                </Pressable>
               ))} */}
                   <Text style={styles.gameTitle}>
                     Choose the More Popular Song
@@ -182,7 +182,7 @@ const GameScreen = ({ navigation }) => {
                     Score: {score}
                   </Text>
                   {/* {currentSongs.map((song, index) => (
-                // <TouchableOpacity
+                // <Pressable
                 //   key={song.id}
                 //   onPress={() => handleSongSelection(index)}
                 // >
@@ -198,16 +198,16 @@ const GameScreen = ({ navigation }) => {
                 //       {result} - Popularity: {song.popularity}
                 //     </Text>
                 //   )}
-                // </TouchableOpacity>
+                // </Pressable>
               ))} */}
                 </>
               )}
-              <TouchableOpacity
+              <Pressable
                 style={stylesGameScreen.quitButton}
                 onPress={() => navigation.navigate("Dashboard")}
               >
                 <Text style={stylesGameScreen.quitButtonText}>Quit</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
         
 
