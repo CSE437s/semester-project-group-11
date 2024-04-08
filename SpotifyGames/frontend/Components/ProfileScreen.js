@@ -61,7 +61,12 @@ const ProfileScreen = ({ navigation }) => {
 
               <SpotifyProfileComponent />
 
-              <Button title="Go Back" onPress={() => navigation.goBack()} />
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => navigation.goBack()}
+              >
+                <Text style={{ color: "white" }}>Go back</Text>
+              </TouchableOpacity>
             </View>
           ) : (
             <>

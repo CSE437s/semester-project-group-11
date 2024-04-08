@@ -18,6 +18,8 @@ const GameScreen = ({ navigation }) => {
   const [correctChoice, setCorrectChoice] = useState(null);
   const [result, setResult] = useState(null);
   const [showResult, setShowResult] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState('white');
+  
 
   useEffect(() => {
     async function fetchArtistsAndTracks() {
@@ -65,162 +67,111 @@ const GameScreen = ({ navigation }) => {
 
     return randomSongs;
   };
+
   const handleSongSelection = (selectedSongIndex) => {
     const selectedSong = currentSongs[selectedSongIndex];
-    const otherSong = currentSongs[selectedSongIndex === 0 ? 1 : 0];
-
+    const isCorrect = selectedSong.popularity >= currentSongs[1 - selectedSongIndex].popularity;
+  
     setUserChoice(selectedSong);
-    setCorrectChoice(
-      selectedSong.popularity >= otherSong.popularity ? selectedSong : otherSong
-    );
-
-    let isCorrect = selectedSong.popularity >= otherSong.popularity;
-
+    setCorrectChoice(isCorrect ? selectedSong : currentSongs[1 - selectedSongIndex]);
+    setResult(isCorrect ? "Correct" : "Incorrect");
+  
     if (isCorrect) {
+      setBackgroundColor('green');
       setScore((prevScore) => prevScore + 1);
-      setResult("Correct");
-      const newRandomSong = pickRandomSongs(songs, 1)[0];
-
-      setUserChoice(currentSongs[selectedSongIndex]);
-      setCorrectChoice(currentSongs[0]); // Correct song is always the first one in the queue
-
-      if (
-        currentSongs[selectedSongIndex].popularity >= currentSongs[0].popularity
-      ) {
-        setScore((prevScore) => prevScore + 1);
-        setResult("Correct");
-      } else {
-        // Delay the update of lives and potential navigation to score screen
-        setTimeout(() => {
-          setLives((prevLives) => {
-            if (prevLives - 1 <= 0) {
-              navigation.navigate("ScoreScreen", { score });
-              return prevLives;
-            }
-            return prevLives - 1;
-          });
-        }, 3000); // Delay to show result before redirecting
-        setResult("Incorrect");
-      }
-
-      setShowResult(true);
-
-      if (isCorrect || lives > 1) {
-        setTimeout(() => {
-          const newRandomSong = pickRandomSongs(songs, 1)[0];
-          const nextSongs = [...currentSongs, newRandomSong].slice(1); // Remove the first song and add a new random song
-          setCurrentSongs(nextSongs);
-          setShowResult(false); // Hide result and show next question
-        }, 3000); // Adjust time as needed
-
-        setTimeout(() => {
-          const nextSongs = [...currentSongs, newRandomSong].slice(1); // Remove the first song and add a new random song
-          setCurrentSongs(nextSongs);
-          setShowResult(false); // Hide result and show next question
-        }, 3000); // Adjust time as needed
-
-        if (lives <= 0) {
-          navigation.navigate("ScoreScreen", { score });
+    } else {
+      setBackgroundColor('red');
+      setLives((prevLives) => {
+        const newLives = prevLives - 1;
+        if (newLives <= 0) {
+          setTimeout(() => navigation.navigate("ScoreScreen", { score }), 3000);
         }
-      }
+        return newLives;
+      });
+    }
+  
+    setShowResult(true);
+  
+    setTimeout(() => {
+      setBackgroundColor('white'); // Reset background color
+  
+      // Update the songs immediately after resetting the background color
+      const newRandomSong = pickRandomSongs(songs, 1)[0];
+      setCurrentSongs([currentSongs[1], newRandomSong]); // Keep the second song and add a new random song
+  
+      setShowResult(false);
+    }, 2000);
+  };
+  
+  
+  
+  
 
-      return (
-        <ThemeProvider>
-          <View style={styles.imageContainer}>
-            {isLoading ? (
-              <Text>Loading...</Text>
-            ) : (
+  return (
+    <ThemeProvider>
+      <View style={[styles.container, { backgroundColor: backgroundColor }]}> 
+        {isLoading ? (
+          <Text>Loading...</Text>
+        ) : (
+          <>
+            <Text style={styles.title}>Choose the More Popular Song</Text>
+            <Text style={{ position: "absolute", top: 10, left: 20 }}>
+              Lives: {lives}
+            </Text>
+            <Text style={{ position: "absolute", top: 10, right: 20 }}>
+              Score: {score}
+            </Text>
+            {currentSongs.map((song, index) => (
               <>
-                {currentSongs.map((song, index) => (
-                  <>
-                    <Image
-                      source={{ uri: song.albumCover }}
-                      style={styles.bottomImageContainer}
-                    />
-                    <Text>
-                      {song.name} - {song.artist}
-                    </Text>
-                    {showResult && userChoice && song.id === userChoice.id && (
-                      <Text>
-                        {result} - Popularity: {song.popularity}
-                      </Text>
-                    )}
-                  </>
-                ))}
-                {/* {currentSongs.map((song, index) => (
-                <Image
-                  source={{ uri: song.albumCover }}
-                  style={styles.bottomImageContainer}
-                />
-              ))} */}
-                {/* {currentSongs.map((song, index) => (
                 <TouchableOpacity
                   key={song.id}
                   onPress={() => handleSongSelection(index)}
+                  style={styles.songButton}
                 >
                   <Image
                     source={{ uri: song.albumCover }}
-                    style={styles.bottomImageContainer}
+                    style={stylesGameScreen.albumCover}
                   />
-                  <Text>
+
+                  <Text style={styles.songText}>
                     {song.name} - {song.artist}
                   </Text>
                   {showResult && userChoice && song.id === userChoice.id && (
-                    <Text>
+                    <Text style={styles.resultText}>
                       {result} - Popularity: {song.popularity}
                     </Text>
                   )}
                 </TouchableOpacity>
-              ))} */}
-                <Text style={styles.gameTitle}>
-                  Choose the More Popular Song
-                </Text>
-                <Text style={{ position: "absolute", top: 10, left: 20 }}>
-                  Lives: {lives}
-                </Text>
-                <Text style={{ position: "absolute", top: 10, right: 20 }}>
-                  Score: {score}
-                </Text>
-                {/* {currentSongs.map((song, index) => (
-                // <TouchableOpacity
-                //   key={song.id}
-                //   onPress={() => handleSongSelection(index)}
-                // >
-                //   <Image
-                //     source={{ uri: song.albumCover }}
-                //     style={styles.topImageContainer}
-                //   />
-                //   <Text>
-                //     {song.name} - {song.artist}
-                //   </Text>
-                //   {showResult && userChoice && song.id === userChoice.id && (
-                //     <Text>
-                //       {result} - Popularity: {song.popularity}
-                //     </Text>
-                //   )}
-                // </TouchableOpacity>
-              ))} */}
               </>
-            )}
-            <TouchableOpacity
-              style={stylesGameScreen.quitButton}
-              onPress={() => navigation.navigate("Dashboard")}
-            >
-              <Text style={stylesGameScreen.quitButtonText}>Quit</Text>
-            </TouchableOpacity>
-          </View>
-        </ThemeProvider>
-      );
-    }
-  };
+            ))}
+          </>
+        )}
+        <TouchableOpacity
+          style={stylesGameScreen.quitButton}
+          onPress={() => navigation.navigate("Dashboard")}
+        >
+          <Text style={stylesGameScreen.quitButtonText}>Quit</Text>
+        </TouchableOpacity>
+      </View>
+    </ThemeProvider>
+  );
 };
 
 // Styles
 const stylesGameScreen = StyleSheet.create({
   // Add your styles here
+  title: {
+    fontSize: 30, // Set the font size to 30pt
+    color: '#1DB954', // Spotify green color
+    textShadowColor: 'black', // Black text shadow to create the border effect
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10 // Adjust the radius to control the border thickness
+  },
   albumCover: {
-    width: 100,
-    height: 100,
+    width: 250,
+    height: 250,
+    borderWidth: 10,
+    borderColor: "black",
   },
   quitButton: {
     marginTop: 20,
@@ -241,12 +192,6 @@ const stylesGameScreen = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
   },
-  quitButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  // ...
 });
 
 export default GameScreen;

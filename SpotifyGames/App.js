@@ -3,6 +3,7 @@ import { Button, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+
 import LoginScreen from "./frontend/Components/LoginScreen.js";
 import RegisterScreen from "./frontend/Components/RegisterScreen.js";
 import TestProfile from "./frontend/Components/TestProfile.js";
@@ -50,7 +51,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider>
+      <ThemeProvider theme={theme}>
         <NavigationContainer>
           <Stack.Navigator initialRouteName={user ? "Login" : "Dashboard"}>
             {user ? (
@@ -62,7 +63,7 @@ export default function App() {
                       component={DashboardScreen}
                     />
                     <Stack.Screen name="Profile" component={ProfileScreen} />
-                    <Stack.Screen name="Game" component={GameScreen} />
+                    <Stack.Screen name="Game" component={GameScreen} options={{ title: 'Higher Lower Game' }}/>
                     <Stack.Screen name="ScoreScreen" component={ScoreScreen} />
                   </>
                 ) : (
