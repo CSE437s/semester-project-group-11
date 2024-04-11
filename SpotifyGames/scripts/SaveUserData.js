@@ -22,18 +22,22 @@ export async function saveSpotifyTokenInfo(spotifyInfo, spotifyTokenExpiration) 
         // console.log(user.uid);
         // console.log(spotifyInfo, spotifyTokenExpiration);
 
-        if (Platform.OS === "web") {
-            localStorage.setItem("spotifyInfo", spotifyInfo);
-            localStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
+        await saveToCrossPlatformStorage("spotifyTokenExpiration", spotifyTokenExpiration);
+        await saveToCrossPlatformStorage("spotifyInfo", spotifyInfo);
 
-            console.log("testing if set in localStorage", localStorage.getItem("spotifyInfo"));
-        }
-        else {
-            await AsyncStorage.setItem("spotifyInfo", spotifyInfo);
-            await AsyncStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
-            const testGet = await AsyncStorage.getItem("spotifyInfo");
-            console.log("testing if set in ASYNCStorage", testGet);
-        }
+
+        // if (Platform.OS === "web") {
+        //     localStorage.setItem("spotifyInfo", spotifyInfo);
+        //     localStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
+
+        //     console.log("testing if set in localStorage", localStorage.getItem("spotifyInfo"));
+        // }
+        // else {
+        //     await AsyncStorage.setItem("spotifyInfo", spotifyInfo);
+        //     await AsyncStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
+        //     const testGet = await AsyncStorage.getItem("spotifyInfo");
+        //     console.log("testing if set in ASYNCStorage", testGet);
+        // }
 
         return updateDoc(userRef, { "spotifyInfo": spotifyInfo, "spotifyTokenExpiration": spotifyTokenExpiration }).then(() => {
             console.log("worked");
