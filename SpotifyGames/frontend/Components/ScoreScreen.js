@@ -22,6 +22,10 @@ const ScoreScreen = ({ route, navigation }) => {
   );
 };
 
+
+
+export default ScoreScreen;
+
 // const styles = StyleSheet.create({
 //   container: {
 //     flex: 1,
@@ -33,5 +37,3 @@ const ScoreScreen = ({ route, navigation }) => {
 //     marginBottom: 20,
 //   },
 // });
-
-export default ScoreScreen;
