@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, get } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
 
 const WaitingLobbyScreen = ({ route, navigation }) => {
@@ -22,11 +22,30 @@ const WaitingLobbyScreen = ({ route, navigation }) => {
 
     // return () => unsubscribe();
 
-    const startGameRef = ref(realtimeDB, "lobbies/"+gameCode+"/gameStatus");
+    const lobbyRef = ref(realtimeDB, "lobbies/"+gameCode);
+    const startGameRef = lobbyRef.child("gameStatus");
+
     const unsubscribe = onValue(startGameRef, (snapshot) => {
       const gameStatus = snapshot.val();
-
       const user = getAuth();
+
+      //update the players shown in the lobby
+      get(child(lobbyRef, "users")).then((snapshot) => {
+
+        //players currently formatted like this:
+        // {
+        //   uid:user.uid,
+        //   username: username,
+        //   topSongs: topSongs
+        // }
+        // refer to how they are pushed into the list in DashboardScreen.js if that changes
+
+        const userObjects = snapshot.val();
+
+        const usernames = map(userObjects, (user) => user.username);
+
+        setPlayers(usernames);
+      });
 
       if (gameStatus.hasStarted){
 
@@ -34,8 +53,11 @@ const WaitingLobbyScreen = ({ route, navigation }) => {
 
         if (user && user.uid == gameStatus.hostUID){
           // host can run the algorithm to determine which songs are chosen for the game
-
           
+          //Songs are currently stored under the user information in the players path
+          // I'm thinking of randomly sampling 2 or so songs from each player and then putting
+          // that into an answers section of the database
+
 
         }
 
@@ -43,10 +65,9 @@ const WaitingLobbyScreen = ({ route, navigation }) => {
         // REDIRECT TO GAME START HERE
       }
       else if (gameStatus.isOver){
-
+        //do something when the game ends. Redirect to results screen?
       }
     })
-
     return () => unsubscribe();
   }, []);
 

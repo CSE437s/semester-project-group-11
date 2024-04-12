@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 // import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { getDatabase, ref, set } from 'firebase/database';
+import { getDatabase, ref, set, push } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
 import LogoutButton from './LogoutButton';
 import SpotifyLoginButton from './SpotifyLoginButton';
@@ -69,12 +69,15 @@ const DashboardScreen = ({ navigation }) => {
         const username = userData.username; 
         const topSongs = userData.topSongs;
 
-        await set(ref(realtimeDB, 'lobbies/'+gameCode+"/users/"+user.uid), {
+        const usersRef = ref(db, "lobbies/"+gameCode+"/users");
+
+        push(usersRef, {
+          uid:user.uid,
           username: username,
           topSongs: topSongs
         })
 
-        await set(ref(realtimeDB, 'lobbies/'+gameCode+"/gameStatus"), {
+        await set(ref(realtimeDB, "lobbies/"+gameCode+"/gameStatus"), {
           hasStarted: false,
           round:1,
           isOver: false,
