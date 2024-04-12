@@ -1,20 +1,23 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-// import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { getDatabase, ref, set, push } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
 import LogoutButton from './LogoutButton';
-import SpotifyLoginButton from './SpotifyLoginButton';
-import { getOrRefreshStoredToken } from '../../scripts/SpotifyApiRequests';
+import { getTopTracks } from '../../scripts/SpotifyApiRequests';
 import { getAuth } from 'firebase/auth';
 import { ThemeProvider } from '@react-navigation/native';
 import styles from './Styles';
-import { getUserFirebaseInfo, saveUserTopSongs } from '../../scripts/SaveUserData';
+import { getUserFirebaseInfo, parseTokenFromInfo, saveUserTopSongs } from '../../scripts/SaveUserData';
 
 const DashboardScreen = ({ navigation }) => {
   const firestore = getFirestore(app);
   const auth = getAuth();
   const currentUser = auth.currentUser;
+
+  React.useEffect(() => {
+    storeUserTopSongs();
+  },[])
 
   const generateGameCode = () => {
     let result = '';
@@ -36,36 +39,33 @@ const DashboardScreen = ({ navigation }) => {
         return;
       }
 
-      try {
-        const artists = await getTopArtists(spotifyToken);
-        const tracksPromises = artists.map((artist) =>
-          getTopSongsForArtistID(spotifyToken, artist.id)
-        );
-        const tracks = await Promise.all(tracksPromises);
+      console.log("SPOTIFY TOKEN",spotifyToken);
 
-        const combinedTracks = tracks.flat(); // Flatten the tracks array
+      const songs = await getTopTracks(spotifyToken);
 
-        const res = await saveUserTopSongs(combinedTracks);
+      console.log(songs);
+      
+      const res = await saveUserTopSongs(songs);
 
-        console.log("able to save top songs????", res);
-
-      } catch (error) {
-        console.error("Error fetching data in storeUserTopSongs:", error);
-      }
+      console.log("able to save top songs????", res);
 
   }
 
   const handleCreateLobby = async () => {
 
-    const user = getAuth();
+    const auth = getAuth();
+    const user = auth.currentUser;
 
     if (user) {
 
-      const realtimeDB = getDatabase(app);
+      const db = getDatabase(app);
       const userData = getUserFirebaseInfo();
 
       try {
-        const gameCode = generateGameCode();
+        // const gameCode = generateGameCode();
+        //REPLACE LATER WITH GENERATED CODE
+        const gameCode = "ABC123";
+
         const username = userData.username; 
         const topSongs = userData.topSongs;
 
@@ -75,15 +75,15 @@ const DashboardScreen = ({ navigation }) => {
           uid:user.uid,
           username: username,
           topSongs: topSongs
-        })
+        });
 
-        await set(ref(realtimeDB, "lobbies/"+gameCode+"/gameStatus"), {
+        set(ref(db, "lobbies/"+gameCode+"/gameStatus"), {
           hasStarted: false,
           round:1,
           isOver: false,
           hostUID: user.uid,
           hostUsername: username
-        })
+        });
 
         // await setDoc(doc(firestore, 'gameLobbies', gameCode), {
         //   players: [username],

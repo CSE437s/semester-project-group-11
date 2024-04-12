@@ -114,24 +114,10 @@ export function saveUserTopSongs(songs){
     console.log(auth);
 
     if (user) {
-        console.log("trying to store");
         const db = getFirestore(app);
-        console.log("firestore?");
         const userRef = doc(db, "users", user.uid);
-        // console.log(user.uid);
-        // console.log(spotifyInfo, spotifyTokenExpiration);
-
-        if (Platform.OS === "web"){
-            localStorage.setItem("spotifyInfo", spotifyInfo);
-            localStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
-
-            console.log("testing if set in localStorage", localStorage.getItem("spotifyInfo"));
-        }
-        else{
-            console.log("need to add mobile support here");
-        }
         
-        return updateDoc(userRef, { "topSongs": spotifyInfo }).then(() => {
+        return updateDoc(userRef, { "topSongs": songs }).then(() => {
             console.log("saved top songs");
             return "success";
         }).catch((error) => {
