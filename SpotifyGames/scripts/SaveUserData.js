@@ -79,6 +79,72 @@ export async function getSpotifyTokenInfo() {
     }
 }
 
+export async function getUserFirebaseInfo(){
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+
+        const db = getFirestore(app);
+        const userRef = doc(db, "users", user.uid).where("id", "==", user.uid);
+        const userInfo = await getDoc(userRef);
+
+        if (userInfo.exists()){
+            const data = userInfo.data()
+            console.log("Firebase data:",data)
+            return data;
+        }
+        else{
+            console.log("Uh oh, no such user with uid:",user.uid + " (there should be though)");
+        }
+
+    }
+    else{
+        return Error("User is not signed in, not authorized to retrieve spotify data")
+    }
+
+}
+
+export function saveUserTopSongs(songs){
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    console.log(auth);
+
+    if (user) {
+        console.log("trying to store");
+        const db = getFirestore(app);
+        console.log("firestore?");
+        const userRef = doc(db, "users", user.uid);
+        // console.log(user.uid);
+        // console.log(spotifyInfo, spotifyTokenExpiration);
+
+        if (Platform.OS === "web"){
+            localStorage.setItem("spotifyInfo", spotifyInfo);
+            localStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
+
+            console.log("testing if set in localStorage", localStorage.getItem("spotifyInfo"));
+        }
+        else{
+            console.log("need to add mobile support here");
+        }
+        
+        return updateDoc(userRef, { "topSongs": spotifyInfo }).then(() => {
+            console.log("saved top songs");
+            return "success";
+        }).catch((error) => {
+            throw error;
+        })
+
+    }
+    else{
+        return Error("User is not signed in, not authorized to save spotify data")
+    }
+
+}
+
 export function parseTokenFromInfo(info){
     const json = JSON.parse(info);
     return json.access_token;

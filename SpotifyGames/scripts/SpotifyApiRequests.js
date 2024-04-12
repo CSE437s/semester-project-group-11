@@ -13,7 +13,7 @@ export async function getTopArtists(token) {
     let totalArtists = [];
 
     // First fetch the top 50 artists
-    let result = await fetch(`https://api.spotify.com/v1/me/top/artists?limit=50`, {
+    let result = await fetch(`https://api.spotify.com/v1/me/top/artists?limit=10`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
     });
