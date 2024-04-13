@@ -35,6 +35,23 @@ const WaitingLobbyScreen = ({ route, navigation }) => {
         }
       });
 
+      //update the players shown in the lobby
+      onValue(child(lobbyRef, "users"), (usersSnapshot) => {
+
+        if (!usersSnapshot.exists()) {
+          console.log("users snapshot doesn't exist :(");
+          return;
+        }
+        const userObjects = usersSnapshot.val();
+
+        console.log("players in game:", userObjects, typeof (userObjects));
+
+        const usernames = Object.values(userObjects).map((userinfo) => userinfo.username);
+        console.log(usernames);
+
+        setPlayers(usernames);
+      });
+
       const unsubscribe = onValue(startGameRef, (snapshot) => {
 
         if (!snapshot.exists) {
@@ -45,25 +62,7 @@ const WaitingLobbyScreen = ({ route, navigation }) => {
 
         const auth = getAuth();
         const user = auth.currentUser;
-
-        //update the players shown in the lobby
-        get(child(lobbyRef, "users")).then((usersSnapshot) => {
-
-          if (!usersSnapshot.exists()) {
-            console.log("users snapshot doesn't exist :(");
-            return;
-          }
-          const userObjects = usersSnapshot.val();
-
-          console.log("players in game:", userObjects, typeof (userObjects));
-
-          const usernames = Object.values(userObjects).map((userinfo) => userinfo.username);
-          console.log(usernames);
-
-          setPlayers(usernames);
-
-        });
-
+        
         if (gameStatus.hasStarted) {
 
           // Randomly generate which songs from the database will be used in the game
