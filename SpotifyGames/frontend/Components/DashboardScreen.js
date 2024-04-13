@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { View, Text, TouchableOpacity, Pressable, TextInput } from 'react-native';
+import { View, Text, Pressable, TextInput } from 'react-native';
 import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { getDatabase, ref, set, get } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
@@ -147,11 +147,11 @@ const DashboardScreen = ({ navigation }) => {
         <Text style={{ color: "white" }}>Start Higher Lower Game</Text>
       </Pressable>
 
-      {/* <TouchableOpacity style={styles.button}
+      {/* <Pressable style={styles.button}
         onPress={() => navigation.navigate("RouletteScreen")}
       >
         <Text style={{ color: "white" }}>Play Roulette</Text>
-      </TouchableOpacity> */}
+      </Pressable> */}
 
       <Pressable style={styles.button}
         onPress={handleCreateLobby}>
