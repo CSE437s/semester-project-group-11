@@ -1,16 +1,10 @@
 import React from "react";
-import { View, Text, Button, Pressable, FlatList } from "react-native";
-
+import { View, Text, Pressable, FlatList } from "react-native";
+import { ListItem, Avatar } from "@rneui/base";
 import { useState, useEffect } from "react";
-import SpotifyLoginButton from "./SpotifyLoginButton";
-import SpotifyProfileComponent from "./SpotifyProfileComponent";
-import { Platform } from "react-native";
-import { ThemeProvider, ThemeConsumer } from "@react-navigation/native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import styles from "./Styles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getFromCrossPlatformStorage, getUserDataFromFirestore, parseTokenFromInfo } from "../../scripts/SaveUserData";
-import { getTopArtists } from "../../scripts/SpotifyApiRequests";
+import { getTopArtists, getProfile } from "../../scripts/SpotifyApiRequests";
 
 
 const ProfileScreen = ({ navigation }) => {
@@ -26,12 +20,11 @@ const ProfileScreen = ({ navigation }) => {
         }
 
         const getProfileData = async () => {
-            let spotifyInfo = getFromCrossPlatformStorage("spotifyInfo");
+            let spotifyInfo = await getFromCrossPlatformStorage("spotifyInfo");
             const spotifyToken = parseTokenFromInfo(spotifyInfo);
             console.log("spotifyTOKEN", spotifyToken);
 
             try {
-
                 if (spotifyToken !== null) {
                     const data = await getProfile(spotifyToken);
                     console.log("DATA", data);
@@ -89,7 +82,7 @@ const ProfileScreen = ({ navigation }) => {
         </>);
     }
 
-    function renderFriend({item, index}){
+    function renderFriend({ item, index }) {
         return (
             <>
                 <ListItem bottomDivider>
@@ -114,26 +107,29 @@ const ProfileScreen = ({ navigation }) => {
             {/* <View style={{flex: 1}}> */}
             <View style={styles.container}>
 
-
                 <View style={{ flex: 1 }}>
 
                     {firebaseProfile && <View>
                         <Text style={styles.title}>{firebaseProfile.username}'s Profile:</Text>
-                        <Text>Your High Scores</Text>
 
-                        <FlatList
-                            data={Object.entries(firebaseProfile.scores).map(([key, value]) => ({ key, value }))}
-                            renderItem={renderGameScorePair}
-                            keyExtractor={(item) => item.key}
-                        />
+                        {firebaseProfile.scores && <>
+                            <Text>Your High Scores</Text>
 
-                        <Text>Your Friends</Text>
+                            <FlatList
+                                data={Object.entries(firebaseProfile.scores).map(([key, value]) => ({ key, value }))}
+                                renderItem={renderGameScorePair}
+                                keyExtractor={(item) => item.key}
+                            />
+                        </>}
+
+
+                        {/* <Text>Your Friends</Text>
 
                         <FlatList
                             data={Object.entries(firebaseProfile.friends).map(([key,value]) => ({ key, value}))}
                             renderItem={renderFriend}
                             keyExtractor={(item) => item.key}
-                        />
+                        /> */}
 
                     </View>
                     }

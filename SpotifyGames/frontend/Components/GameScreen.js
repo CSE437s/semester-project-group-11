@@ -4,7 +4,7 @@ import {
   getTopArtists,
   getTopSongsForArtistID,
 } from "../../scripts/SpotifyApiRequests";
-import { parseTokenFromInfo } from "../../scripts/SaveUserData";
+import { getFromCrossPlatformStorage, parseTokenFromInfo } from "../../scripts/SaveUserData";
 import styles from "./Styles";
 import { ThemeProvider, ThemeConsumer } from "@react-navigation/native";
 
@@ -24,7 +24,7 @@ const GameScreen = ({ navigation }) => {
   useEffect(() => {
     async function fetchArtistsAndTracks() {
       setIsLoading(true);
-      const spotifyInfo = localStorage.getItem("spotifyInfo");
+      const spotifyInfo = await getFromCrossPlatformStorage("spotifyInfo");
       const spotifyToken = parseTokenFromInfo(spotifyInfo);
 
       if (!spotifyToken) {

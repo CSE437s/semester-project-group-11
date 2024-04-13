@@ -1,5 +1,5 @@
 
-import { doc, getDoc, updateDoc, getFirestore, where } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, getFirestore } from 'firebase/firestore';
 import { app } from "./firebaseConfig.js";
 import { getAuth } from 'firebase/auth';
 
@@ -11,7 +11,7 @@ export async function saveSpotifyTokenInfo(spotifyInfo, spotifyTokenExpiration) 
 
     const auth = getAuth();
     const user = auth.currentUser;
-
+    
     console.log(auth);
 
     if (user) {
@@ -19,25 +19,9 @@ export async function saveSpotifyTokenInfo(spotifyInfo, spotifyTokenExpiration) 
         const db = getFirestore(app);
         console.log("firestore?");
         const userRef = doc(db, "users", user.uid);
-        // console.log(user.uid);
-        // console.log(spotifyInfo, spotifyTokenExpiration);
 
         await saveToCrossPlatformStorage("spotifyTokenExpiration", spotifyTokenExpiration);
         await saveToCrossPlatformStorage("spotifyInfo", spotifyInfo);
-
-
-        // if (Platform.OS === "web") {
-        //     localStorage.setItem("spotifyInfo", spotifyInfo);
-        //     localStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
-
-        //     console.log("testing if set in localStorage", localStorage.getItem("spotifyInfo"));
-        // }
-        // else {
-        //     await AsyncStorage.setItem("spotifyInfo", spotifyInfo);
-        //     await AsyncStorage.setItem("spotifyTokenExpiration", spotifyTokenExpiration);
-        //     const testGet = await AsyncStorage.getItem("spotifyInfo");
-        //     console.log("testing if set in ASYNCStorage", testGet);
-        // }
 
         return updateDoc(userRef, { "spotifyInfo": spotifyInfo, "spotifyTokenExpiration": spotifyTokenExpiration }).then(() => {
             console.log("worked");

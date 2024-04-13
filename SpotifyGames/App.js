@@ -37,7 +37,7 @@ const theme = createTheme({
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [spotifyToken, setSpotifyToken] = useState(false);
+  const [spotifyToken, setSpotifyToken] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
