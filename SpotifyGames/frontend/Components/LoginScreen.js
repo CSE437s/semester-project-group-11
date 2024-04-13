@@ -5,7 +5,7 @@ import {
   Text,
   TextInput,
   View,
-  TouchableOpacity,
+  Pressable
 } from "react-native";
 
 import styles from './Styles';
@@ -59,16 +59,16 @@ export default LoginScreen = ({ navigation }) => {
             />
           </View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
+          <Pressable style={styles.loginButton} onPress={handleSubmit}>
             <Text style={{ color: "white" }}>Login</Text>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             style={styles.landingButton}
             onPress={() => navigation.navigate("Register")}
           >
             <Text style={{ color: "white" }}>Sign Up Here!</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
     </>

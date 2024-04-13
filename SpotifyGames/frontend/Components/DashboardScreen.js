@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { View, Text, TouchableOpacity, Pressable, TextInput } from 'react-native';
+import { View, Text, Pressable, TextInput } from 'react-native';
 import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { getDatabase, ref, set, get } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
@@ -9,9 +9,8 @@ import { getTopTracks } from '../../scripts/SpotifyApiRequests';
 import { getAuth } from 'firebase/auth';
 import { ThemeProvider } from '@react-navigation/native';
 import styles from './Styles';
-import { getUserFirebaseInfo, parseTokenFromInfo, saveUserTopSongs } from '../../scripts/SaveUserData';
+import { getUserFirebaseInfo, parseTokenFromInfo, saveUserTopSongs, getFromCrossPlatformStorage } from '../../scripts/SaveUserData';
 import { onLobbyJoin } from '../../scripts/Lobbies';
-
 
 
 const DashboardScreen = ({ navigation }) => {
@@ -23,6 +22,30 @@ const DashboardScreen = ({ navigation }) => {
 
 
   React.useEffect(() => {
+
+    const storeUserTopSongs = async () => {
+
+      const spotifyInfo = await getFromCrossPlatformStorage("spotifyInfo");
+      console.log(typeof(spotifyInfo), spotifyInfo);
+      const spotifyToken = parseTokenFromInfo(spotifyInfo);
+
+      if (!spotifyToken) {
+        console.error("Spotify token is not available.");
+        return;
+      }
+
+      console.log("SPOTIFY TOKEN", spotifyToken);
+
+      const songs = await getTopTracks(spotifyToken);
+
+      console.log(songs);
+
+      const res = await saveUserTopSongs(songs);
+
+      console.log("able to save top songs????", res);
+
+    }
+
     storeUserTopSongs();
   }, [])
 
@@ -40,27 +63,6 @@ const DashboardScreen = ({ navigation }) => {
     return result;
   };
 
-  const storeUserTopSongs = async () => {
-
-    const spotifyInfo = localStorage.getItem("spotifyInfo");
-    const spotifyToken = parseTokenFromInfo(spotifyInfo);
-
-    if (!spotifyToken) {
-      console.error("Spotify token is not available.");
-      return;
-    }
-
-    console.log("SPOTIFY TOKEN", spotifyToken);
-
-    const songs = await getTopTracks(spotifyToken);
-
-    console.log(songs);
-
-    const res = await saveUserTopSongs(songs);
-
-    console.log("able to save top songs????", res);
-
-  }
 
   const handleJoinLobby = async () => {
 
@@ -79,7 +81,7 @@ const DashboardScreen = ({ navigation }) => {
       if (snapshot.exists()) {
         onLobbyJoin(gameCode).then(() => navigation.navigate('WaitingLobby', { gameCode, username }));
       }
-      else{
+      else {
         alert(gameCode + " is not a valid game code");
       }
     });
@@ -125,55 +127,55 @@ const DashboardScreen = ({ navigation }) => {
 
   };
   return (
-    
-      <View style={styles.container}>
-        <Text style={styles.title}>Welcome to Gamify!</Text>
-        <Pressable
-          style={styles.button}
-          onPress={() => navigation.navigate("Profile")}
-        >
-          <Text style={{ color: "white" }}>My Profile</Text>
-        </Pressable>
+
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to Gamify!</Text>
+      <Pressable
+        style={styles.button}
+        onPress={() => navigation.navigate("Profile")}
+      >
+        <Text style={{ color: "white" }}>My Profile</Text>
+      </Pressable>
 
 
-        {/* Add a Start Game button */}
-        <Pressable
-          style={styles.button}
-          onPress={() => navigation.navigate("Game")}
-        >
+      {/* Add a Start Game button */}
+      <Pressable
+        style={styles.button}
+        onPress={() => navigation.navigate("Game")}
+      >
 
-          <Text style={{ color: "white" }}>Start Higher Lower Game</Text>
-        </Pressable>
+        <Text style={{ color: "white" }}>Start Higher Lower Game</Text>
+      </Pressable>
 
-        {/* <TouchableOpacity style={styles.button}
+      {/* <Pressable style={styles.button}
         onPress={() => navigation.navigate("RouletteScreen")}
       >
         <Text style={{ color: "white" }}>Play Roulette</Text>
-      </TouchableOpacity> */}
+      </Pressable> */}
 
-        <Pressable style={styles.button}
-          onPress={handleCreateLobby}>
-          <Text style={{ color: "white" }}>Create Roulette Lobby</Text>
-        </Pressable>
+      <Pressable style={styles.button}
+        onPress={handleCreateLobby}>
+        <Text style={{ color: "white" }}>Create Roulette Lobby</Text>
+      </Pressable>
 
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.inputText}
-            placeholder="Game Code"
-            value={gameCode}
-            onChangeText={handleGameCodeChange}
-          />
-        </View>
-
-        <Pressable style={styles.button}
-          onPress={handleJoinLobby}>
-          <Text style={{ color: "white" }}>Join Roulette Lobby</Text>
-        </Pressable>
-
-         
-        <LogoutButton />
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Game Code"
+          value={gameCode}
+          onChangeText={handleGameCodeChange}
+        />
       </View>
-   
+
+      <Pressable style={styles.button}
+        onPress={handleJoinLobby}>
+        <Text style={{ color: "white" }}>Join Roulette Lobby</Text>
+      </Pressable>
+
+
+      <LogoutButton />
+    </View>
+
   );
 };
 

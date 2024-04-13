@@ -59,17 +59,6 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
         }
     }, [response]);
 
-    function tokenInLocalStorage() {
-        const token = localStorage.getItem("spotifyInfo");
-        const expirationTime = localStorage.getItem("spotifyTokenExpiration");
-
-        console.log(expirationTime + " " + Date.now());
-
-        if (token == null || expirationTime == null);
-
-        return token != null && expirationTime > Date.now();
-    }
-
     return (
         <>
             <View>

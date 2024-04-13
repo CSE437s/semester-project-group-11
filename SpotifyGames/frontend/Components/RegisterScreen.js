@@ -3,7 +3,7 @@ import { addUser, validateUniqueUsername } from "../../scripts/FirebaseFirestore
 import { useState } from "react";
 import styles from "./Styles.js"
 
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Pressable } from "react-native";
 
 export default RegisterScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -110,16 +110,16 @@ export default RegisterScreen = ({ navigation }) => {
         />
       </View>
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
+      <Pressable style={styles.loginButton} onPress={handleSubmit}>
         <Text style={{ color: "white" }}>Register</Text>
-      </TouchableOpacity>
+      </Pressable>
 
-      <TouchableOpacity
+      <Pressable
         style={styles.landingButton}
         onPress={() => navigation.navigate("Login")}
       >
         <Text style={{ color: "white" }}>Go to Login Page</Text>
-      </TouchableOpacity>
+      </Pressable>
 
     </View>
   );

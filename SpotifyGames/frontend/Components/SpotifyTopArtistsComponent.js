@@ -1,25 +1,28 @@
 import { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
-import { getTopArtists, getTopSongsForArtistID } from '../../scripts/SpotifyApiRequests'; 
-import { parseTokenFromInfo } from '../../scripts/SaveUserData';
+import { getTopArtists, getTopSongsForArtistID } from '../../scripts/SpotifyApiRequests';
+import { parseTokenFromInfo, getFromCrossPlatformStorage } from '../../scripts/SaveUserData';
 
 const SpotifyTopArtistsComponent = () => {
     const [topArtists, setTopArtists] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        let spotifyInfo = localStorage.getItem("spotifyInfo");
-        const spotifyToken = parseTokenFromInfo(spotifyInfo);
+        const fn = async () => {
+            let spotifyInfo = await getFromCrossPlatformStorage("spotifyInfo");
+            const spotifyToken = parseTokenFromInfo(spotifyInfo);
 
-        if (spotifyToken) {
-            getTopArtists(spotifyToken).then((artists) => {
-                setTopArtists(artists);
-                setIsLoading(false);
-            }).catch(error => {
-                console.error('Error fetching top artists:', error);
-                setIsLoading(false);
-            });
+            if (spotifyToken) {
+                getTopArtists(spotifyToken).then((artists) => {
+                    setTopArtists(artists);
+                    setIsLoading(false);
+                }).catch(error => {
+                    console.error('Error fetching top artists:', error);
+                    setIsLoading(false);
+                });
+            }
         }
+        fn();
     }, [/* dependencies if any */]);
 
     if (isLoading) {
