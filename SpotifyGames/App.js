@@ -6,8 +6,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import LoginScreen from "./frontend/Components/LoginScreen.js";
 import RegisterScreen from "./frontend/Components/RegisterScreen.js";
-import TestProfile from "./frontend/Components/TestProfile.js";
-import LandingScreen from "./frontend/Components/LandingScreen.js";
 import DashboardScreen from "./frontend/Components/DashboardScreen.js";
 import ProfileScreen from "./frontend/Components/ProfileScreen.js";
 import RouletteScreen from "./frontend/Components/RouletteScreen.js"

@@ -1,0 +1,39 @@
+plugins = []
+headers = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "/Users/zachkuo/437/semester-project-group-11/SpotifyGames"
+publishOrigin = "default"
+base = "/Users/zachkuo/437/semester-project-group-11/SpotifyGames"
+command = "expo build:web"
+commandOrigin = "heuristics"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

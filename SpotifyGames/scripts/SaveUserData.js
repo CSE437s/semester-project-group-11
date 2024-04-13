@@ -62,7 +62,7 @@ export async function getSpotifyTokenInfo() {
     if (user) {
 
         const db = getFirestore(app);
-        const userRef = doc(db, "users", user.uid).where("id", "==", user.uid);
+        const userRef = doc(db, "users", user.uid);
         const userInfo = await getDoc(userRef);
 
         if (userInfo.exists()){
@@ -77,6 +77,59 @@ export async function getSpotifyTokenInfo() {
     else{
         return Error("User is not signed in, not authorized to retrieve spotify data")
     }
+}
+
+export async function getUserFirebaseInfo(){
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+
+        const db = getFirestore(app);
+        const userRef = doc(db, "users", user.uid);
+        const userInfo = await getDoc(userRef);
+
+        if (userInfo.exists()){
+            const data = userInfo.data()
+            console.log("Firebase data:",data)
+            return data;
+        }
+        else{
+            console.log("Uh oh, no such user with uid:",user.uid + " (there should be though)");
+            return;
+        }
+
+    }
+    else{
+        return Error("User is not signed in, not authorized to retrieve spotify data")
+    }
+
+}
+
+export function saveUserTopSongs(songs){
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    console.log(auth);
+
+    if (user) {
+        const db = getFirestore(app);
+        const userRef = doc(db, "users", user.uid);
+        
+        return updateDoc(userRef, { "topSongs": songs }).then(() => {
+            console.log("saved top songs");
+            return "success";
+        }).catch((error) => {
+            throw error;
+        })
+
+    }
+    else{
+        return Error("User is not signed in, not authorized to save spotify data")
+    }
+
 }
 
 export function parseTokenFromInfo(info){
