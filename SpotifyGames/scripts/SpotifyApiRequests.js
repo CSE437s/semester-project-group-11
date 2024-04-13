@@ -67,6 +67,7 @@ export async function getTopTracks(token) {
     let tracks = [];
 
     // First fetch the top 50 tracks
+
     let result = await fetch(`https://api.spotify.com/v1/me/top/tracks?limit=10`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
@@ -79,7 +80,7 @@ export async function getTopTracks(token) {
     let extracted = tracks.map((track) => {
 
         const albumName = track.album.name;
-        const albumCover = track.album.images;
+        const albumCover = track.album.images[0].url;
 
         const artists = parseArtistNames(track.artists);
         const name = track.name;

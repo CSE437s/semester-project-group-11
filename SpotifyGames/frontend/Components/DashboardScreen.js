@@ -21,7 +21,7 @@ const DashboardScreen = ({ navigation }) => {
 
   const generateGameCode = () => {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnpqrstuvwxyz123456789';
+    const characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
     const charactersLength = characters.length;
     for (let i = 0; i < 6; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -44,7 +44,7 @@ const DashboardScreen = ({ navigation }) => {
       const songs = await getTopTracks(spotifyToken);
 
       console.log(songs);
-      
+
       const res = await saveUserTopSongs(songs);
 
       console.log("able to save top songs????", res);
@@ -59,23 +59,13 @@ const DashboardScreen = ({ navigation }) => {
     if (user) {
 
       const db = getDatabase(app);
-      const userData = getUserFirebaseInfo();
 
       try {
-        // const gameCode = generateGameCode();
-        //REPLACE LATER WITH GENERATED CODE
-        const gameCode = "ABC123";
+        const gameCode = generateGameCode();
 
-        const username = userData.username; 
-        const topSongs = userData.topSongs;
+        const userData = await getUserFirebaseInfo();
 
-        const usersRef = ref(db, "lobbies/"+gameCode+"/users");
-
-        push(usersRef, {
-          uid:user.uid,
-          username: username,
-          topSongs: topSongs
-        });
+        const username = userData.username;
 
         set(ref(db, "lobbies/"+gameCode+"/gameStatus"), {
           hasStarted: false,

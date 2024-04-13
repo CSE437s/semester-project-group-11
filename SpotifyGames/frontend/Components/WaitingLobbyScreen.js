@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
-import { getDatabase, ref, onValue, get } from 'firebase/database';
+import { getDatabase, ref, onValue, get, child } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
+import { onLobbyJoin } from '../../scripts/Lobbies';
 
 const WaitingLobbyScreen = ({ route, navigation }) => {
-  let { gameCode, username } = route.params;
+  const { gameCode, username } = route.params;
   const [players, setPlayers] = useState([]);
+  const [host, setHost] = useState();
 
-  // FIX LATER
-  gameCode = "ABC123"
-
-  const firestore = getFirestore(app); // Initialize Firestore instance
-  const realtimeDB = getDatabase(app);
+  const db = getDatabase(app);
 
   useEffect(() => {
 
@@ -25,73 +24,88 @@ const WaitingLobbyScreen = ({ route, navigation }) => {
 
     // return () => unsubscribe();
 
-    const lobbyRef = ref(realtimeDB, "lobbies/" + gameCode);
-    const startGameRef = lobbyRef.child("gameStatus");
+    const lobbyRef = ref(db, "lobbies/" + gameCode);
+    const startGameRef = child(lobbyRef, "gameStatus");
 
-    const unsubscribe = onValue(startGameRef, (snapshot) => {
+    onLobbyJoin(gameCode)
 
-      if (!snapshot.exists) {
-        console.log("snapshot doesn't exist for game :(");
-      }
+    // TEMPORARY WORKAROUND TO AVOID USER INFO FROM JOINING NOT BEING IN THE DATABASE BEFORE GETTING WHO'S IN THE LOBBY
+    setTimeout(() => {
 
-      const gameStatus = snapshot.val();
-      const user = getAuth();
-
-      //update the players shown in the lobby
-      get(child(lobbyRef, "users")).then((usersSnapshot) => {
-
-        //players currently formatted like this:
-        // {
-        //   uid:user.uid,
-        //   username: username,
-        //   topSongs: topSongs
-        // }
-        // refer to how they are pushed into the list in DashboardScreen.js if that changes
-
-        if (!usersSnapshot.exists()) {
-          console.log("users snapshot doesn't exist :(");
-          return;
+      get(child(lobbyRef, "gameStatus/hostUsername")).then((snapshot) => {
+        if (snapshot.exists()) {
+          const hostName = snapshot.val()
+          setHost(hostName);
         }
-        const userObjects = usersSnapshot.val();
-
-        const usernames = map(userObjects, (user) => user.username);
-
-        setPlayers(usernames);
-
       });
 
-      if (gameStatus.hasStarted) {
+      const unsubscribe = onValue(startGameRef, (snapshot) => {
 
-        // Randomly generate which songs from the database will be used in the game
-
-        if (user && user.uid == gameStatus.hostUID) {
-          // host can run the algorithm to determine which songs are chosen for the game
-
-          //Songs are currently stored under the user information in the players path
-          // I'm thinking of randomly sampling 2 or so songs from each player and then putting
-          // that into an answers section of the database
-
+        if (!snapshot.exists) {
+          console.log("snapshot doesn't exist for game :(");
         }
 
-        console.log("game started");
-        // REDIRECT TO GAME START HERE
-      }
-      else if (gameStatus.isOver) {
-        //do something when the game ends. Redirect to results screen?
-      }
-    })
-    return () => unsubscribe();
+        const gameStatus = snapshot.val();
+
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        //update the players shown in the lobby
+        get(child(lobbyRef, "users")).then((usersSnapshot) => {
+
+          if (!usersSnapshot.exists()) {
+            console.log("users snapshot doesn't exist :(");
+            return;
+          }
+          const userObjects = usersSnapshot.val();
+
+          console.log("players in game:", userObjects, typeof (userObjects));
+
+          const usernames = Object.values(userObjects).map((userinfo) => userinfo.username);
+          console.log(usernames);
+
+          setPlayers(usernames);
+
+        });
+
+        if (gameStatus.hasStarted) {
+
+          // Randomly generate which songs from the database will be used in the game
+
+          if (user && user.uid == gameStatus.hostUID) {
+            // host can run the algorithm to determine which songs are chosen for the game
+
+            //Songs are currently stored under the user information in the players path
+            // I'm thinking of randomly sampling 2 or so songs from each player and then putting
+            // that into an answers section of the database
+
+          }
+
+          console.log("game started");
+          // REDIRECT TO GAME START HERE
+        }
+        else if (gameStatus.isOver) {
+          //do something when the game ends. Redirect to results screen?
+        }
+      })
+
+      return () => unsubscribe();
+
+    }, 250);
   }, []);
 
   return (
     <View style={styles.container}>
+
       <Text style={styles.code}>Game Code: {gameCode}</Text>
       <Text style={styles.title}>Waiting Lobby</Text>
+      <Text>Host: {host}</Text>
       <Text style={styles.player}>Your Username: {username}</Text>
       <Text style={styles.title}>Players in Lobby:</Text>
       {players.map(player => (
         <Text key={player} style={styles.player}>{player}</Text>
       ))}
+
     </View>
   );
 };

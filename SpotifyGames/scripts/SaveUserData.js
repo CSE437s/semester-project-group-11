@@ -62,7 +62,7 @@ export async function getSpotifyTokenInfo() {
     if (user) {
 
         const db = getFirestore(app);
-        const userRef = doc(db, "users", user.uid).where("id", "==", user.uid);
+        const userRef = doc(db, "users", user.uid);
         const userInfo = await getDoc(userRef);
 
         if (userInfo.exists()){
@@ -87,7 +87,7 @@ export async function getUserFirebaseInfo(){
     if (user) {
 
         const db = getFirestore(app);
-        const userRef = doc(db, "users", user.uid).where("id", "==", user.uid);
+        const userRef = doc(db, "users", user.uid);
         const userInfo = await getDoc(userRef);
 
         if (userInfo.exists()){
@@ -97,6 +97,7 @@ export async function getUserFirebaseInfo(){
         }
         else{
             console.log("Uh oh, no such user with uid:",user.uid + " (there should be though)");
+            return;
         }
 
     }
