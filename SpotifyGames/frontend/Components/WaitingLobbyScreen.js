@@ -4,7 +4,6 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import { getDatabase, ref, onValue, get, child } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
-import { onLobbyJoin } from '../../scripts/Lobbies';
 
 const WaitingLobbyScreen = ({ route, navigation }) => {
   const { gameCode, username } = route.params;
@@ -27,10 +26,7 @@ const WaitingLobbyScreen = ({ route, navigation }) => {
     const lobbyRef = ref(db, "lobbies/" + gameCode);
     const startGameRef = child(lobbyRef, "gameStatus");
 
-    onLobbyJoin(gameCode)
-
-    // TEMPORARY WORKAROUND TO AVOID USER INFO FROM JOINING NOT BEING IN THE DATABASE BEFORE GETTING WHO'S IN THE LOBBY
-    setTimeout(() => {
+    // setTimeout(() => {
 
       get(child(lobbyRef, "gameStatus/hostUsername")).then((snapshot) => {
         if (snapshot.exists()) {
@@ -91,7 +87,7 @@ const WaitingLobbyScreen = ({ route, navigation }) => {
 
       return () => unsubscribe();
 
-    }, 250);
+    // }, 250);
   }, []);
 
   return (
