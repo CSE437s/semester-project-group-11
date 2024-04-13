@@ -3,12 +3,13 @@ import { Button, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+
 import LoginScreen from "./frontend/Components/LoginScreen.js";
 import RegisterScreen from "./frontend/Components/RegisterScreen.js";
-import TestProfile from "./frontend/Components/TestProfile.js";
-import LandingScreen from "./frontend/Components/LandingScreen.js";
 import DashboardScreen from "./frontend/Components/DashboardScreen.js";
 import ProfileScreen from "./frontend/Components/ProfileScreen.js";
+import RouletteScreen from "./frontend/Components/RouletteScreen.js"
+import WaitingLobbyScreen from "./frontend/Components/WaitingLobbyScreen.js";
 
 import SpotifyLoginScreen from "./frontend/Components/SpotifyLoginScreen.js";
 
@@ -70,8 +71,10 @@ export default function App() {
                       component={DashboardScreen}
                     />
                     <Stack.Screen name="Profile" component={ProfileScreen} />
-                    <Stack.Screen name="Game" component={GameScreen} />
+                    <Stack.Screen name="Game" component={GameScreen} options={{ title: 'Higher Lower Game' }}/>
                     <Stack.Screen name="ScoreScreen" component={ScoreScreen} />
+                    <Stack.Screen name="RouletteScreen" component={RouletteScreen} />
+                    <Stack.Screen name="WaitingLobby" component={WaitingLobbyScreen} />
                   </>
                 ) : (
                   <>

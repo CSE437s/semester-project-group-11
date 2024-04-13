@@ -11,9 +11,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#1DB954",
   },
-  imageContainer: {
+  gameContainer: {
     flex: 1,
-    flexDirection: "column",
   },
   topImageContainer: {
     flex: 1,
@@ -33,6 +32,7 @@ const styles = StyleSheet.create({
     color: "#191414",
     fontWeight: "bold",
   },
+
   subtitle: {
     fontSize: 30,
     marginBottom: 15,
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     // alignItems: "center",
   },
+
   inputView: {
     width: "80%",
     backgroundColor: "white",
@@ -78,6 +79,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 40,
     marginBottom: 10,
+  },
+  songButton: {
+    flex: 1, // Make buttons take up equal space horizontally
+    flexDirection: "column", // Arrange image and text horizontally
+    padding: 10,
+    alignItems: "center", // Align content vertically within button
+    marginBottom: 100,
+  },
+  songImage: {
+    width: 50,
+    height: 50,
+    marginRight: 10, // Add margin between image and text
+  },
+  songText: {
+    flex: 1, // Allow text to expand and fill remaining space
+  },
+  resultText: {
+    fontSize: 12, // Adjust result text size if needed
+    color: "white", // Optional: Style result text differently
   },
   gameButton: {
     flex: 1,
