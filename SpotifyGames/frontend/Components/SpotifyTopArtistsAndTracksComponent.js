@@ -21,6 +21,7 @@ const SpotifyTopArtistsAndTracksComponent = () => {
 
             try {
                 const artists = await getTopArtists(spotifyToken);
+                console.log("ARTISTS?????",artists);
                 const tracksPromises = artists.map(artist => getTopSongsForArtistID(spotifyToken, artist.id));
                 const tracks = await Promise.all(tracksPromises);
                 

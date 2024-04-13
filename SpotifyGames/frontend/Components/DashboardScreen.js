@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { View, Text, TouchableOpacity, Pressable, TextInput } from 'react-native';
 import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -10,6 +11,7 @@ import { ThemeProvider } from '@react-navigation/native';
 import styles from './Styles';
 import { getUserFirebaseInfo, parseTokenFromInfo, saveUserTopSongs } from '../../scripts/SaveUserData';
 import { onLobbyJoin } from '../../scripts/Lobbies';
+
 
 
 const DashboardScreen = ({ navigation }) => {
@@ -123,23 +125,25 @@ const DashboardScreen = ({ navigation }) => {
 
   };
   return (
-    <ThemeProvider>
+    
       <View style={styles.container}>
         <Text style={styles.title}>Welcome to Gamify!</Text>
-        <TouchableOpacity
+        <Pressable
           style={styles.button}
           onPress={() => navigation.navigate("Profile")}
         >
           <Text style={{ color: "white" }}>My Profile</Text>
-        </TouchableOpacity>
+        </Pressable>
+
 
         {/* Add a Start Game button */}
-        <TouchableOpacity
+        <Pressable
           style={styles.button}
           onPress={() => navigation.navigate("Game")}
         >
+
           <Text style={{ color: "white" }}>Start Higher Lower Game</Text>
-        </TouchableOpacity>
+        </Pressable>
 
         {/* <TouchableOpacity style={styles.button}
         onPress={() => navigation.navigate("RouletteScreen")}
@@ -147,10 +151,10 @@ const DashboardScreen = ({ navigation }) => {
         <Text style={{ color: "white" }}>Play Roulette</Text>
       </TouchableOpacity> */}
 
-        <TouchableOpacity style={styles.button}
+        <Pressable style={styles.button}
           onPress={handleCreateLobby}>
           <Text style={{ color: "white" }}>Create Roulette Lobby</Text>
-        </TouchableOpacity>
+        </Pressable>
 
         <View style={styles.inputView}>
           <TextInput
@@ -166,18 +170,10 @@ const DashboardScreen = ({ navigation }) => {
           <Text style={{ color: "white" }}>Join Roulette Lobby</Text>
         </Pressable>
 
-        {/* <TouchableOpacity
-          style={styles.button}
-          onPress={() =>
-            console.log("token? ", localStorage.getItem("spotifyInfo"))
-          }
-        >
-          <Text style={{ color: "white" }}>Test token in localstorage</Text>
-        </TouchableOpacity> */}
-
+         
         <LogoutButton />
       </View>
-    </ThemeProvider>
+   
   );
 };
 

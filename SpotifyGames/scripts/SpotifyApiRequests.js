@@ -1,5 +1,4 @@
 import { Buffer } from 'buffer';
-import { save, getValueFor } from './SaveUserData';
 
 export async function getProfile(token) {
 
@@ -151,17 +150,18 @@ export const getFirstTokenData = async (code, redirect_uri) => {
         json: true
     })
     try {
-        return await response.json()
+        return await response.json();
     } catch (error) {
-        console.log("first token error", error)
+        console.log("first token error", error);
     }
 }
 
 
 export function calculateExpirationTime(expiresIn) {
-    const currTime = Date.now()
-    const expirationTime = currTime + (expiresIn * 1000)
-    return expirationTime
+    expiresIn = Number(expiresIn);
+    const currTime = Date.now();
+    const expirationTime = currTime + (expiresIn * 1000);
+    return expirationTime;
 }
 
 
@@ -196,6 +196,7 @@ export const getRefreshTokenData = async (refreshToken) => {
     }
 }
 
+
 export const getUserTopSongs = async (token) => {
 
     const artists = await getTopArtists(token);
@@ -209,38 +210,3 @@ export const getUserTopSongs = async (token) => {
     return combinedTracks;
 }
 
-export const getOrRefreshStoredToken = async () => {
-    try {
-        const expirationTime = await getValueFor("SpotifyExpiration");
-
-        if (expirationTime == null) {
-            console.log("no spotify token found, gotta log in");
-            throw new Error("No Spotify data in SecureStore");
-        }
-
-        const SpotifyDataString = await getValueFor("SpotifyData");
-        let SpotifyData = JSON.parse(SpotifyDataString);
-        const refreshToken = SpotifyData.refresh_token;
-
-        const currTime = Date.now();
-
-        if (expirationTime <= currTime) {
-            console.log("token expired");
-            SpotifyData = await getRefreshTokenData(refreshToken);
-            await save("SpotifyData", JSON.stringify(SpotifyData));
-            await save("SpotifyExpiration", String(calculateExpirationTime(SpotifyData.expires_in)));
-        }
-
-        if (!SpotifyData) {
-            throw new Error("Spotify Response does not exist in Secure Store");
-        }
-
-        if (SpotifyData.access_token) {
-            console.log(SpotifyData.access_token)
-            return SpotifyData.access_token
-        }
-    }
-    catch (error) {
-        console.log(error);
-    }
-}

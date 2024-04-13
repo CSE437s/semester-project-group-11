@@ -1,0 +1,4 @@
+# Local Netlify folder
+.netlify
+# ignore the file where I keep the commands to run the deployment
+NetlifyReadme.md

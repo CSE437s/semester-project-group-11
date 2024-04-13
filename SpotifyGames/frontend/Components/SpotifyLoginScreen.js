@@ -12,13 +12,13 @@ const SpotifyLoginScreen = ({ navigation, route }) => {
   };
 
   return (
-    <ThemeProvider>
+    
       <View style={styles.container}>
         <Text style={styles.title}>Login to Spotify!</Text>
 
         <SpotifyLoginButton setSpotifyToken={setSpotifyTokenWrapper} />
       </View>
-    </ThemeProvider>
+   
   );
 };
 

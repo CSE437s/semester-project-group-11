@@ -32,6 +32,23 @@ const styles = StyleSheet.create({
     color: "#191414",
     fontWeight: "bold",
   },
+
+  subtitle: {
+    fontSize: 30,
+    marginBottom: 15,
+    color: "#191414",
+    fontWeight: "bold",
+  },
+  gameTitle: {
+    fontSize: 50,
+    // marginBottom: 40,
+    color: "#191414",
+    fontWeight: "bold",
+    position: "absolute",
+    justifyContent: "center",
+    // alignItems: "center",
+  },
+
   inputView: {
     width: "80%",
     backgroundColor: "white",

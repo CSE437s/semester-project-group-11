@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import {
   getTopArtists,
   getTopSongsForArtistID,
 } from "../../scripts/SpotifyApiRequests";
 import { parseTokenFromInfo } from "../../scripts/SaveUserData";
 import styles from "./Styles";
-import { ThemeProvider } from "@react-navigation/native";
+import { ThemeProvider, ThemeConsumer } from "@react-navigation/native";
 
 const GameScreen = ({ navigation }) => {
   const [songs, setSongs] = useState([]);
@@ -86,6 +86,7 @@ const GameScreen = ({ navigation }) => {
         if (newLives <= 0) {
           setTimeout(() => navigation.navigate("ScoreScreen", { score }), 3000);
         }
+
         return newLives;
       });
     }
@@ -103,12 +104,8 @@ const GameScreen = ({ navigation }) => {
     }, 2000);
   };
   
-  
-  
-  
 
   return (
-    <ThemeProvider>
       <View style={[styles.container, { backgroundColor: backgroundColor }]}> 
         {isLoading ? (
           <Text>Loading...</Text>
@@ -123,7 +120,7 @@ const GameScreen = ({ navigation }) => {
             </Text>
             {currentSongs.map((song, index) => (
               <>
-                <TouchableOpacity
+                <Pressable
                   key={song.id}
                   onPress={() => handleSongSelection(index)}
                   style={styles.songButton}
@@ -141,19 +138,19 @@ const GameScreen = ({ navigation }) => {
                       {result} - Popularity: {song.popularity}
                     </Text>
                   )}
-                </TouchableOpacity>
+
+                </Pressable>
               </>
             ))}
           </>
         )}
-        <TouchableOpacity
+        <Pressable
           style={stylesGameScreen.quitButton}
           onPress={() => navigation.navigate("Dashboard")}
         >
           <Text style={stylesGameScreen.quitButtonText}>Quit</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
-    </ThemeProvider>
   );
 };
 

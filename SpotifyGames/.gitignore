@@ -40,3 +40,6 @@ yarn-error.*
 
 # yarn
 yarn.lock
+
+# netlify redirects
+_redirects
