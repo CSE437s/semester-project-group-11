@@ -42,7 +42,12 @@ export default function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user){
-        setSpotifyToken(getOrRefreshTokenFromFirebase())
+        getOrRefreshTokenFromFirebase().then((token) => {
+          // console.log("APP.JS TOKEN,",token);
+          if (token){
+            setSpotifyToken(token);
+          }
+        });
       }
       else{
         setSpotifyToken(null);

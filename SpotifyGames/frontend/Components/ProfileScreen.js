@@ -48,7 +48,6 @@ const ProfileScreen = ({ navigation }) => {
             setFirebaseProfile(data);
         }
 
-
         getProfileData();
         retrieveFirebase();
         setIsLoading(false);
