@@ -1,7 +1,7 @@
 import { getAuth } from "firebase/auth";
 import { app } from "./firebaseConfig";
 import { getUserFirebaseInfo } from "./SaveUserData";
-import { ref, set, push, getDatabase, child } from 'firebase/database';
+import { ref, set, push, getDatabase, get, child } from 'firebase/database';
 
 
 export const onLobbyJoin = async (gameCode) => {
@@ -52,3 +52,34 @@ export const onLobbyJoin = async (gameCode) => {
 
     
 }
+export const fetchUsersForGame = async (gameCode) => {
+    const db = getDatabase(app);
+    const lobbyRef = ref(db, `lobbies/${gameCode}/users`);
+    const snapshot = await get(lobbyRef);
+
+    if (snapshot.exists()) {
+        const usersData = snapshot.val();
+        // Convert object of objects into an array
+        const usersArray = Object.keys(usersData).map(key => {
+            return {
+                uid: key,
+                ...usersData[key],
+            };
+        });
+
+        // Fetch top songs for each user and add them to the user's object
+        for (let user of usersArray) {
+            const userSongsSnapshot = await get(ref(db, `lobbies/${gameCode}/songPool/${user.uid}`));
+            if (userSongsSnapshot.exists()) {
+                user.topSongs = userSongsSnapshot.val();
+            } else {
+                user.topSongs = [];
+            }
+        }
+        
+        return usersArray; // Returns an array of users with their top songs
+    } else {
+        console.log(`No users found in gameCode: ${gameCode}`);
+        return []; // Return an empty array if no users are found
+    }
+};

@@ -10,7 +10,7 @@ import DashboardScreen from "./frontend/Components/DashboardScreen.js";
 import ProfileScreen from "./frontend/Components/ProfileScreen.js";
 import RouletteScreen from "./frontend/Components/RouletteScreen.js"
 import WaitingLobbyScreen from "./frontend/Components/WaitingLobbyScreen.js";
-
+import QuestionScreen from "./frontend/Components/QuestionScreen.js";
 import SpotifyLoginScreen from "./frontend/Components/SpotifyLoginScreen.js";
 
 import GameScreen from "./frontend/Components/GameScreen.js";
@@ -22,6 +22,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, createTheme } from "@rneui/themed";
 import styles from "./Styles";
 import { getOrRefreshTokenFromFirebase } from "./scripts/SaveUserData.js";
+import { GameProvider, useGame } from './scripts/GameContext.js';
 
 const Stack = createNativeStackNavigator();
 
@@ -79,7 +80,10 @@ export default function App() {
                     <Stack.Screen name="Game" component={GameScreen} options={{ title: 'Higher Lower Game' }}/>
                     <Stack.Screen name="ScoreScreen" component={ScoreScreen} />
                     <Stack.Screen name="RouletteScreen" component={RouletteScreen} />
+                    
                     <Stack.Screen name="WaitingLobby" component={WaitingLobbyScreen} />
+                    <Stack.Screen name="QuestionScreen" component={QuestionScreen} />
+
                   </>
                 ) : (
                   <>

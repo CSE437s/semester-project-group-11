@@ -167,10 +167,13 @@ const DashboardScreen = ({ navigation }) => {
         />
       </View>
 
-      <Pressable style={styles.button}
-        onPress={handleJoinLobby}>
+      <Pressable
+        style={[styles.button, !gameCode.trim() && { opacity: 0.5 }]}
+        onPress={handleJoinLobby}
+        disabled={!gameCode.trim()} // Disable button when gameCode is empty
+      >
         <Text style={{ color: "white" }}>Join Roulette Lobby</Text>
-      </Pressable>
+    </Pressable>
 
 
       <LogoutButton />
