@@ -1,15 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { getAuth } from 'firebase/auth';
-import { getDatabase, ref, onValue, set } from 'firebase/database';
+import { getDatabase, ref, onValue, set, update } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
-import { fetchUsersForGame } from '../../scripts/Lobbies';
+import { randomlyGenerateQuestions, fetchUsersForGame } from '../../scripts/Lobbies';
 
 const WaitingLobbyScreen = ({ route, navigation }) => {
   const { gameCode, username } = route.params;
   const [players, setPlayers] = useState([]);
   const [isHost, setIsHost] = useState(false);
   const db = getDatabase(app);  // Define db here for reuse
+
+  // const calculateQuestions = async () => {
+  //   const songPoolRef = ref(db, `lobbies/${gameCode}/songPool`);
+  //   get(songPoolRef, (snapshot) => {
+  //     if (snapshot.exists()){
+  //       const userSongs = snapshot.val();
+
+  //       for (const [key,value] of Object.entries(userSongs)){
+
+  //       }
+  //     }
+  //   })
+  // };
 
   useEffect(() => {
     const gameStatusRef = ref(db, `lobbies/${gameCode}/gameStatus`);
@@ -57,18 +70,26 @@ const WaitingLobbyScreen = ({ route, navigation }) => {
         <Text key={player} style={styles.player}>{player}</Text>
       ))}
       {isHost && (
-        <Pressable 
-          style={styles.button} 
+        <Pressable
+          style={styles.button}
           onPress={() => {
             const gameStatusRef = ref(db, `lobbies/${gameCode}/gameStatus`);
-            set(gameStatusRef, { hasStarted: true })
-              .then(() => console.log("Game started successfully!"))
-              .catch(error => console.error("Error starting the game: ", error));
+
+            const questionsRef = ref(db, `lobbies/${gameCode}/questions`);
+
+            randomlyGenerateQuestions(gameCode).then((questions) => {
+              set(questionsRef, questions).then(() =>
+                update(gameStatusRef, { hasStarted: true })
+                  .then(() => console.log("Game started successfully!"))
+                  .catch(error => console.error("Error starting the game: ", error))
+              ).catch((e) => console.log("Error storing questions, ", e))
+            }).catch((e) => console.log("error creating questions, ", e));
           }}>
           <Text style={{ color: "white" }}>Start Game</Text>
         </Pressable>
-      )}
-    </View>
+      )
+      }
+    </View >
   );
 };
 

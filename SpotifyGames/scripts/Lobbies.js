@@ -33,7 +33,7 @@ export const onLobbyJoin = async (gameCode) => {
     userData.topSongs.forEach((song, index) => {
         if (index < 5) {  // Assuming you only want to store up to 5 songs per user
             const songId = song.id; // Make sure each song has a unique identifier
-            songsData[songId] = {...song, userId: user.uid}; // Spread the song data and add user ID
+            songsData[songId] = { ...song, userId: user.uid }; // Spread the song data and add user ID
         }
     });
 
@@ -77,3 +77,46 @@ export const fetchUsersForGame = async (gameCode) => {
     }
 };
 
+const selectRandomSong = (users) => {
+    const usersWithSongs = users.filter(user => user.topSongs && user.topSongs.length > 0);
+    if (usersWithSongs.length === 0) {
+        console.error('No users with songs available');
+        return;
+    }
+
+    const randomUserIndex = Math.floor(Math.random() * usersWithSongs.length);
+    const randomUser = usersWithSongs[randomUserIndex];
+    const randomSongIndex = Math.floor(Math.random() * randomUser.topSongs.length);
+    const randomSong = randomUser.topSongs[randomSongIndex];
+
+    console.log('Selected song:', randomSong);
+
+    return randomSong;
+    // setGameData(prevState => ({
+    //     ...prevState,
+    //     currentSong: { ...randomSong, ownerId: randomUser.id }
+    // }));
+};
+
+export const randomlyGenerateQuestions = async (gameCode) => {
+    try {
+        const users = await fetchUsersForGame(gameCode);
+        console.log("Fetched users and songs:", users);
+        if (users.length === 0) {
+            console.error('No users found for this game');
+        } else {
+            console.log('Users with songs:', users.filter(u => u.topSongs && u.topSongs.length > 0));
+            // setGameData({ users, currentSong: null });
+            // selectRandomSong(users);
+
+            // Print out the pool of all songs
+            const allSongs = users.reduce((allSongs, user) => {
+                return allSongs.concat(user.topSongs);
+            }, []);
+            console.log("Pool of all songs:", allSongs);
+            return allSongs;
+        }
+    } catch (error) {
+        console.error('Failed to fetch users and songs:', error);
+    }
+};

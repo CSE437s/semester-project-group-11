@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Image } from 'react-native';
-import { ref, set, onValue } from 'firebase/database';
+import { ref, set, onValue, get } from 'firebase/database';
 import { db } from '../../scripts/firebaseConfig';
 import { fetchUsersForGame } from '../../scripts/Lobbies';
 import Scoreboard from './Scoreboard';
@@ -12,32 +12,62 @@ const QuestionScreen = ({ route }) => {
     const [answered, setAnswered] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [hostUID, setHostUID] = useState(null);
+    const [questions, setQuestions] = useState([]);
+
+    // useEffect(() => {
+    //     const fetchUsersAndSongs = async () => {
+    //         try {
+    //             const users = await fetchUsersForGame(gameCode);
+    //             console.log("Fetched users and songs:", users);
+    //             if (users.length === 0) {
+    //                 console.error('No users found for this game');
+    //             } else {
+    //                 console.log('Users with songs:', users.filter(u => u.topSongs && u.topSongs.length > 0));
+    //                 setGameData({ users, currentSong: null });
+    //                 selectRandomSong(users);
+
+    //                 // Print out the pool of all songs
+    //                 const allSongs = users.reduce((allSongs, user) => {
+    //                     return allSongs.concat(user.topSongs);
+    //                 }, []);
+    //                 console.log("Pool of all songs:", allSongs);
+    //             }
+    //         } catch (error) {
+    //             console.error('Failed to fetch users and songs:', error);
+    //         }
+    //     };
+
+    //     fetchUsersAndSongs();
+    // }, [gameCode]);
 
     useEffect(() => {
-        const fetchUsersAndSongs = async () => {
-            try {
-                const users = await fetchUsersForGame(gameCode);
-                console.log("Fetched users and songs:", users);
-                if (users.length === 0) {
-                    console.error('No users found for this game');
-                } else {
-                    console.log('Users with songs:', users.filter(u => u.topSongs && u.topSongs.length > 0));
-                    setGameData({ users, currentSong: null });
-                    selectRandomSong(users);
-
-                    // Print out the pool of all songs
-                    const allSongs = users.reduce((allSongs, user) => {
-                        return allSongs.concat(user.topSongs);
-                    }, []);
-                    console.log("Pool of all songs:", allSongs);
+        const fetchSongs = async () => {
+            const questionsRef = ref(db, `lobbies/${gameCode}/questions`);
+            get(questionsRef).then((snapshot) => {
+                if (!snapshot.exists()) {
+                    console.log("questions do not exist :(");
                 }
-            } catch (error) {
-                console.error('Failed to fetch users and songs:', error);
-            }
-        };
+                const qs = snapshot.val();
+                // console.log("HERE:", qs);
+                let questionList = [];
+                for (const [key, value] of Object.entries(qs)) {
+                    // console.log(`${key}: ${value}`);
+                    questionList.push(JSON.stringify(value));
+                }
 
-        fetchUsersAndSongs();
-    }, [gameCode]);
+                console.log("HERE:", questionList[0]);
+
+                setGameData(prevState => ({
+                    ...prevState,
+                    currentSong: JSON.parse(questionList[0])
+                }));
+
+                setQuestions(questionList);
+                
+            }).catch((e) => console.log("ERROR FETCHING QUESTIONS:", e));
+        }
+        fetchSongs();
+    }, [])
 
     useEffect(() => {
         const gameStatusRef = ref(db, `lobbies/${gameCode}/gameStatus`);
@@ -53,26 +83,6 @@ const QuestionScreen = ({ route }) => {
             gameStatusListener(); // Clean up the listener
         };
     }, [gameCode]);
-
-    const selectRandomSong = (users) => {
-        const usersWithSongs = users.filter(user => user.topSongs && user.topSongs.length > 0);
-        if (usersWithSongs.length === 0) {
-            console.error('No users with songs available');
-            return;
-        }
-
-        const randomUserIndex = Math.floor(Math.random() * usersWithSongs.length);
-        const randomUser = usersWithSongs[randomUserIndex];
-        const randomSongIndex = Math.floor(Math.random() * randomUser.topSongs.length);
-        const randomSong = randomUser.topSongs[randomSongIndex];
-
-        console.log('Selected song:', randomSong);
-
-        setGameData(prevState => ({
-            ...prevState,
-            currentSong: { ...randomSong, ownerId: randomUser.id }
-        }));
-    };
 
     const handleAnswer = (userId) => {
         setSelectedUser(userId);
@@ -149,7 +159,10 @@ const QuestionScreen = ({ route }) => {
                     ))}
                 </>
             ) : (
-                <Text>Loading song and user data...</Text>
+                <>
+                    <Text>Loading song and user data...</Text>
+                    <Text>Question: {questions}</Text>
+                </>
             )}
             <Button
                 title="Next Question"
