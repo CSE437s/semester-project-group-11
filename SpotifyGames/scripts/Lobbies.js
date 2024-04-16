@@ -5,53 +5,43 @@ import { ref, set, push, getDatabase, get, child } from 'firebase/database';
 
 
 export const onLobbyJoin = async (gameCode) => {
-
     const auth = getAuth();
     const user = auth.currentUser;
-
-    if (!user){
+    if (!user) {
         console.log("USER NOT LOGGED IN WHEN TRYING TO JOIN LOBBY");
-        return
+        return;
     }
 
     const db = getDatabase(app);
-
     const userData = await getUserFirebaseInfo();
-
-    const username = userData.username;
-    let topSongs = userData.topSongs;
-
-    const userRef = ref(db, "lobbies/" + gameCode + "/users/" + user.uid);
-
-    console.log("vals:", user.uid, username, topSongs);
-
-    set(userRef, {
-        username: username
-    });
-
-    const songPoolRef = ref(db, "lobbies/" + gameCode + "/songPool");
-
-    // randomly select songs from the top songs to include
-
-    let selectedSongs = []
-
-    for (let i = 0; i < 5; i++) {
-        const randomIndex = Math.floor(Math.random() * topSongs.length);
-        selectedSongs.push(topSongs.splice(randomIndex, 1)[0]);
+    if (!userData.topSongs || userData.topSongs.length === 0) {
+        console.error('No top songs available for the user:', user.uid);
+        return;
     }
 
-    console.log("SELECTED SONGS", selectedSongs);
+    const username = userData.username;
+    const userRef = ref(db, `lobbies/${gameCode}/users/${user.uid}`);
+    console.log("vals:", user.uid, username, userData.topSongs);
 
-    selectedSongs.forEach((song) => {
-        console.log("SONG ID", song);
-        set(child(songPoolRef, song.id), {
-            song:song,
-            user:user.uid
-        })
-    })
+    // Update user with username and basic data, not song data
+    await set(userRef, { username: username, userId: user.uid });
 
-    
-}
+    const songPoolRef = ref(db, `lobbies/${gameCode}/songPool/${user.uid}`);
+
+    // Create an object to store songs under user's ID
+    let songsData = {};
+    userData.topSongs.forEach((song, index) => {
+        if (index < 5) {  // Assuming you only want to store up to 5 songs per user
+            const songId = song.id; // Make sure each song has a unique identifier
+            songsData[songId] = {...song, userId: user.uid}; // Spread the song data and add user ID
+        }
+    });
+
+    console.log("Storing songs for user:", user.uid, songsData);
+    await set(songPoolRef, songsData);
+};
+
+
 export const fetchUsersForGame = async (gameCode) => {
     const db = getDatabase(app);
     const lobbyRef = ref(db, `lobbies/${gameCode}/users`);
@@ -59,27 +49,31 @@ export const fetchUsersForGame = async (gameCode) => {
 
     if (snapshot.exists()) {
         const usersData = snapshot.val();
-        // Convert object of objects into an array
-        const usersArray = Object.keys(usersData).map(key => {
-            return {
-                uid: key,
-                ...usersData[key],
-            };
+        console.log("Fetched users data:", usersData);  // Debugging
+
+        const usersArray = Object.keys(usersData).map(async key => {
+            const userSongsRef = ref(db, `lobbies/${gameCode}/songPool/${key}`);
+            const songsSnapshot = await get(userSongsRef);
+            if (songsSnapshot.exists()) {
+                return {
+                    uid: key,
+                    ...usersData[key],
+                    topSongs: Object.values(songsSnapshot.val())  // Check if this matches your structure
+                };
+            } else {
+                console.error(`No songs found for user ${key}`);
+                return {
+                    uid: key,
+                    ...usersData[key],
+                    topSongs: []
+                };
+            }
         });
 
-        // Fetch top songs for each user and add them to the user's object
-        for (let user of usersArray) {
-            const userSongsSnapshot = await get(ref(db, `lobbies/${gameCode}/songPool/${user.uid}`));
-            if (userSongsSnapshot.exists()) {
-                user.topSongs = userSongsSnapshot.val();
-            } else {
-                user.topSongs = [];
-            }
-        }
-        
-        return usersArray; // Returns an array of users with their top songs
+        return Promise.all(usersArray);  // Ensure asynchronous operations complete
     } else {
-        console.log(`No users found in gameCode: ${gameCode}`);
-        return []; // Return an empty array if no users are found
+        console.error(`No users found in gameCode: ${gameCode}`);
+        return [];
     }
 };
+

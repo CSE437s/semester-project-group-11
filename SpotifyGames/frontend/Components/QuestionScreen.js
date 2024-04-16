@@ -1,125 +1,164 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Image } from 'react-native';
-import { getUserDataFromFirestore } from '../../scripts/SaveUserData';
+import { ref, set, onValue } from 'firebase/database';
+import { db } from '../../scripts/firebaseConfig';
 import { fetchUsersForGame } from '../../scripts/Lobbies';
-import Scoreboard from './Scoreboard'; // Ensure Scoreboard is correctly imported
+import Scoreboard from './Scoreboard';
 
 const QuestionScreen = ({ route }) => {
-  const { gameCode, isHost } = route.params; // Pass isHost from wherever you're navigating from
-  const [gameData, setGameData] = useState({ users: [], currentSong: null });
-  const [questionNumber, setQuestionNumber] = useState(1);
-  const [answered, setAnswered] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  
-  useEffect(() => {
-    const fetchGameData = async () => {
-      try {
-        const gameUsers = await fetchUsersForGame(gameCode);
-        if (gameUsers.length === 0) {
-          throw new Error('No users found for this game');
+    const { gameCode, isHost } = route.params;
+    const [gameData, setGameData] = useState({ users: [], currentSong: null });
+    const [questionNumber, setQuestionNumber] = useState(1);
+    const [answered, setAnswered] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [hostUID, setHostUID] = useState(null);
+
+    useEffect(() => {
+        const fetchUsersAndSongs = async () => {
+            try {
+                const users = await fetchUsersForGame(gameCode);
+                console.log("Fetched users and songs:", users);
+                if (users.length === 0) {
+                    console.error('No users found for this game');
+                } else {
+                    console.log('Users with songs:', users.filter(u => u.topSongs && u.topSongs.length > 0));
+                    setGameData({ users, currentSong: null });
+                    selectRandomSong(users);
+
+                    // Print out the pool of all songs
+                    const allSongs = users.reduce((allSongs, user) => {
+                        return allSongs.concat(user.topSongs);
+                    }, []);
+                    console.log("Pool of all songs:", allSongs);
+                }
+            } catch (error) {
+                console.error('Failed to fetch users and songs:', error);
+            }
+        };
+
+        fetchUsersAndSongs();
+    }, [gameCode]);
+
+    useEffect(() => {
+        const gameStatusRef = ref(db, `lobbies/${gameCode}/gameStatus`);
+        const gameStatusListener = onValue(gameStatusRef, (snapshot) => {
+            const gameStatus = snapshot.val();
+            if (gameStatus) {
+                setQuestionNumber(gameStatus.currentQuestion);
+                setHostUID(gameStatus.hostUID);
+            }
+        });
+
+        return () => {
+            gameStatusListener(); // Clean up the listener
+        };
+    }, [gameCode]);
+
+    const selectRandomSong = (users) => {
+        const usersWithSongs = users.filter(user => user.topSongs && user.topSongs.length > 0);
+        if (usersWithSongs.length === 0) {
+            console.error('No users with songs available');
+            return;
         }
-        const usersWithSongs = await Promise.all(gameUsers.map(async (user) => {
-          const userData = await getUserDataFromFirestore(user.id);
-          return { ...user, songs: userData.topSongs || [] };
-        }));
-        setGameData({ users: usersWithSongs, currentSong: null });
-        selectRandomSong(usersWithSongs);  // Ensure users are loaded before selecting a song
-      } catch (error) {
-        console.error('Failed to fetch game data:', error);
-      }
-    };
-  
-    fetchGameData();
-  }, [gameCode]);
 
-  const selectRandomSong = (users) => {
-    if (!users || users.length === 0) {
-        console.error('No users or users have no songs');
-        return;
-    }
+        const randomUserIndex = Math.floor(Math.random() * usersWithSongs.length);
+        const randomUser = usersWithSongs[randomUserIndex];
+        const randomSongIndex = Math.floor(Math.random() * randomUser.topSongs.length);
+        const randomSong = randomUser.topSongs[randomSongIndex];
 
-    const randomUserIndex = Math.floor(Math.random() * users.length);
-    const randomUser = users[randomUserIndex];
+        console.log('Selected song:', randomSong);
 
-    if (!randomUser.songs || randomUser.songs.length === 0) {
-        console.error('Selected user has no songs');
-        return;
-    }
-
-    const randomSongIndex = Math.floor(Math.random() * randomUser.songs.length);
-    const randomSong = randomUser.songs[randomSongIndex];
-
-    setGameData(prevState => ({
-        ...prevState,
-        currentSong: { ...randomSong, ownerId: randomUser.id } // Include ownerId in the song data
-    }));
-};
-
-const handleNextQuestion = () => {
-    setQuestionNumber(prev => prev + 1);  // Increment question number
-    setAnswered(false);  // Reset the answered flag
-    setSelectedUser(null);  // Clear any selected user
-    selectRandomSong(gameData.users);  // Pick a new song
-};
-
-  const handleAnswer = (userId) => {
-    // Check if the selected user's ID matches the user ID of the song's owner
-    const isCorrect = userId === gameData.currentSong.ownerId; // Assume ownerId is stored in currentSong
-
-    if (isCorrect) {
         setGameData(prevState => ({
             ...prevState,
-            users: prevState.users.map(user => {
-                if (user.id === userId) {
-                    // Make sure to convert score to a number before incrementing
-                    return { ...user, score: (user.score || 0) + 1 };
-                }
-                return user;
-            })
+            currentSong: { ...randomSong, ownerId: randomUser.id }
         }));
-    }
+    };
 
-    // Set answered to true to disable further answers until the next question
-    setAnswered(true);
+    const handleAnswer = (userId) => {
+        setSelectedUser(userId);
+        if (gameData.currentSong.ownerId === userId) {
+            console.log('Correct answer!');
+            // Find the user who answered correctly
+            const userIndex = gameData.users.findIndex(user => user.id === userId);
+            if (userIndex !== -1) {
+                // Create a copy of users array to update the score of the user
+                const updatedUsers = [...gameData.users];
+                updatedUsers[userIndex].score = (updatedUsers[userIndex].score || 0) + 1; // Increment score
+                setGameData(prevState => ({
+                    ...prevState,
+                    users: updatedUsers
+                }));
+            }
+        } else {
+            console.log('Wrong answer!');
+        }
+        setAnswered(true);
+    };
 
-    // Wait a bit before moving to the next question
-    setTimeout(() => {
-        handleNextQuestion();
-    }, 2000); // 2000 milliseconds pause before the next question
-};
+    const handleNextQuestion = () => {
+        // Only allow the host to click "Next Question"
+        if (hostUID !== isHost) return;
 
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Scoreboard
-        scores={gameData.users}
-        onNextQuestion={handleNextQuestion}
-        isHost={isHost}
-        questionNumber={questionNumber}
-      />
-      {gameData.currentSong ? (
-        <>
-          <Text>Pick the user who likes this song:</Text>
-          <Text>{`Song: ${gameData.currentSong.name} by ${gameData.currentSong.artists}`}</Text>
-          <Image
-            source={{ uri: gameData.currentSong.albumCover }}
-            style={{ width: 100, height: 100 }}
-            resizeMode="contain"
-          />
-          {gameData.users.map((user) => (
-            <Button
-              key={user.id}
-              title={user.username}
-              onPress={() => handleAnswer(user.id)}
-              disabled={answered}
-              color={selectedUser === user.id ? 'blue' : 'grey'}
+        // Increment question number
+        const newQuestionNumber = questionNumber + 1;
+
+        // Update game status
+        const gameStatusRef = ref(db, `lobbies/${gameCode}/gameStatus`);
+        const newGameStatus = { currentQuestion: newQuestionNumber };
+        set(gameStatusRef, newGameStatus)
+            .then(() => {
+                console.log('Game status updated successfully.');
+            })
+            .catch((error) => {
+                console.error('Error updating game status:', error);
+            });
+
+        // Reset answered state and selectedUser
+        setAnswered(false);
+        setSelectedUser(null);
+
+        // Update question number state
+        setQuestionNumber(newQuestionNumber);
+    };
+
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Scoreboard
+                scores={gameData.users}
+                onNextQuestion={handleNextQuestion}
+                isHost={isHost}
+                questionNumber={questionNumber}
             />
-          ))}
-        </>
-      ) : (
-        <Text>Loading song and user data...</Text>
-      )}
-    </View>
-  );
+            {gameData.currentSong ? (
+                <>
+                    <Text>Pick the user who likes this song:</Text>
+                    <Text>{`Song: ${gameData.currentSong.name} by ${gameData.currentSong.artists}`}</Text>
+                    <Image
+                        source={{ uri: gameData.currentSong.albumCover }}
+                        style={{ width: 100, height: 100 }}
+                        resizeMode="contain"
+                    />
+                    {gameData.users.map((user) => (
+                        <Button
+                            key={user.id}
+                            title={user.username}
+                            onPress={() => handleAnswer(user.id)}
+                            disabled={answered}
+                            color={selectedUser === user.id ? 'blue' : 'grey'}
+                        />
+                    ))}
+                </>
+            ) : (
+                <Text>Loading song and user data...</Text>
+            )}
+            <Button
+                title="Next Question"
+                onPress={handleNextQuestion}
+                disabled={hostUID !== isHost} // Disable button for non-host players
+            />
+        </View>
+    );
+
 };
 
 export default QuestionScreen;

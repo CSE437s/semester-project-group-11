@@ -23,6 +23,7 @@ import { ThemeProvider, createTheme } from "@rneui/themed";
 import styles from "./Styles";
 import { getOrRefreshTokenFromFirebase } from "./scripts/SaveUserData.js";
 import { GameProvider, useGame } from './scripts/GameContext.js';
+import {onLobbyJoin, fetchUsersForGame} from './scripts/Lobbies.js';
 
 const Stack = createNativeStackNavigator();
 

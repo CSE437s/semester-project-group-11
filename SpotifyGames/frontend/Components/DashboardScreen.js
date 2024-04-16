@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
 import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -144,7 +143,7 @@ const DashboardScreen = ({ navigation }) => {
         onPress={() => navigation.navigate("Game")}
       >
 
-        <Text style={{ color: "white" }}>Start Higher Lower Game</Text>
+        <Text style={{ color: "white" }}>Higher Lower Game</Text>
       </Pressable>
 
       {/* <Pressable style={styles.button}
@@ -155,7 +154,7 @@ const DashboardScreen = ({ navigation }) => {
 
       <Pressable style={styles.button}
         onPress={handleCreateLobby}>
-        <Text style={{ color: "white" }}>Create Roulette Lobby</Text>
+        <Text style={{ color: "white" }}>Create Song Roulette Lobby</Text>
       </Pressable>
 
       <View style={styles.inputView}>
@@ -172,7 +171,7 @@ const DashboardScreen = ({ navigation }) => {
         onPress={handleJoinLobby}
         disabled={!gameCode.trim()} // Disable button when gameCode is empty
       >
-        <Text style={{ color: "white" }}>Join Roulette Lobby</Text>
+        <Text style={{ color: "white" }}>Join Song Roulette Lobby</Text>
     </Pressable>
 
 
