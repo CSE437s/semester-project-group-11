@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Image } from 'react-native';
-import { ref, set, onValue } from 'firebase/database';
+import { ref, set, onValue, runTransaction } from 'firebase/database';
 import { db } from '../../scripts/firebaseConfig';
 import { fetchUsersForGame } from '../../scripts/Lobbies';
 import Scoreboard from './Scoreboard';
@@ -105,13 +105,24 @@ const QuestionScreen = ({ route }) => {
         // Update game status
         const gameStatusRef = ref(db, `lobbies/${gameCode}/gameStatus`);
         const newGameStatus = { currentQuestion: newQuestionNumber };
-        set(gameStatusRef, newGameStatus)
-            .then(() => {
-                console.log('Game status updated successfully.');
-            })
-            .catch((error) => {
-                console.error('Error updating game status:', error);
-            });
+
+
+        runTransaction(gameStatusRef, (status) => {
+            if (status){
+                if (status.currentQuestion){
+                    
+                }
+            }
+            else{
+
+            }
+        })
+        .then(() => {
+            console.log('Game status updated successfully.');
+        })
+        .catch((error) => {
+            console.error('Error updating game status:', error);
+        });
 
         // Reset answered state and selectedUser
         setAnswered(false);

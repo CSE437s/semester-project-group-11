@@ -25,7 +25,7 @@ const DashboardScreen = ({ navigation }) => {
     const storeUserTopSongs = async () => {
 
       const spotifyInfo = await getFromCrossPlatformStorage("spotifyInfo");
-      console.log(typeof(spotifyInfo), spotifyInfo);
+      console.log(typeof (spotifyInfo), spotifyInfo);
       const spotifyToken = parseTokenFromInfo(spotifyInfo);
 
       if (!spotifyToken) {
@@ -105,7 +105,7 @@ const DashboardScreen = ({ navigation }) => {
 
       set(ref(db, "lobbies/" + gameCode + "/gameStatus"), {
         hasStarted: false,
-        round: 1,
+        currentQuestion: 1,
         isOver: false,
         hostUID: user.uid,
         hostUsername: username
@@ -157,6 +157,16 @@ const DashboardScreen = ({ navigation }) => {
         <Text style={{ color: "white" }}>Create Song Roulette Lobby</Text>
       </Pressable>
 
+
+
+      <Pressable
+        style={[styles.button, !gameCode.trim() && { opacity: 0.5 }]}
+        onPress={handleJoinLobby}
+        disabled={!gameCode.trim()} // Disable button when gameCode is empty
+      >
+        <Text style={{ color: "white" }}>Join Song Roulette Lobby</Text>
+      </Pressable>
+
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
@@ -165,14 +175,6 @@ const DashboardScreen = ({ navigation }) => {
           onChangeText={handleGameCodeChange}
         />
       </View>
-
-      <Pressable
-        style={[styles.button, !gameCode.trim() && { opacity: 0.5 }]}
-        onPress={handleJoinLobby}
-        disabled={!gameCode.trim()} // Disable button when gameCode is empty
-      >
-        <Text style={{ color: "white" }}>Join Song Roulette Lobby</Text>
-    </Pressable>
 
 
       <LogoutButton />
