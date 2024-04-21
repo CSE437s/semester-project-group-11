@@ -24,7 +24,7 @@ export const onLobbyJoin = async (gameCode) => {
     console.log("vals:", user.uid, username, userData.topSongs);
 
     // Update user with username and basic data, not song data
-    await set(userRef, { username: username, userId: user.uid });
+    await set(userRef, { username: username, userId: user.uid, score: 0});
 
     const songPoolRef = ref(db, `lobbies/${gameCode}/songPool/${user.uid}`);
 
@@ -42,38 +42,38 @@ export const onLobbyJoin = async (gameCode) => {
 };
 
 
-export const fetchUsersForGame = async (gameCode) => {
-    const db = getDatabase(app);
-    const lobbyRef = ref(db, `lobbies/${gameCode}/users`);
-    const snapshot = await get(lobbyRef);
+// export const fetchUsersForGame = async (gameCode) => {
+//     const db = getDatabase(app);
+//     const lobbyRef = ref(db, `lobbies/${gameCode}/users`);
+//     const snapshot = await get(lobbyRef);
 
-    if (snapshot.exists()) {
-        const usersData = snapshot.val();
-        console.log("Fetched users data:", usersData);  // Debugging
+//     if (snapshot.exists()) {
+//         const usersData = snapshot.val();
+//         console.log("Fetched users data:", usersData);  // Debugging
 
-        const usersArray = Object.keys(usersData).map(async key => {
-            const userSongsRef = ref(db, `lobbies/${gameCode}/songPool/${key}`);
-            const songsSnapshot = await get(userSongsRef);
-            if (songsSnapshot.exists()) {
-                return {
-                    uid: key,
-                    ...usersData[key],
-                    topSongs: Object.values(songsSnapshot.val())  // Check if this matches your structure
-                };
-            } else {
-                console.error(`No songs found for user ${key}`);
-                return {
-                    uid: key,
-                    ...usersData[key],
-                    topSongs: []
-                };
-            }
-        });
+//         const usersArray = Object.keys(usersData).map(async key => {
+//             const userSongsRef = ref(db, `lobbies/${gameCode}/songPool/${key}`);
+//             const songsSnapshot = await get(userSongsRef);
+//             if (songsSnapshot.exists()) {
+//                 return {
+//                     uid: key,
+//                     ...usersData[key],
+//                     topSongs: Object.values(songsSnapshot.val())  // Check if this matches your structure
+//                 };
+//             } else {
+//                 console.error(`No songs found for user ${key}`);
+//                 return {
+//                     uid: key,
+//                     ...usersData[key],
+//                     topSongs: []
+//                 };
+//             }
+//         });
 
-        return Promise.all(usersArray);  // Ensure asynchronous operations complete
-    } else {
-        console.error(`No users found in gameCode: ${gameCode}`);
-        return [];
-    }
-};
+//         return Promise.all(usersArray);  // Ensure asynchronous operations complete
+//     } else {
+//         console.error(`No users found in gameCode: ${gameCode}`);
+//         return [];
+//     }
+// };
 

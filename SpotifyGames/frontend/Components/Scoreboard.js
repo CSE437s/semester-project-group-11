@@ -11,9 +11,9 @@ const Scoreboard = ({ scores, onNextQuestion, isHost, questionNumber }) => {
           {userScore.username}: {userScore.score}
         </Text>
       ))}
-      {isHost && (
+      {/* {isHost && (
         <Button title="Next Question" onPress={onNextQuestion} />
-      )}
+      )} */}
     </View>
   );
 };

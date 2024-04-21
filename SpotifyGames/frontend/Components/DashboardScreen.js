@@ -105,7 +105,7 @@ const DashboardScreen = ({ navigation }) => {
 
       set(ref(db, "lobbies/" + gameCode + "/gameStatus"), {
         hasStarted: false,
-        currentQuestion: 1,
+        questionNumber: 1,
         isOver: false,
         hostUID: user.uid,
         hostUsername: username
