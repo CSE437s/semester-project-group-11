@@ -19,7 +19,7 @@ const QuestionScreen = ({ route }) => {
     const user = auth.currentUser;
 
     useEffect(() => {
-        
+
         const fetchUsers = async () => {
 
             // try {
@@ -53,11 +53,11 @@ const QuestionScreen = ({ route }) => {
 
                 console.log(players);
 
-                for (const [key,val] of Object.entries(players)) {
+                for (const [key, val] of Object.entries(players)) {
                     console.log(key, val);
                     users.push(val);
                 }
-                console.log("USERS FROM UDPATED USER CALL", users);
+                // console.log("USERS FROM UDPATED USER CALL", users);
                 setUsers(users);
             })
         };
@@ -72,13 +72,14 @@ const QuestionScreen = ({ route }) => {
                     return;
                 }
                 const qs = snapshot.val();
-                console.log("QUESTIONS?????", qs);
+                // console.log("QUESTIONS?????", qs);
                 setQuestions(qs);
                 setCurrentSong(qs[0]);
             });
         }
 
         getQuestions();
+        // setQuestionNumber(1);
 
     }, []);
 
@@ -89,7 +90,7 @@ const QuestionScreen = ({ route }) => {
             if (gameStatus) {
                 setQuestionNumber(gameStatus.currentQuestion);
                 setHostUID(gameStatus.hostUID);
-                console.log("HOST UID",gameStatus.hostUID);
+                console.log("HOST UID", gameStatus.hostUID);
             }
         });
 
@@ -111,7 +112,7 @@ const QuestionScreen = ({ route }) => {
 
             console.log(players);
 
-            for (const [key,val] of Object.entries(players)) {
+            for (const [key, val] of Object.entries(players)) {
                 console.log(key, val);
                 users.push(val);
             }
@@ -123,6 +124,54 @@ const QuestionScreen = ({ route }) => {
             scoreListener();
         }
     }, []);
+
+    // Game over Listener
+    useEffect(() => {
+        const gameOverRef = ref(db, `lobbies/${gameCode}/gameStatus/isOver`);
+        const gameOverListener = onValue(gameOverRef, (snapshot) => {
+            if (!snapshot.exists()){
+                console.log("cannot find game over flag");
+                return;
+            }
+            const isOver = snapshot.val();
+            if (isOver){
+                // HANDLE END GAME STUFF HERE
+                alert("game is over!");
+                // NAVIGATE TO SCORE SCREEN TO SHOW RESULTS???
+            }
+        });
+
+        return () => {
+            gameOverListener();
+        }
+    }, []);
+
+
+    // Round Number Listener
+    useEffect(() => {
+        const questionNumberRef = ref(db, `lobbies/${gameCode}/gameStatus/questionNumber`);
+        const gameNextQuestionListener = onValue(questionNumberRef, (snapshot) => {
+            if (!snapshot.exists()){
+                console.log("cannot find question number in question number listener");
+                return;
+            }
+            const newQuestionNum = snapshot.val();
+
+            console.log("ARE MY QUESTIONS STILL HERE????????",questions);
+
+            setAnswered(false);
+            setSelectedUser(null);
+            console.log("NEW QUESTION NUMBER?", newQuestionNum);
+            setQuestionNumber(newQuestionNum);
+            // ADD CHECK TO SEE IF GAME IS OVER
+            console.log("next question is:", newQuestionNum, questions[newQuestionNum]);
+            setCurrentSong(questions[newQuestionNum]);
+        });
+
+        return () => {
+            gameNextQuestionListener();
+        }
+    }, [questions]);
 
     // const selectRandomSong = (users) => {
     //     const usersWithSongs = users.filter(user => user.topSongs && user.topSongs.length > 0);
@@ -144,16 +193,17 @@ const QuestionScreen = ({ route }) => {
     //     }));
     // };
 
+
     const handleAnswer = (userId) => {
-        console.log(currentSong);
-        console.log(userId);
-        console.log(users);
+        // console.log(currentSong);
+        // console.log(userId);
+        // console.log(users);
         setSelectedUser(userId);
         if (currentSong.userId === userId) {
             console.log('Correct answer!');
             const userScoreRef = ref(db, `lobbies/${gameCode}/users/${user.uid}/score`);
             runTransaction(userScoreRef, (score) => {
-                console.log("SCORE???",score);
+                // console.log("SCORE???", score);
                 if (typeof score !== 'undefined') {
                     score++;
                     console.log("new score for curr user is", score);
@@ -179,23 +229,33 @@ const QuestionScreen = ({ route }) => {
         // Only allow the host to click "Next Question"
         if (hostUID !== user.uid) return;
 
-        console.log("HANDLING NEXT QUESTION");
+        // console.log("HANDLING NEXT QUESTION,");
         // Increment question number
-        const newQuestionNumber = questionNumber + 1;
+        // const newQuestionNumber = questionNumber + 1;
+        console.log("QUESTIONS FROM NEXTR QUESTION BUTTON", questions);
 
         // Update game status
         const gameStatusRef = ref(db, `lobbies/${gameCode}/gameStatus`);
-        // const newGameStatus = { currentQuestion: newQuestionNumber };
+        let newQuestionNumber;
 
         runTransaction(gameStatusRef, (status) => {
-            if (status) {
-                if (status.questionNumber) {
-                    status.questionNumber = newQuestionNumber;
+            if (status && status.questionNumber !== undefined && status.totalQuestions) {
+
+                if (status.questionNumber === (status.totalQuestions-1)){
+                    // HANDLE END GAME LOGIC
+                    status.isOver = true;
+
+                    return status;
                 }
+                // console.log(status);
+                const next = status.questionNumber + 1;
+                status.questionNumber = next;
+                newQuestionNumber = next;
             }
             else {
                 console.log("transaction failed");
             }
+            return status;
         })
             .then(() => {
                 console.log('Game status updated successfully.');
@@ -203,16 +263,6 @@ const QuestionScreen = ({ route }) => {
             .catch((error) => {
                 console.error('Error updating game status:', error);
             });
-
-        // Reset answered state and selectedUser
-        setAnswered(false);
-        setSelectedUser(null);
-
-        // Update question number state
-        setQuestionNumber(newQuestionNumber);
-
-        // ADD CHECK TO SEE IF GAME IS OVER
-        setCurrentSong(questions[newQuestionNumber]);
     };
 
     return (
@@ -245,14 +295,13 @@ const QuestionScreen = ({ route }) => {
             ) : (
                 <Text>Loading song and user data...</Text>
             )}
-            <Button
+            {hostUID === user.uid && <Button
                 title="Next Question"
                 onPress={handleNextQuestion}
                 disabled={hostUID !== user.uid} // Disable button for non-host players
-            />
+            />}
         </View>
     );
-
 };
 
 export default QuestionScreen;

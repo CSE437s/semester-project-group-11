@@ -54,7 +54,7 @@ const DashboardScreen = ({ navigation }) => {
 
   const generateGameCode = () => {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
+    const characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ';
     const charactersLength = characters.length;
     for (let i = 0; i < 6; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -106,6 +106,7 @@ const DashboardScreen = ({ navigation }) => {
       set(ref(db, "lobbies/" + gameCode + "/gameStatus"), {
         hasStarted: false,
         questionNumber: 1,
+        totalQuestions:0,
         isOver: false,
         hostUID: user.uid,
         hostUsername: username
