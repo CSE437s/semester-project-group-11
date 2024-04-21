@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Image } from 'react-native';
 import { ref, set, onValue, runTransaction, get } from 'firebase/database';
 import { db, auth } from '../../scripts/firebaseConfig';
-// import { fetchUsersForGame } from '../../scripts/Lobbies';
 import Scoreboard from './Scoreboard';
 
 const QuestionScreen = ({ route }) => {
     const { gameCode } = route.params;
-    // const [gameData, setGameData] = useState({ users: [], currentSong: null });
     const [users, setUsers] = useState([]);
     const [currentSong, setCurrentSong] = useState(null);
     const [questionNumber, setQuestionNumber] = useState(1);
@@ -18,29 +16,11 @@ const QuestionScreen = ({ route }) => {
 
     const user = auth.currentUser;
 
+
+    // Single-run setup things
     useEffect(() => {
 
         const fetchUsers = async () => {
-
-            // try {
-            //     const users = await fetchUsersForGame(gameCode);
-            //     console.log("Fetched users and songs:", users);
-            //     if (users.length === 0) {
-            //         console.error('No users found for this game');
-            //     } else {
-            //         console.log('Users with songs:', users.filter(u => u.topSongs && u.topSongs.length > 0));
-            //         setGameData({ users, currentSong: null });
-            //         selectRandomSong(users);
-
-            //         // Print out the pool of all songs
-            //         const allSongs = users.reduce((allSongs, user) => {
-            //             return allSongs.concat(user.topSongs);
-            //         }, []);
-            //         console.log("Pool of all songs:", allSongs);
-            //     }
-            // } catch (error) {
-            //     console.error('Failed to fetch users and songs:', error);
-            // }
             const usersRef = ref(db, `lobbies/${gameCode}/users`);
             get(usersRef).then((snapshot) => {
                 if (!snapshot.exists()) {
@@ -57,7 +37,6 @@ const QuestionScreen = ({ route }) => {
                     console.log(key, val);
                     users.push(val);
                 }
-                // console.log("USERS FROM UDPATED USER CALL", users);
                 setUsers(users);
             })
         };
@@ -79,26 +58,22 @@ const QuestionScreen = ({ route }) => {
         }
 
         getQuestions();
-        // setQuestionNumber(1);
 
+        const getHost = async() => {
+            const gameHostRef = ref(db, `lobbies/${gameCode}/gameStatus/hostUID`);
+            get(gameHostRef).then((snapshot) => {
+                if (snapshot.exists()){
+                    const host = snapshot.val();
+                    setHostUID(host);
+                }
+            })
+        }
+
+        getHost();
     }, []);
 
-    useEffect(() => {
-        const gameStatusRef = ref(db, `lobbies/${gameCode}/gameStatus`);
-        const gameStatusListener = onValue(gameStatusRef, (snapshot) => {
-            const gameStatus = snapshot.val();
-            if (gameStatus) {
-                setQuestionNumber(gameStatus.currentQuestion);
-                setHostUID(gameStatus.hostUID);
-                console.log("HOST UID", gameStatus.hostUID);
-            }
-        });
 
-        return () => {
-            gameStatusListener(); // Clean up the listener
-        };
-    }, [gameCode]);
-
+    // Event listener to update the scores of the users
     useEffect(() => {
         const usersRef = ref(db, `lobbies/${gameCode}/users`);
         const scoreListener = onValue(usersRef, (snapshot) => {
@@ -157,13 +132,10 @@ const QuestionScreen = ({ route }) => {
             }
             const newQuestionNum = snapshot.val();
 
-            console.log("ARE MY QUESTIONS STILL HERE????????",questions);
-
             setAnswered(false);
             setSelectedUser(null);
-            console.log("NEW QUESTION NUMBER?", newQuestionNum);
             setQuestionNumber(newQuestionNum);
-            // ADD CHECK TO SEE IF GAME IS OVER
+            console.log("NEW QUESTION NUMBER?", newQuestionNum);
             console.log("next question is:", newQuestionNum, questions[newQuestionNum]);
             setCurrentSong(questions[newQuestionNum]);
         });
@@ -171,39 +143,17 @@ const QuestionScreen = ({ route }) => {
         return () => {
             gameNextQuestionListener();
         }
+
     }, [questions]);
 
-    // const selectRandomSong = (users) => {
-    //     const usersWithSongs = users.filter(user => user.topSongs && user.topSongs.length > 0);
-    //     if (usersWithSongs.length === 0) {
-    //         console.error('No users with songs available');
-    //         return;
-    //     }
-
-    //     // const randomUserIndex = Math.floor(Math.random() * usersWithSongs.length);
-    //     // const randomUser = usersWithSongs[randomUserIndex];
-    //     // const randomSongIndex = Math.floor(Math.random() * randomUser.topSongs.length);
-    //     // const randomSong = randomUser.topSongs[randomSongIndex];
-
-    //     // console.log('Selected song:', randomSong);
-
-    //     setGameData(prevState => ({
-    //         ...prevState,
-    //         currentSong: { ...randomSong, userId: randomUser.id }
-    //     }));
-    // };
-
-
+    
     const handleAnswer = (userId) => {
-        // console.log(currentSong);
-        // console.log(userId);
-        // console.log(users);
+
         setSelectedUser(userId);
         if (currentSong.userId === userId) {
             console.log('Correct answer!');
             const userScoreRef = ref(db, `lobbies/${gameCode}/users/${user.uid}/score`);
             runTransaction(userScoreRef, (score) => {
-                // console.log("SCORE???", score);
                 if (typeof score !== 'undefined') {
                     score++;
                     console.log("new score for curr user is", score);
@@ -229,11 +179,6 @@ const QuestionScreen = ({ route }) => {
         // Only allow the host to click "Next Question"
         if (hostUID !== user.uid) return;
 
-        // console.log("HANDLING NEXT QUESTION,");
-        // Increment question number
-        // const newQuestionNumber = questionNumber + 1;
-        console.log("QUESTIONS FROM NEXTR QUESTION BUTTON", questions);
-
         // Update game status
         const gameStatusRef = ref(db, `lobbies/${gameCode}/gameStatus`);
         let newQuestionNumber;
@@ -242,9 +187,8 @@ const QuestionScreen = ({ route }) => {
             if (status && status.questionNumber !== undefined && status.totalQuestions) {
 
                 if (status.questionNumber === (status.totalQuestions-1)){
-                    // HANDLE END GAME LOGIC
+                    // HANDLE END GAME LOGIC HERE OR IN GAME OVER EVENT LISTENER!!!!
                     status.isOver = true;
-
                     return status;
                 }
                 // console.log(status);

@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, onValue, set, get, update } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
-// import { fetchUsersForGame } from '../../scripts/Lobbies';
 
 const WaitingLobbyScreen = ({ route, navigation }) => {
   const { gameCode, username } = route.params;
@@ -32,11 +31,6 @@ const WaitingLobbyScreen = ({ route, navigation }) => {
       if (snapshot.exists() && snapshot.val().hasStarted) {
         
         navigation.navigate('QuestionScreen', { gameCode });
-        // Fetch and print songs for all users
-        // const users = await fetchUsersForGame(gameCode);
-        // users.forEach(user => {
-        //   console.log(`Songs for ${user.username}:`, user.topSongs);
-        // });
       }
     });
 
@@ -84,8 +78,6 @@ const WaitingLobbyScreen = ({ route, navigation }) => {
 
       set(questionsRef, songList).then(() => {
         console.log("set questions at", Date.now());
-
-        // const gameStartRef = ref(db, `lobbies/${gameCode}/gameStatus/hasStarted`);
 
         const gameStatusUpdates = {};
         gameStatusUpdates[`lobbies/${gameCode}/gameStatus/hasStarted`] = true;
