@@ -83,7 +83,8 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
 
                                 await saveSpotifyTokenInfo(
                                     JSON.stringify(tokenres),
-                                    String(expirationTime)
+                                    String(expirationTime),
+                                    (tokenres.refresh_token)
                                 );
                                 console.log("Access token saved in local storage");
                                 setSpotifyToken(true);

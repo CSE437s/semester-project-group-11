@@ -129,7 +129,7 @@ export const getFirstTokenData = async (code, redirect_uri) => {
         grant_type: 'authorization_code'
     };
 
-    console.log(redirect_uri)
+    console.log(redirect_uri);
 
     var formBody = [];
     for (var key in dataToSend) {
@@ -166,33 +166,30 @@ export function calculateExpirationTime(expiresIn) {
 
 
 export const getRefreshTokenData = async (refreshToken) => {
-    console.log(refreshToken);
-    console.log(refreshToken + " going in for refresh")
-    var dataToSend = {
+    // console.log(refreshToken);
+    console.log(refreshToken + " going in for refresh");
+    const url = "https://accounts.spotify.com/api/token";
+
+    const payload = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + (new Buffer(process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID + ':' + process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_SECRET).toString('base64'))
+      },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
         refresh_token: refreshToken,
-        grant_type: 'refresh_token'
+        client_id: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID
+      })
     };
-    //making data to send on server
-    var formBody = [];
-    for (var key in dataToSend) {
-        var encodedKey = encodeURIComponent(key);
-        var encodedValue = encodeURIComponent(dataToSend[key]);
-        formBody.push(encodedKey + '=' + encodedValue);
+    const body = await fetch(url, payload);
+    const response = await body.json();
+    console.log("REFRESH TOKEN RESPONSE BODY", response);
+    if (response.error){
+        console.log("error getting refresh token");
     }
-    formBody = formBody.join('&');
-    //POST request
-    var response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST', //Request Type
-        body: formBody, //post body
-        headers: {
-            //Header Defination
-            'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')),
-        },
-    })
-    try {
-        return await response.json()
-    } catch (error) {
-        console.log(error)
+    else{
+        return response;
     }
 }
 

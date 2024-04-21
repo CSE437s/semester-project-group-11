@@ -1,106 +1,116 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
-import { getDatabase, ref, onValue, get, child } from 'firebase/database';
+import { getDatabase, ref, onValue, set, get, update } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
 
 const WaitingLobbyScreen = ({ route, navigation }) => {
   const { gameCode, username } = route.params;
   const [players, setPlayers] = useState([]);
-  const [host, setHost] = useState();
-
-  const db = getDatabase(app);
+  const [isHost, setIsHost] = useState(false);
+  const db = getDatabase(app);  // Define db here for reuse
 
   useEffect(() => {
+    const gameStatusRef = ref(db, `lobbies/${gameCode}/gameStatus`);
 
-    // const lobbyRef = doc(firestore, 'gameLobbies', gameCode);
-    // const unsubscribe = onSnapshot(lobbyRef, (docSnapshot) => {
-    //   if (docSnapshot.exists()) {
-    //     setPlayers(docSnapshot.data().players);
-    //   }
-    // });
+    const hostListener = onValue(ref(db, `lobbies/${gameCode}/gameStatus/hostUID`), (snapshot) => {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      setIsHost(currentUser && currentUser.uid === snapshot.val());
+    });
 
-    // return () => unsubscribe();
-
-    const lobbyRef = ref(db, "lobbies/" + gameCode);
-    const startGameRef = child(lobbyRef, "gameStatus");
-
-    // setTimeout(() => {
-
-      get(child(lobbyRef, "gameStatus/hostUsername")).then((snapshot) => {
-        if (snapshot.exists()) {
-          const hostName = snapshot.val()
-          setHost(hostName);
-        }
-      });
-
-      //update the players shown in the lobby
-      onValue(child(lobbyRef, "users"), (usersSnapshot) => {
-
-        if (!usersSnapshot.exists()) {
-          console.log("users snapshot doesn't exist :(");
-          return;
-        }
-        const userObjects = usersSnapshot.val();
-
-        console.log("players in game:", userObjects, typeof (userObjects));
-
-        const usernames = Object.values(userObjects).map((userinfo) => userinfo.username);
-        console.log(usernames);
-
+    const playerListener = onValue(ref(db, `lobbies/${gameCode}/users`), (snapshot) => {
+      if (snapshot.exists()) {
+        const userObjects = snapshot.val();
+        const usernames = Object.values(userObjects).map(userinfo => userinfo.username);
         setPlayers(usernames);
+      }
+    });
+
+    const gameStartListener = onValue(gameStatusRef, async (snapshot) => {
+      if (snapshot.exists() && snapshot.val().hasStarted) {
+        
+        navigation.navigate('QuestionScreen', { gameCode });
+      }
+    });
+
+    return () => {
+      hostListener();
+      playerListener();
+      gameStartListener();
+    };
+  }, [db, gameCode, navigation]);  // Include db in dependency array for clarity
+
+  // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  const generateQuestionOrderAndStartGame = async () => {
+    const songPoolRef = ref(db, `lobbies/${gameCode}/songPool`);
+    get(songPoolRef).then((snapshot) => {
+      if (!snapshot.exists()) {
+        console.log("no songs in song pool");
+        return;
+      }
+
+      const songsGroupedByUser = snapshot.val();
+
+      // console.log(songsGroupedByUser, Object.keys(songsGroupedByUser));
+
+      let songList = [];
+
+      Object.keys(songsGroupedByUser).forEach((key) => {
+        Object.entries(songsGroupedByUser[key]).forEach((song) => {
+          // console.log("song?", song[1]);
+          songList.push(song[1]);
+        });
       });
 
-      const unsubscribe = onValue(startGameRef, (snapshot) => {
+      shuffleArray(songList);
 
-        if (!snapshot.exists) {
-          console.log("snapshot doesn't exist for game :(");
-        }
+      console.log("SONG LIST?", songList);
 
-        const gameStatus = snapshot.val();
+      const questionsRef = ref(db, `lobbies/${gameCode}/questions`);
 
-        const auth = getAuth();
-        const user = auth.currentUser;
-        
-        if (gameStatus.hasStarted) {
+      set(questionsRef, songList).then(() => {
+        console.log("set questions at", Date.now());
 
-          // Randomly generate which songs from the database will be used in the game
+        const gameStatusUpdates = {};
+        gameStatusUpdates[`lobbies/${gameCode}/gameStatus/hasStarted`] = true;
+        gameStatusUpdates[`lobbies/${gameCode}/gameStatus/totalQuestions`] = songList.length;
 
-          if (user && user.uid == gameStatus.hostUID) {
-            // host can run the algorithm to determine which songs are chosen for the game
+        update(ref(db), gameStatusUpdates)
+          .then(() => console.log("Game started successfully!"))
+          .catch(error => console.error("Error starting the game: ", error));
+      }).catch((e) => console.log("couldn't set questions in database:", e));
 
-            //Songs are currently stored under the user information in the players path
-            // I'm thinking of randomly sampling 2 or so songs from each player and then putting
-            // that into an answers section of the database
-
-          }
-
-          console.log("game started");
-          // REDIRECT TO GAME START HERE
-        }
-        else if (gameStatus.isOver) {
-          //do something when the game ends. Redirect to results screen?
-        }
-      })
-
-      return () => unsubscribe();
-
-    // }, 250);
-  }, []);
+    }).catch((e) => console.log(e));
+  }
 
   return (
     <View style={styles.container}>
-
       <Text style={styles.code}>Game Code: {gameCode}</Text>
       <Text style={styles.title}>Waiting Lobby</Text>
-      <Text>Host: {host}</Text>
+      <Text>Host: {isHost ? "You are the host" : "Waiting for host"}</Text>
       <Text style={styles.player}>Your Username: {username}</Text>
       <Text style={styles.title}>Players in Lobby:</Text>
       {players.map(player => (
         <Text key={player} style={styles.player}>{player}</Text>
       ))}
-
+      {isHost && (
+        <Pressable
+          style={styles.button}
+          onPress={() => {
+            generateQuestionOrderAndStartGame()
+              .catch((e) => console.log("error with generating song order", e));
+          }}>
+          <Text style={{ color: "white" }}>Start Game</Text>
+        </Pressable>
+      )}
     </View>
   );
 };
@@ -123,6 +133,12 @@ const styles = StyleSheet.create({
   },
   player: {
     fontSize: 16,
+  },
+  button: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: 'blue',
+    borderRadius: 5,
   },
 });
 

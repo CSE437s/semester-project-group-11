@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
 import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -26,7 +25,7 @@ const DashboardScreen = ({ navigation }) => {
     const storeUserTopSongs = async () => {
 
       const spotifyInfo = await getFromCrossPlatformStorage("spotifyInfo");
-      console.log(typeof(spotifyInfo), spotifyInfo);
+      console.log(typeof (spotifyInfo), spotifyInfo);
       const spotifyToken = parseTokenFromInfo(spotifyInfo);
 
       if (!spotifyToken) {
@@ -55,7 +54,7 @@ const DashboardScreen = ({ navigation }) => {
 
   const generateGameCode = () => {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
+    const characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ';
     const charactersLength = characters.length;
     for (let i = 0; i < 6; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -106,7 +105,8 @@ const DashboardScreen = ({ navigation }) => {
 
       set(ref(db, "lobbies/" + gameCode + "/gameStatus"), {
         hasStarted: false,
-        round: 1,
+        questionNumber: 1,
+        totalQuestions:0,
         isOver: false,
         hostUID: user.uid,
         hostUsername: username
@@ -144,7 +144,7 @@ const DashboardScreen = ({ navigation }) => {
         onPress={() => navigation.navigate("Game")}
       >
 
-        <Text style={{ color: "white" }}>Start Higher Lower Game</Text>
+        <Text style={{ color: "white" }}>Higher Lower Game</Text>
       </Pressable>
 
       {/* <Pressable style={styles.button}
@@ -155,7 +155,17 @@ const DashboardScreen = ({ navigation }) => {
 
       <Pressable style={styles.button}
         onPress={handleCreateLobby}>
-        <Text style={{ color: "white" }}>Create Roulette Lobby</Text>
+        <Text style={{ color: "white" }}>Create Song Roulette Lobby</Text>
+      </Pressable>
+
+
+
+      <Pressable
+        style={[styles.button, !gameCode.trim() && { opacity: 0.5 }]}
+        onPress={handleJoinLobby}
+        disabled={!gameCode.trim()} // Disable button when gameCode is empty
+      >
+        <Text style={{ color: "white" }}>Join Song Roulette Lobby</Text>
       </Pressable>
 
       <View style={styles.inputView}>
@@ -166,11 +176,6 @@ const DashboardScreen = ({ navigation }) => {
           onChangeText={handleGameCodeChange}
         />
       </View>
-
-      <Pressable style={styles.button}
-        onPress={handleJoinLobby}>
-        <Text style={{ color: "white" }}>Join Roulette Lobby</Text>
-      </Pressable>
 
 
       <LogoutButton />
