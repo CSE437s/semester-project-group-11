@@ -15,13 +15,10 @@ import {
     getRefreshTokenData,
 } from "../../scripts/SpotifyApiRequests.js";
 import styles from "./Styles";
-import { ThemeProvider, ThemeConsumer } from "@react-navigation/native";
 
 WebBrowser.maybeCompleteAuthSession();
 
-// const expoRedirectUri = makeRedirectUri({ scheme: 'your.app' }); //NETLIFY PATH
-
-const expoRedirectUri = makeRedirectUri({ scheme: 'your.app', path: "callback", preferLocalhost: true });
+const expoRedirectUri = makeRedirectUri({ scheme: 'your.app', path: EXPO_PUBLIC_SPOTIFY_REDIRECT_PATH, preferLocalhost: true });
 
 // Endpoint
 const discovery = {
@@ -58,6 +55,7 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
             //   console.log("code", code)
         }
     }, [response]);
+
 
     return (
         <>
