@@ -175,6 +175,7 @@ const DashboardScreen = ({ navigation }) => {
           value={gameCode}
           onChangeText={handleGameCodeChange}
         />
+
       </View>
 
 
