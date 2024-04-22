@@ -81,8 +81,10 @@ const ProfileScreen = ({ navigation }) => {
         </>);
     }
 
+
     function renderFriend({ item, index }) {
         return (
+
             <>
                 <ListItem bottomDivider>
                     <ListItem.Content>
