@@ -18,7 +18,9 @@ import styles from "./Styles";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const expoRedirectUri = makeRedirectUri({ scheme: 'your.app', path: process.env.EXPO_PUBLIC_SPOTIFY_REDIRECT_PATH, preferLocalhost: true });
+const path = process.env.EXPO_PUBLIC_SPOTIFY_REDIRECT_PATH ? process.env.EXPO_PUBLIC_SPOTIFY_REDIRECT_PATH : undefined;
+
+const expoRedirectUri = makeRedirectUri({ scheme: 'your.app', path, preferLocalhost: true });
 
 // Endpoint
 const discovery = {
