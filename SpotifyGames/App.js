@@ -6,11 +6,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import LoginScreen from "./frontend/Components/LoginScreen.js";
 import RegisterScreen from "./frontend/Components/RegisterScreen.js";
-import TestProfile from "./frontend/Components/TestProfile.js";
-import LandingScreen from "./frontend/Components/LandingScreen.js";
 import DashboardScreen from "./frontend/Components/DashboardScreen.js";
 import ProfileScreen from "./frontend/Components/ProfileScreen.js";
-
+import RouletteScreen from "./frontend/Components/RouletteScreen.js"
+import WaitingLobbyScreen from "./frontend/Components/WaitingLobbyScreen.js";
+import QuestionScreen from "./frontend/Components/QuestionScreen.js";
 import SpotifyLoginScreen from "./frontend/Components/SpotifyLoginScreen.js";
 
 import GameScreen from "./frontend/Components/GameScreen.js";
@@ -20,8 +20,10 @@ import { auth } from "./scripts/firebaseConfig.js";
 
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, createTheme } from "@rneui/themed";
-
 import styles from "./Styles";
+import { getOrRefreshTokenFromFirebase } from "./scripts/SaveUserData.js";
+import { GameProvider, useGame } from './scripts/GameContext.js';
+import {onLobbyJoin, fetchUsersForGame} from './scripts/Lobbies.js';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,10 +39,21 @@ const theme = createTheme({
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [spotifyToken, setSpotifyToken] = useState(false);
+  const [spotifyToken, setSpotifyToken] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user){
+        getOrRefreshTokenFromFirebase().then((token) => {
+          // console.log("APP.JS TOKEN,",token);
+          if (token){
+            setSpotifyToken(token);
+          }
+        });
+      }
+      else{
+        setSpotifyToken(null);
+      }
       setUser(user);
     });
 
@@ -48,6 +61,8 @@ export default function App() {
       unsubscribe();
     };
   }, []);
+
+  
 
   return (
     <SafeAreaProvider>
@@ -65,6 +80,11 @@ export default function App() {
                     <Stack.Screen name="Profile" component={ProfileScreen} />
                     <Stack.Screen name="Game" component={GameScreen} options={{ title: 'Higher Lower Game' }}/>
                     <Stack.Screen name="ScoreScreen" component={ScoreScreen} />
+                    <Stack.Screen name="RouletteScreen" component={RouletteScreen} />
+                    
+                    <Stack.Screen name="WaitingLobby" component={WaitingLobbyScreen} />
+                    <Stack.Screen name="QuestionScreen" component={QuestionScreen} />
+
                   </>
                 ) : (
                   <>

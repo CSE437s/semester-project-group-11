@@ -1,26 +1,35 @@
 import React from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button, Pressable } from "react-native";
 import styles from "./Styles";
-import { ThemeProvider } from "react-native-paper";
-import { TouchableOpacity } from "react-native-web";
+import { ThemeProvider, ThemeConsumer } from "react-native-paper";
+// import { TouchableOpacity } from "react-native-web";
 
 const ScoreScreen = ({ route, navigation }) => {
   const { score } = route.params; // Receive the score passed from GameScreen
 
+  React.useEffect(() => {
+    saveScoreForGame("game1", score);
+  }, [])
+
   return (
-    <ThemeProvider>
-      <View style={styles.container}>
-        <Text style={styles.title}>Your Score: {score}</Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Dashboard")}
-        >
-          <Text style={{ color: "white" }}>Go home</Text>
-        </TouchableOpacity>
-      </View>
-    </ThemeProvider>
+    <>
+        <View style={styles.container}>
+          <Text style={styles.title}>Your Score: {score}</Text>
+          <Pressable
+            style={styles.button}
+            onPress={() => navigation.navigate("Dashboard")}
+          >
+            <Text style={{ color: "white" }}>Go home</Text>
+          </Pressable>
+        </View>
+      
+    </>
   );
 };
+
+
+
+export default ScoreScreen;
 
 // const styles = StyleSheet.create({
 //   container: {
@@ -33,5 +42,3 @@ const ScoreScreen = ({ route, navigation }) => {
 //     marginBottom: 20,
 //   },
 // });
-
-export default ScoreScreen;

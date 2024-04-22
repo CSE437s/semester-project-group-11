@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { getTopArtists, getTopSongsForArtistID } from '../../scripts/SpotifyApiRequests'; 
-import { parseTokenFromInfo } from '../../scripts/SaveUserData';
+import { parseTokenFromInfo, getFromCrossPlatformStorage } from '../../scripts/SaveUserData';
 
 const SpotifyTopArtistsAndTracksComponent = () => {
     const [artistsAndTracks, setArtistsAndTracks] = useState([]);
@@ -10,7 +10,7 @@ const SpotifyTopArtistsAndTracksComponent = () => {
     useEffect(() => {
         async function fetchArtistsAndTracks() {
             setIsLoading(true);
-            const spotifyInfo = localStorage.getItem("spotifyInfo");
+            const spotifyInfo = await getFromCrossPlatformStorage("spotifyInfo");
             const spotifyToken = parseTokenFromInfo(spotifyInfo);
             
             if (!spotifyToken) {

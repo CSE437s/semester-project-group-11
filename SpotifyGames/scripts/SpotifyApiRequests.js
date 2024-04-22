@@ -12,7 +12,9 @@ export async function getTopArtists(token) {
     let totalArtists = [];
 
     // First fetch the top 50 artists
-    let result = await fetch(`https://api.spotify.com/v1/me/top/artists?limit=50`, {
+    // CHANGED TO 10 TO TRY TO AVOID RATE LIMITING
+
+    let result = await fetch(`https://api.spotify.com/v1/me/top/artists?limit=10`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
     });
@@ -36,7 +38,68 @@ export async function getTopArtists(token) {
     return totalArtists;
 }
 
-export async function getTopSongsForArtistID(token, artistID){
+function parseArtistNames(arr){
+       
+    if (arr.length == 1){
+        return arr[0].name;
+    }
+
+    if (arr.length == 2){
+        return arr[0].name + " and " + arr[1].name;
+    }
+
+    let combined = "";
+    
+    for (let i = 0; i < arr.length; i++){
+        if (i == arr.length - 1){
+            combined += " and " + arr[i].name;
+        }
+        else{
+            combined += arr[i].name + ", ";
+        }
+    }
+
+    return combined;
+}
+
+export async function getTopTracks(token) {
+    let tracks = [];
+
+    // First fetch the top 50 tracks
+
+    let result = await fetch(`https://api.spotify.com/v1/me/top/tracks?limit=10`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    let data = await result.json();
+    tracks = tracks.concat(data.items);
+
+    // parsing the data that's useful from this. Feel free to alter if there's other useful stuff
+
+    let extracted = tracks.map((track) => {
+
+        const albumName = track.album.name;
+        const albumCover = track.album.images[0].url;
+
+        const artists = parseArtistNames(track.artists);
+        const name = track.name;
+        const id = track.id;
+
+        const trackInfo = {
+            albumName:albumName,
+            albumCover:albumCover,
+            artists:artists,
+            name:name,
+            id:id
+        }
+
+        return trackInfo;
+    });
+
+    return extracted;
+}
+
+export async function getTopSongsForArtistID(token, artistID) {
     const result = await fetch(`https://api.spotify.com/v1/artists/${artistID}/top-tracks?market=US`, {  // Ensure you specify a market
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
@@ -51,7 +114,7 @@ export async function getTopSongsForArtistID(token, artistID){
     }));
 }
 
-export async function getAlbumsForArtistID(token, artistID){
+export async function getAlbumsForArtistID(token, artistID) {
     const result = await fetch(`https://api.spotify.com/v1/artists/${artistID}/albums`, {
         method: "GET", headers: { Authorization: `Bearer ${token}` }
     });
@@ -66,7 +129,7 @@ export const getFirstTokenData = async (code, redirect_uri) => {
         grant_type: 'authorization_code'
     };
 
-    console.log(redirect_uri)
+    console.log(redirect_uri);
 
     var formBody = [];
     for (var key in dataToSend) {
@@ -87,84 +150,60 @@ export const getFirstTokenData = async (code, redirect_uri) => {
         json: true
     })
     try {
-        return await response.json()
+        return await response.json();
     } catch (error) {
-        console.log("first token error", error)
+        console.log("first token error", error);
     }
 }
 
 
 export function calculateExpirationTime(expiresIn) {
-    const currTime = Date.now()
-    const expirationTime = currTime + (expiresIn * 1000)
-    return expirationTime
+    expiresIn = Number(expiresIn);
+    const currTime = Date.now();
+    const expirationTime = currTime + (expiresIn * 1000);
+    return expirationTime;
 }
 
 
 export const getRefreshTokenData = async (refreshToken) => {
-    console.log(refreshToken);
-    console.log(refreshToken + " going in for refresh")
-    var dataToSend = {
+    // console.log(refreshToken);
+    console.log(refreshToken + " going in for refresh");
+    const url = "https://accounts.spotify.com/api/token";
+
+    const payload = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + (new Buffer(process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID + ':' + process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_SECRET).toString('base64'))
+      },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
         refresh_token: refreshToken,
-        grant_type: 'refresh_token'
+        client_id: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID
+      })
     };
-    //making data to send on server
-    var formBody = [];
-    for (var key in dataToSend) {
-        var encodedKey = encodeURIComponent(key);
-        var encodedValue = encodeURIComponent(dataToSend[key]);
-        formBody.push(encodedKey + '=' + encodedValue);
+    const body = await fetch(url, payload);
+    const response = await body.json();
+    console.log("REFRESH TOKEN RESPONSE BODY", response);
+    if (response.error){
+        console.log("error getting refresh token");
     }
-    formBody = formBody.join('&');
-    //POST request
-    var response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST', //Request Type
-        body: formBody, //post body
-        headers: {
-            //Header Defination
-            'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')),
-        },
-    })
-    try {
-        return await response.json()
-    } catch (error) {
-        console.log(error)
+    else{
+        return response;
     }
 }
 
-// export const getOrRefreshStoredToken = async () => {
-//     try {
-//         const expirationTime = await getValueFor("SpotifyExpiration");
 
-//         if (expirationTime == null) {
-//             console.log("no spotify token found, gotta log in");
-//             throw new Error("No Spotify data in SecureStore");
-//         }
+export const getUserTopSongs = async (token) => {
 
-//         const SpotifyDataString = await getValueFor("SpotifyData");
-//         let SpotifyData = JSON.parse(SpotifyDataString);
-//         const refreshToken = SpotifyData.refresh_token;
+    const artists = await getTopArtists(token);
+    const tracksPromises = artists.map((artist) =>
+        getTopSongsForArtistID(token, artist.id)
+    );
+    const tracks = await Promise.all(tracksPromises);
 
-//         const currTime = Date.now();
+    const combinedTracks = tracks.flat(); // Flatten the tracks array
 
-//         if (expirationTime <= currTime) {
-//             console.log("token expired");
-//             SpotifyData = await getRefreshTokenData(refreshToken);
-//             await save("SpotifyData", JSON.stringify(SpotifyData));
-//             await save("SpotifyExpiration", String(calculateExpirationTime(SpotifyData.expires_in)));
-//         }
+    return combinedTracks;
+}
 
-
-//         if (!SpotifyData) {
-//             throw new Error("Spotify Response does not exist in Secure Store");
-//         }
-
-//         if (SpotifyData.access_token) {
-//             console.log(SpotifyData.access_token)
-//             return SpotifyData.access_token
-//         }
-//     }
-//     catch (error) {
-//         console.log(error);
-//     }
-// }
