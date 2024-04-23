@@ -4,7 +4,7 @@ import { ref, set, onValue, runTransaction, get } from 'firebase/database';
 import { db, auth } from '../../scripts/firebaseConfig';
 import Scoreboard from './Scoreboard';
 
-const QuestionScreen = ({ route }) => {
+const QuestionScreen = ({ route, navigation }) => {
     const { gameCode } = route.params;
     const [users, setUsers] = useState([]);
     const [currentSong, setCurrentSong] = useState(null);
@@ -13,9 +13,9 @@ const QuestionScreen = ({ route }) => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [hostUID, setHostUID] = useState(null);
     const [questions, setQuestions] = useState([]);
+    const [gameOver, setGameOver] = useState(false);
 
     const user = auth.currentUser;
-
 
     // Single-run setup things
     useEffect(() => {
@@ -59,10 +59,10 @@ const QuestionScreen = ({ route }) => {
 
         getQuestions();
 
-        const getHost = async() => {
+        const getHost = async () => {
             const gameHostRef = ref(db, `lobbies/${gameCode}/gameStatus/hostUID`);
             get(gameHostRef).then((snapshot) => {
-                if (snapshot.exists()){
+                if (snapshot.exists()) {
                     const host = snapshot.val();
                     setHostUID(host);
                 }
@@ -104,16 +104,18 @@ const QuestionScreen = ({ route }) => {
     useEffect(() => {
         const gameOverRef = ref(db, `lobbies/${gameCode}/gameStatus/isOver`);
         const gameOverListener = onValue(gameOverRef, (snapshot) => {
-            if (!snapshot.exists()){
+            if (!snapshot.exists()) {
                 console.log("cannot find game over flag");
                 return;
             }
             const isOver = snapshot.val();
-            if (isOver){
+            if (isOver) {
                 // HANDLE END GAME STUFF HERE
-                // alert("game is over!");
+                alert("game is over!");
+                setGameOver(true);
 
-                navigation.navigate('ResultsScreen', { gameCode });
+                // navigation.navigate('ResultsScreen', { gameCode });
+
                 // NAVIGATE TO SCORE SCREEN TO SHOW RESULTS???
             }
         });
@@ -128,7 +130,7 @@ const QuestionScreen = ({ route }) => {
     useEffect(() => {
         const questionNumberRef = ref(db, `lobbies/${gameCode}/gameStatus/questionNumber`);
         const gameNextQuestionListener = onValue(questionNumberRef, (snapshot) => {
-            if (!snapshot.exists()){
+            if (!snapshot.exists()) {
                 console.log("cannot find question number in question number listener");
                 return;
             }
@@ -138,8 +140,8 @@ const QuestionScreen = ({ route }) => {
             setSelectedUser(null);
             setQuestionNumber(newQuestionNum);
             console.log("NEW QUESTION NUMBER?", newQuestionNum);
-            console.log("next question is:", newQuestionNum, questions[newQuestionNum-1]);
-            setCurrentSong(questions[newQuestionNum-1]);
+            console.log("next question is:", newQuestionNum, questions[newQuestionNum - 1]);
+            setCurrentSong(questions[newQuestionNum - 1]);
         });
 
         return () => {
@@ -148,7 +150,7 @@ const QuestionScreen = ({ route }) => {
 
     }, [questions]);
 
-    
+
     const handleAnswer = (userId) => {
 
         setSelectedUser(userId);
@@ -178,6 +180,7 @@ const QuestionScreen = ({ route }) => {
     };
 
     const handleNextQuestion = () => {
+        console.log("GAME OVER??????", gameOver);
         // Only allow the host to click "Next Question"
         if (hostUID !== user.uid) return;
 
@@ -188,7 +191,7 @@ const QuestionScreen = ({ route }) => {
         runTransaction(gameStatusRef, (status) => {
             if (status && status.questionNumber !== undefined && status.totalQuestions) {
 
-                if (status.questionNumber === status.totalQuestions){
+                if (status.questionNumber === status.totalQuestions) {
                     // HANDLE END GAME LOGIC HERE OR IN GAME OVER EVENT LISTENER!!!!
                     status.isOver = true;
                     return status;
@@ -241,9 +244,15 @@ const QuestionScreen = ({ route }) => {
             ) : (
                 <Text>Loading song and user data...</Text>
             )}
-            {hostUID === user.uid && <Button
+            {hostUID === user.uid && !gameOver && <Button
                 title="Next Question"
                 onPress={handleNextQuestion}
+                disabled={(hostUID !== user.uid)} // Disable button for non-host players
+            />}
+
+            {hostUID === user.uid && <Button
+                title="End Game"
+                onPress={() => navigation.navigate('ResultsScreen', { gameCode })}
                 disabled={hostUID !== user.uid} // Disable button for non-host players
             />}
         </View>

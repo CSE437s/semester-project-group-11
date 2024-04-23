@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, Image } from 'react-native';
+import { View, Text, Button, Image, StyleSheet } from 'react-native';
 import { ref, set, onValue, runTransaction, get } from 'firebase/database';
 import { db, auth } from '../../scripts/firebaseConfig';
-import Scoreboard from './Scoreboard';
 
-const ResultsScreen = ({ route }) => {
+const ResultsScreen = ({ route, navigation }) => {
     const { gameCode } = route.params;
     const [users, setUsers] = useState([]);
 
@@ -52,11 +51,28 @@ const ResultsScreen = ({ route }) => {
             <Button
                 title="Back to Dashboard"
                 onPress={ () => {
-                    navigation.navigate('DashboardScreen');
+                    navigation.navigate('Dashboard');
                 } }
             />
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+      padding: 20,
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 20,
+    },
+    score: {
+      fontSize: 18,
+      marginVertical: 4,
+    },
+  });
+  
 
 export default ResultsScreen;

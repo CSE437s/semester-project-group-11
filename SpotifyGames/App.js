@@ -24,6 +24,7 @@ import styles from "./Styles";
 import { getOrRefreshTokenFromFirebase } from "./scripts/SaveUserData.js";
 import { GameProvider, useGame } from './scripts/GameContext.js';
 import {onLobbyJoin, fetchUsersForGame} from './scripts/Lobbies.js';
+import ResultsScreen from "./frontend/Components/ResultsScreen.js";
 
 const Stack = createNativeStackNavigator();
 
@@ -81,6 +82,7 @@ export default function App() {
                     <Stack.Screen name="Game" component={GameScreen} options={{ title: 'Higher Lower Game' }}/>
                     <Stack.Screen name="ScoreScreen" component={ScoreScreen} />
                     <Stack.Screen name="RouletteScreen" component={RouletteScreen} />
+                    <Stack.Screen name="ResultsScreen" component={ResultsScreen} />
                     
                     <Stack.Screen name="WaitingLobby" component={WaitingLobbyScreen} />
                     <Stack.Screen name="QuestionScreen" component={QuestionScreen} />
