@@ -62,12 +62,14 @@ function parseArtistNames(arr){
     return combined;
 }
 
+export const trackNumberLimit = 50;
+
 export async function getTopTracks(token) {
     let tracks = [];
 
     // First fetch the top 50 tracks
 
-    let result = await fetch(`https://api.spotify.com/v1/me/top/tracks?limit=10`, {
+    let result = await fetch(`https://api.spotify.com/v1/me/top/tracks?limit=${trackNumberLimit}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` }
     });
