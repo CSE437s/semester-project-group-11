@@ -106,7 +106,8 @@ const GameScreen = ({ navigation }) => {
   
 
   return (
-      <View style={[styles.container, { backgroundColor: backgroundColor }]}> 
+      // <View style={[styles.container, { backgroundColor: backgroundColor }]}> 
+      <View style={[styles.container]}> 
         {isLoading ? (
           <Text>Loading...</Text>
         ) : (

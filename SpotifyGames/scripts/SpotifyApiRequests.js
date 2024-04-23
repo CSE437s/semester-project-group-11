@@ -186,7 +186,7 @@ export const getRefreshTokenData = async (refreshToken) => {
         body: formBody, //post body
         headers: {
             //Header Defination
-            'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')),
+            'Authorization': 'Basic ' + (new Buffer(process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID + ':' + process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_SECRET).toString('base64')),
         },
     })
     try {

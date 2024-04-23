@@ -3,12 +3,11 @@ import { Button, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-
 import LoginScreen from "./frontend/Components/LoginScreen.js";
 import RegisterScreen from "./frontend/Components/RegisterScreen.js";
 import DashboardScreen from "./frontend/Components/DashboardScreen.js";
 import ProfileScreen from "./frontend/Components/ProfileScreen.js";
-import RouletteScreen from "./frontend/Components/RouletteScreen.js"
+import RouletteScreen from "./frontend/Components/RouletteScreen.js";
 import WaitingLobbyScreen from "./frontend/Components/WaitingLobbyScreen.js";
 
 import SpotifyLoginScreen from "./frontend/Components/SpotifyLoginScreen.js";
@@ -41,10 +40,9 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user){
-        setSpotifyToken(getOrRefreshTokenFromFirebase())
-      }
-      else{
+      if (user) {
+        setSpotifyToken(getOrRefreshTokenFromFirebase());
+      } else {
         setSpotifyToken(null);
       }
       setUser(user);
@@ -54,8 +52,6 @@ export default function App() {
       unsubscribe();
     };
   }, []);
-
-  
 
   return (
     <SafeAreaProvider>
@@ -71,10 +67,26 @@ export default function App() {
                       component={DashboardScreen}
                     />
                     <Stack.Screen name="Profile" component={ProfileScreen} />
-                    <Stack.Screen name="Game" component={GameScreen} options={{ title: 'Higher Lower Game' }}/>
-                    <Stack.Screen name="ScoreScreen" component={ScoreScreen} />
-                    <Stack.Screen name="RouletteScreen" component={RouletteScreen} />
-                    <Stack.Screen name="WaitingLobby" component={WaitingLobbyScreen} />
+                    <Stack.Screen
+                      name="Game"
+                      component={GameScreen}
+                      options={{ title: "Higher Lower Game" }}
+                    />
+                    <Stack.Screen
+                      name="ScoreScreen"
+                      component={ScoreScreen}
+                      options={{ title: "Final Score" }}
+                    />
+                    <Stack.Screen
+                      name="RouletteScreen"
+                      component={RouletteScreen}
+                      options={{ title: "Song Roulette" }}
+                    />
+                    <Stack.Screen
+                      name="WaitingLobby"
+                      component={WaitingLobbyScreen}
+                      options={{ title: "Waiting Lobby" }}
+                    />
                   </>
                 ) : (
                   <>
@@ -82,6 +94,7 @@ export default function App() {
                       name="SpotifyLoginScreen"
                       component={SpotifyLoginScreen}
                       initialParams={{ setSpotifyToken: setSpotifyToken }}
+                      options={{ title: "Spotify Login" }}
                     />
                   </>
                 )}
