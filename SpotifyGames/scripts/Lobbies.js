@@ -4,7 +4,7 @@ import { getUserFirebaseInfo } from "./SaveUserData";
 import { ref, set, push, getDatabase, get, child } from 'firebase/database';
 import { trackNumberLimit } from "./SpotifyApiRequests";
 
-const numSongsToAddToGamePool = 10;
+const numSongsToAddToGamePool = 2;
 
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffleArray(array) {

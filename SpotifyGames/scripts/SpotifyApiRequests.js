@@ -52,7 +52,7 @@ function parseArtistNames(arr){
     
     for (let i = 0; i < arr.length; i++){
         if (i == arr.length - 1){
-            combined += " and " + arr[i].name;
+            combined += "and " + arr[i].name;
         }
         else{
             combined += arr[i].name + ", ";

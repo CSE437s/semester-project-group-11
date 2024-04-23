@@ -111,7 +111,9 @@ const QuestionScreen = ({ route }) => {
             const isOver = snapshot.val();
             if (isOver){
                 // HANDLE END GAME STUFF HERE
-                alert("game is over!");
+                // alert("game is over!");
+
+                navigation.navigate('ResultsScreen', { gameCode });
                 // NAVIGATE TO SCORE SCREEN TO SHOW RESULTS???
             }
         });
@@ -136,8 +138,8 @@ const QuestionScreen = ({ route }) => {
             setSelectedUser(null);
             setQuestionNumber(newQuestionNum);
             console.log("NEW QUESTION NUMBER?", newQuestionNum);
-            console.log("next question is:", newQuestionNum, questions[newQuestionNum]);
-            setCurrentSong(questions[newQuestionNum]);
+            console.log("next question is:", newQuestionNum, questions[newQuestionNum-1]);
+            setCurrentSong(questions[newQuestionNum-1]);
         });
 
         return () => {
@@ -186,7 +188,7 @@ const QuestionScreen = ({ route }) => {
         runTransaction(gameStatusRef, (status) => {
             if (status && status.questionNumber !== undefined && status.totalQuestions) {
 
-                if (status.questionNumber === (status.totalQuestions-1)){
+                if (status.questionNumber === status.totalQuestions){
                     // HANDLE END GAME LOGIC HERE OR IN GAME OVER EVENT LISTENER!!!!
                     status.isOver = true;
                     return status;
