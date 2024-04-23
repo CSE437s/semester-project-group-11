@@ -1,12 +1,11 @@
 import React from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
-import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, serverTimestamp, runTransaction, getDoc } from 'firebase/firestore';
 import { getDatabase, ref, set, get } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
 import LogoutButton from './LogoutButton';
-import { getTopTracks } from '../../scripts/SpotifyApiRequests';
+import { getTopTracks, trackNumberLimit } from '../../scripts/SpotifyApiRequests';
 import { getAuth } from 'firebase/auth';
-import { ThemeProvider } from '@react-navigation/native';
 import styles from './Styles';
 import { getUserFirebaseInfo, parseTokenFromInfo, saveUserTopSongs, getFromCrossPlatformStorage } from '../../scripts/SaveUserData';
 import { onLobbyJoin } from '../../scripts/Lobbies';
@@ -45,7 +44,57 @@ const DashboardScreen = ({ navigation }) => {
 
     }
 
-    storeUserTopSongs();
+    const checkIfUserAlreadyHasSongs = async () => {
+
+      const spotifyInfo = await getFromCrossPlatformStorage("spotifyInfo");
+      console.log(typeof (spotifyInfo), spotifyInfo);
+      const spotifyToken = parseTokenFromInfo(spotifyInfo);
+
+      if (!spotifyToken) {
+        console.error("Spotify token is not available.");
+        return;
+      }
+
+      if (currentUser) {
+        const db = getFirestore(app);
+        const userDocRef = doc(db, "users", currentUser.uid);
+
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()){
+          console.log("user does not exist, cannot access their doc from checkIfUserAlreadyHasSongs");
+          return;
+        }
+
+        if ( !userDoc.data().topSongs || userDoc.data().topSongs.length < trackNumberLimit){
+          console.log("getting more songs bc the user needs more");
+          await storeUserTopSongs();
+        }
+        else{
+          console.log("user has sufficient songs");
+        }
+        // runTransaction(db, async (transaction) => {
+        //   const userDoc = await transaction.get(userDocRef);
+
+        //   if (!userDoc.exists()) {
+        //     console.log("cannot find user doc when running transaction for storing songs");
+        //   }
+
+        //   if (userDoc.data().topSongs && userDoc.data().topSongs.length >= trackNumberLimit) {
+        //     console.log("user already has sufficent number of tracks");
+        //   }
+        //   else {
+        //     console.log("getting/updating tracks for the user");
+        //     getTopTracks(spotifyToken).then((songs) => {
+        //       transaction.update(userDocRef, {topSongs : songs});
+        //     });
+        //   }
+        // });
+      }
+    }
+
+    checkIfUserAlreadyHasSongs();
+
   }, [])
 
   const handleGameCodeChange = (text) => {
@@ -106,7 +155,7 @@ const DashboardScreen = ({ navigation }) => {
       set(ref(db, "lobbies/" + gameCode + "/gameStatus"), {
         hasStarted: false,
         questionNumber: 1,
-        totalQuestions:0,
+        totalQuestions: 0,
         isOver: false,
         hostUID: user.uid,
         hostUsername: username
@@ -123,8 +172,6 @@ const DashboardScreen = ({ navigation }) => {
       console.error("Error creating lobby: ", error);
       // Handle error in UI
     }
-
-
   };
   return (
 
@@ -157,8 +204,6 @@ const DashboardScreen = ({ navigation }) => {
         onPress={handleCreateLobby}>
         <Text style={{ color: "white" }}>Create Song Roulette Lobby</Text>
       </Pressable>
-
-
 
       <Pressable
         style={[styles.button, !gameCode.trim() && { opacity: 0.5 }]}
