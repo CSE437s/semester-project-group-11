@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, onValue, set, get, update } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
+import styles from './Styles'
 
 const WaitingLobbyScreen = ({ route, navigation }) => {
   const { gameCode, username } = route.params;

@@ -21,8 +21,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, createTheme } from "@rneui/themed";
 import styles from "./Styles";
 import { getOrRefreshTokenFromFirebase } from "./scripts/SaveUserData.js";
-import { GameProvider, useGame } from './scripts/GameContext.js';
-import {onLobbyJoin, fetchUsersForGame} from './scripts/Lobbies.js';
+import { GameProvider, useGame } from "./scripts/GameContext.js";
+import { onLobbyJoin, fetchUsersForGame } from "./scripts/Lobbies.js";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,15 +42,14 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user){
+      if (user) {
         getOrRefreshTokenFromFirebase().then((token) => {
           // console.log("APP.JS TOKEN,",token);
-          if (token){
+          if (token) {
             setSpotifyToken(token);
           }
         });
-      }
-      else{
+      } else {
         setSpotifyToken(null);
       }
       setUser(user);
@@ -90,14 +89,17 @@ export default function App() {
                       component={RouletteScreen}
                       options={{ title: "Song Roulette" }}
                     />
-                    
+
                     <Stack.Screen
                       name="WaitingLobby"
                       component={WaitingLobbyScreen}
                       options={{ title: "Waiting Lobby" }}
                     />
-                    <Stack.Screen name="QuestionScreen" component={QuestionScreen} />
-
+                    <Stack.Screen
+                      name="QuestionScreen"
+                      component={QuestionScreen}
+                      options={{ title: "Song Roulette" }}
+                    />
                   </>
                 ) : (
                   <>

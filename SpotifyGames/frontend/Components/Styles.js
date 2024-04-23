@@ -1,4 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const width = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   customFonts: {
@@ -10,6 +12,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#1DB954",
+  },
+  highLowContainer: {
+    position: "relative",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "center",
+    // backgroundColor: "#1DB954",
   },
   gameContainer: {
     flex: 1,
@@ -25,6 +34,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     opacity: 0.7,
+  },
+  albumImageContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     fontSize: 50,
@@ -80,6 +94,16 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 10,
   },
+  rouletteButton: {
+    width: "15%",
+    backgroundColor: "#191414",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    marginBottom: 10,
+  },
   songButton: {
     flex: 1, // Make buttons take up equal space horizontally
     flexDirection: "column", // Arrange image and text horizontally
@@ -94,6 +118,19 @@ const styles = StyleSheet.create({
   },
   songText: {
     flex: 1, // Allow text to expand and fill remaining space
+  },
+  highLowText: {
+    position: "absolute",
+    top: 10,
+    color: "white",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 5,
+  },
+  rouletteText: {
+    flex: 1, // Allow text to expand and fill remaining space
+  },
+  gameText: {
+    color: "white",
   },
   resultText: {
     fontSize: 12, // Adjust result text size if needed
@@ -124,6 +161,14 @@ const styles = StyleSheet.create({
   },
   inputField: {
     backgroundColor: "black",
+  },
+  albumCover: {
+    flex: 1,
+    width: 250,
+    height: 250,
+    // aspectRatio: 1,
+    borderWidth: 10,
+    borderColor: "black",
   },
 });
 

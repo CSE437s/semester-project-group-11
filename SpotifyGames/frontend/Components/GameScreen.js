@@ -4,7 +4,10 @@ import {
   getTopArtists,
   getTopSongsForArtistID,
 } from "../../scripts/SpotifyApiRequests";
-import { getFromCrossPlatformStorage, parseTokenFromInfo } from "../../scripts/SaveUserData";
+import {
+  getFromCrossPlatformStorage,
+  parseTokenFromInfo,
+} from "../../scripts/SaveUserData";
 import styles from "./Styles";
 import { ThemeProvider, ThemeConsumer } from "@react-navigation/native";
 
@@ -18,8 +21,7 @@ const GameScreen = ({ navigation }) => {
   const [correctChoice, setCorrectChoice] = useState(null);
   const [result, setResult] = useState(null);
   const [showResult, setShowResult] = useState(false);
-  const [backgroundColor, setBackgroundColor] = useState('white');
-  
+  const [backgroundColor, setBackgroundColor] = useState("white");
 
   useEffect(() => {
     async function fetchArtistsAndTracks() {
@@ -70,17 +72,20 @@ const GameScreen = ({ navigation }) => {
 
   const handleSongSelection = (selectedSongIndex) => {
     const selectedSong = currentSongs[selectedSongIndex];
-    const isCorrect = selectedSong.popularity >= currentSongs[1 - selectedSongIndex].popularity;
-  
+    const isCorrect =
+      selectedSong.popularity >= currentSongs[1 - selectedSongIndex].popularity;
+
     setUserChoice(selectedSong);
-    setCorrectChoice(isCorrect ? selectedSong : currentSongs[1 - selectedSongIndex]);
+    setCorrectChoice(
+      isCorrect ? selectedSong : currentSongs[1 - selectedSongIndex]
+    );
     setResult(isCorrect ? "Correct" : "Incorrect");
-  
+
     if (isCorrect) {
-      setBackgroundColor('green');
+      setBackgroundColor("#8cfe48");
       setScore((prevScore) => prevScore + 1);
     } else {
-      setBackgroundColor('red');
+      setBackgroundColor("red");
       setLives((prevLives) => {
         const newLives = prevLives - 1;
         if (newLives <= 0) {
@@ -90,72 +95,75 @@ const GameScreen = ({ navigation }) => {
         return newLives;
       });
     }
-  
+
     setShowResult(true);
-  
+
     setTimeout(() => {
-      setBackgroundColor('white'); // Reset background color
-  
+      setBackgroundColor("#1DB954"); // Reset background color
+
       // Update the songs immediately after resetting the background color
       const newRandomSong = pickRandomSongs(songs, 1)[0];
       setCurrentSongs([currentSongs[1], newRandomSong]); // Keep the second song and add a new random song
-  
+
       setShowResult(false);
     }, 2000);
   };
-  
 
   return (
-
-      // <View style={[styles.container, { backgroundColor: backgroundColor }]}> 
-      <View style={[styles.container]}> 
-        {isLoading ? (
-          <Text>Loading...</Text>
-        ) : (
-          <>
-            <Text style={styles.title}>Choose the More Popular Song</Text>
-            <Text style={{ position: "absolute", top: 10, left: 20 }}>
-              Lives: {lives}
-            </Text>
-            <Text style={{ position: "absolute", top: 10, right: 20 }}>
-              Score: {score}
-            </Text>
-            {currentSongs.map((song, index) => (
-              <>
-                <Pressable
-                  key={song.id}
-                  onPress={() => handleSongSelection(index)}
-                  style={styles.songButton}
+    // <View style={[styles.container, { backgroundColor: backgroundColor }]}>
+    <View style={[styles.container]}>
+      {isLoading ? (
+        <Text>Loading...</Text>
+      ) : (
+        <>
+          <Text style={[styles.title, { flex: 1, top: 20 }]}>
+            Choose the More Popular Song
+          </Text>
+          <Text style={{ position: "absolute", top: 10, left: 20 }}>
+            Lives: {lives}
+          </Text>
+          <Text style={{ position: "absolute", top: 10, right: 20 }}>
+            Score: {score}
+          </Text>
+          {currentSongs.map((song, index) => (
+            <>
+              {showResult && userChoice && song.id === userChoice.id && (
+                <Text
+                  style={[
+                    styles.resultText,
+                    { backgroundColor: "rgba(0, 0, 0, 0.5)" },
+                  ]}
                 >
+                  {result} - Popularity: {song.popularity}
+                </Text>
+              )}
+              <Pressable
+                key={song.id}
+                onPress={() => handleSongSelection(index)}
+                style={styles.songButton}
+              >
+                <View style={styles.highLowContainer}>
                   <Image
                     source={{ uri: song.albumCover }}
                     style={stylesGameScreen.albumCover}
                   />
 
-                  <Text style={styles.songText}>
-                    {song.name} - {song.artist}
+                  <Text style={styles.highLowText}>
+                    {song.name} by {song.artist}
                   </Text>
-                  {showResult && userChoice && song.id === userChoice.id && (
-                    <Text style={styles.resultText}>
-                      {result} - Popularity: {song.popularity}
-                    </Text>
-                  )}
-                  
-                </Pressable>
-              </>
-            ))}
-          </>
-        )}
-        <Pressable
-
-          style={stylesGameScreen.quitButton}
-          onPress={() => navigation.navigate("Dashboard")}
-        >
-          <Text style={stylesGameScreen.quitButtonText}>Quit</Text>
-
-        </Pressable>
-      </View>
-
+                </View>
+              </Pressable>
+            </>
+          ))}
+        </>
+      )}
+      <Pressable
+        style={stylesGameScreen.quitButton}
+        onPress={() => navigation.navigate("Dashboard")}
+      >
+        <Text style={stylesGameScreen.quitButtonText}>Quit</Text>
+      </Pressable>
+    </View>
   );
 };
 
@@ -164,10 +172,10 @@ const stylesGameScreen = StyleSheet.create({
   // Add your styles here
   title: {
     fontSize: 30, // Set the font size to 30pt
-    color: '#1DB954', // Spotify green color
-    textShadowColor: 'black', // Black text shadow to create the border effect
+    color: "#1DB954", // Spotify green color
+    textShadowColor: "black", // Black text shadow to create the border effect
     textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10 // Adjust the radius to control the border thickness
+    textShadowRadius: 10, // Adjust the radius to control the border thickness
   },
   albumCover: {
     width: 250,
