@@ -73,23 +73,6 @@ const DashboardScreen = ({ navigation }) => {
         else{
           console.log("user has sufficient songs");
         }
-        // runTransaction(db, async (transaction) => {
-        //   const userDoc = await transaction.get(userDocRef);
-
-        //   if (!userDoc.exists()) {
-        //     console.log("cannot find user doc when running transaction for storing songs");
-        //   }
-
-        //   if (userDoc.data().topSongs && userDoc.data().topSongs.length >= trackNumberLimit) {
-        //     console.log("user already has sufficent number of tracks");
-        //   }
-        //   else {
-        //     console.log("getting/updating tracks for the user");
-        //     getTopTracks(spotifyToken).then((songs) => {
-        //       transaction.update(userDocRef, {topSongs : songs});
-        //     });
-        //   }
-        // });
       }
     }
 
