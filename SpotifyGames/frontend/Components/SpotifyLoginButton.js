@@ -15,13 +15,12 @@ import {
     getRefreshTokenData,
 } from "../../scripts/SpotifyApiRequests.js";
 import styles from "./Styles";
-import { ThemeProvider, ThemeConsumer } from "@react-navigation/native";
 
 WebBrowser.maybeCompleteAuthSession();
 
-// const expoRedirectUri = makeRedirectUri({ scheme: 'your.app' }); //NETLIFY PATH
+const path = process.env.EXPO_PUBLIC_SPOTIFY_REDIRECT_PATH ? process.env.EXPO_PUBLIC_SPOTIFY_REDIRECT_PATH : undefined;
 
-const expoRedirectUri = makeRedirectUri({ scheme: 'your.app', path: "callback", preferLocalhost: true });
+const expoRedirectUri = makeRedirectUri({ scheme: 'your.app', path, preferLocalhost: true });
 
 // Endpoint
 const discovery = {
@@ -59,6 +58,7 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
         }
     }, [response]);
 
+
     return (
         <>
             <View>
@@ -83,7 +83,8 @@ export default function SpotifyLoginButton({ setSpotifyToken }) {
 
                                 await saveSpotifyTokenInfo(
                                     JSON.stringify(tokenres),
-                                    String(expirationTime)
+                                    String(expirationTime),
+                                    (tokenres.refresh_token)
                                 );
                                 console.log("Access token saved in local storage");
                                 setSpotifyToken(true);

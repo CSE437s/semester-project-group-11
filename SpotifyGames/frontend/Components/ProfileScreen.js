@@ -48,7 +48,6 @@ const ProfileScreen = ({ navigation }) => {
             setFirebaseProfile(data);
         }
 
-
         getProfileData();
         retrieveFirebase();
         setIsLoading(false);
@@ -82,8 +81,10 @@ const ProfileScreen = ({ navigation }) => {
         </>);
     }
 
+
     function renderFriend({ item, index }) {
         return (
+
             <>
                 <ListItem bottomDivider>
                     <ListItem.Content>

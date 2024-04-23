@@ -1,13 +1,11 @@
-
 import React from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
-import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, serverTimestamp, runTransaction, getDoc } from 'firebase/firestore';
 import { getDatabase, ref, set, get } from 'firebase/database';
 import { app } from '../../scripts/firebaseConfig';
 import LogoutButton from './LogoutButton';
-import { getTopTracks } from '../../scripts/SpotifyApiRequests';
+import { getTopTracks, trackNumberLimit } from '../../scripts/SpotifyApiRequests';
 import { getAuth } from 'firebase/auth';
-import { ThemeProvider } from '@react-navigation/native';
 import styles from './Styles';
 import { getUserFirebaseInfo, parseTokenFromInfo, saveUserTopSongs, getFromCrossPlatformStorage } from '../../scripts/SaveUserData';
 import { onLobbyJoin } from '../../scripts/Lobbies';
@@ -26,7 +24,7 @@ const DashboardScreen = ({ navigation }) => {
     const storeUserTopSongs = async () => {
 
       const spotifyInfo = await getFromCrossPlatformStorage("spotifyInfo");
-      console.log(typeof(spotifyInfo), spotifyInfo);
+      console.log(typeof (spotifyInfo), spotifyInfo);
       const spotifyToken = parseTokenFromInfo(spotifyInfo);
 
       if (!spotifyToken) {
@@ -46,7 +44,40 @@ const DashboardScreen = ({ navigation }) => {
 
     }
 
-    storeUserTopSongs();
+    const checkIfUserAlreadyHasSongs = async () => {
+
+      const spotifyInfo = await getFromCrossPlatformStorage("spotifyInfo");
+      console.log(typeof (spotifyInfo), spotifyInfo);
+      const spotifyToken = parseTokenFromInfo(spotifyInfo);
+
+      if (!spotifyToken) {
+        console.error("Spotify token is not available.");
+        return;
+      }
+
+      if (currentUser) {
+        const db = getFirestore(app);
+        const userDocRef = doc(db, "users", currentUser.uid);
+
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()){
+          console.log("user does not exist, cannot access their doc from checkIfUserAlreadyHasSongs");
+          return;
+        }
+
+        if ( !userDoc.data().topSongs || userDoc.data().topSongs.length < trackNumberLimit){
+          console.log("getting more songs bc the user needs more");
+          await storeUserTopSongs();
+        }
+        else{
+          console.log("user has sufficient songs");
+        }
+      }
+    }
+
+    checkIfUserAlreadyHasSongs();
+
   }, [])
 
   const handleGameCodeChange = (text) => {
@@ -55,7 +86,7 @@ const DashboardScreen = ({ navigation }) => {
 
   const generateGameCode = () => {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
+    const characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ';
     const charactersLength = characters.length;
     for (let i = 0; i < 6; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -106,7 +137,8 @@ const DashboardScreen = ({ navigation }) => {
 
       set(ref(db, "lobbies/" + gameCode + "/gameStatus"), {
         hasStarted: false,
-        round: 1,
+        questionNumber: 1,
+        totalQuestions: 0,
         isOver: false,
         hostUID: user.uid,
         hostUsername: username
@@ -123,8 +155,6 @@ const DashboardScreen = ({ navigation }) => {
       console.error("Error creating lobby: ", error);
       // Handle error in UI
     }
-
-
   };
   return (
 
@@ -144,7 +174,7 @@ const DashboardScreen = ({ navigation }) => {
         onPress={() => navigation.navigate("Game")}
       >
 
-        <Text style={{ color: "white" }}>Start Higher Lower Game</Text>
+        <Text style={{ color: "white" }}>Higher Lower Game</Text>
       </Pressable>
 
       {/* <Pressable style={styles.button}
@@ -155,7 +185,15 @@ const DashboardScreen = ({ navigation }) => {
 
       <Pressable style={styles.button}
         onPress={handleCreateLobby}>
-        <Text style={{ color: "white" }}>Create Roulette Lobby</Text>
+        <Text style={{ color: "white" }}>Create Song Roulette Lobby</Text>
+      </Pressable>
+
+      <Pressable
+        style={[styles.button, !gameCode.trim() && { opacity: 0.5 }]}
+        onPress={handleJoinLobby}
+        disabled={!gameCode.trim()} // Disable button when gameCode is empty
+      >
+        <Text style={{ color: "white" }}>Join Song Roulette Lobby</Text>
       </Pressable>
 
       <View style={styles.inputView}>
@@ -165,12 +203,8 @@ const DashboardScreen = ({ navigation }) => {
           value={gameCode}
           onChangeText={handleGameCodeChange}
         />
-      </View>
 
-      <Pressable style={styles.button}
-        onPress={handleJoinLobby}>
-        <Text style={{ color: "white" }}>Join Roulette Lobby</Text>
-      </Pressable>
+      </View>
 
 
       <LogoutButton />

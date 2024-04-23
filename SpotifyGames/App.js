@@ -9,7 +9,7 @@ import DashboardScreen from "./frontend/Components/DashboardScreen.js";
 import ProfileScreen from "./frontend/Components/ProfileScreen.js";
 import RouletteScreen from "./frontend/Components/RouletteScreen.js";
 import WaitingLobbyScreen from "./frontend/Components/WaitingLobbyScreen.js";
-
+import QuestionScreen from "./frontend/Components/QuestionScreen.js";
 import SpotifyLoginScreen from "./frontend/Components/SpotifyLoginScreen.js";
 
 import GameScreen from "./frontend/Components/GameScreen.js";
@@ -21,6 +21,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, createTheme } from "@rneui/themed";
 import styles from "./Styles";
 import { getOrRefreshTokenFromFirebase } from "./scripts/SaveUserData.js";
+import { GameProvider, useGame } from './scripts/GameContext.js';
+import {onLobbyJoin, fetchUsersForGame} from './scripts/Lobbies.js';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,9 +42,15 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setSpotifyToken(getOrRefreshTokenFromFirebase());
-      } else {
+      if (user){
+        getOrRefreshTokenFromFirebase().then((token) => {
+          // console.log("APP.JS TOKEN,",token);
+          if (token){
+            setSpotifyToken(token);
+          }
+        });
+      }
+      else{
         setSpotifyToken(null);
       }
       setUser(user);
@@ -82,11 +90,14 @@ export default function App() {
                       component={RouletteScreen}
                       options={{ title: "Song Roulette" }}
                     />
+                    
                     <Stack.Screen
                       name="WaitingLobby"
                       component={WaitingLobbyScreen}
                       options={{ title: "Waiting Lobby" }}
                     />
+                    <Stack.Screen name="QuestionScreen" component={QuestionScreen} />
+
                   </>
                 ) : (
                   <>

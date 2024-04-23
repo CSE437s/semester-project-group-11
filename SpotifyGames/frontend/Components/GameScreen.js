@@ -106,6 +106,7 @@ const GameScreen = ({ navigation }) => {
   
 
   return (
+
       // <View style={[styles.container, { backgroundColor: backgroundColor }]}> 
       <View style={[styles.container]}> 
         {isLoading ? (
@@ -139,19 +140,22 @@ const GameScreen = ({ navigation }) => {
                       {result} - Popularity: {song.popularity}
                     </Text>
                   )}
-
+                  
                 </Pressable>
               </>
             ))}
           </>
         )}
         <Pressable
+
           style={stylesGameScreen.quitButton}
           onPress={() => navigation.navigate("Dashboard")}
         >
           <Text style={stylesGameScreen.quitButtonText}>Quit</Text>
+
         </Pressable>
       </View>
+
   );
 };
 
